@@ -253,6 +253,7 @@ export class HubModalStack {
 		containerNode.append(...viewRef.rootNodes);
 
 		this._addDismissEventListener(containerNode, context as any, options);
+		this._addCloseEventListener(containerNode, context as any, options);
 
 		return new ContentRef(
 			[
@@ -294,6 +295,13 @@ export class HubModalStack {
 			environmentInjector,
 			elementInjector
 		});
+
+		if (options.data) {
+			Object.assign(componentRef.instance, {
+				data: options.data
+			});
+		}
+
 		const componentNativeEl: HTMLElement =
 			componentRef.location.nativeElement;
 		if (options.scrollable) {
@@ -302,6 +310,7 @@ export class HubModalStack {
 		this._applicationRef.attachView(componentRef.hostView);
 
 		this._addDismissEventListener(componentNativeEl, context, options);
+		this._addCloseEventListener(componentNativeEl, context as any, options);
 
 		// FIXME: we should here get rid of the component nativeElement
 		// and use `[Array.from(componentNativeEl.childNodes)]` instead and remove the above CSS class.
@@ -402,6 +411,35 @@ export class HubModalStack {
 				container.querySelectorAll(options.dismissSelector);
 			for (const item of Array.from(dismissaable)) {
 				item.addEventListener('click', () => context.dismiss());
+			}
+		}
+	}
+
+	/**
+	 * Attaches click event listeners to elements matching a specified selector to close a modal window.
+	 *
+	 * @param {HTMLElement} container - The `container` parameter is an HTMLElement that represents the DOM element which contains the
+	 * modal content.
+	 * @param {HubActiveModal} context - The `context` parameter in the `_addCloseEventListener` function is of type `HubActiveModal`.
+	 * It is used to reference the active modal instance within the function and call the `close()` method on it when a close event is
+	 * triggered.
+	 * @param {HubModalOptions} options - The `options` parameter is an object that contains configuration options for the modal. It
+	 * may include properties such as `closeSelector`, which is used to specify the selector for elements that can trigger the modal
+	 * to close when clicked.
+	 */
+	private _addCloseEventListener(
+		container: HTMLElement,
+		context: HubActiveModal,
+		options: HubModalOptions
+	) {
+		if (options.closeSelector) {
+			debugger;
+			const dismissaable: NodeListOf<Element> =
+				container.querySelectorAll(options.closeSelector);
+			for (const item of Array.from(dismissaable)) {
+				const clickEventListeners = item.addEventListener('click', () =>
+					context.close()
+				);
 			}
 		}
 	}

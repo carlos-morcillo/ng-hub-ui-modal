@@ -134,7 +134,24 @@ export interface HubModalOptions {
 	 */
 	footerSelector?: string;
 
+	/** Used to specify a custom selector for elements that can trigger the dismissal of the modal window. By providing a CSS selector
+	 * string for `dismissSelector`, you can target specific elements within the modal content that, when interacted with (e.g., clicked),
+	 * will close or dismiss the modal window.
+	 */
 	dismissSelector?: string;
+
+	/**
+	 * Used to specify a custom selector for elements that can trigger the closing of the modal window. By providing a CSS selector
+	 * string for `closeSelector`, you can target specific elements within the modal content that, when interacted with (e.g., clicked),
+	 * will close the modal window. This allows for customization of the elements that can act as close buttons for the modal.
+	 */
+	closeSelector?: string;
+
+	/** Used to store any additional data that needs to be passed to the modal window when it is opened. This property allows you
+	 * to provide custom data to the modal component, which can then be accessed and utilized within the modal content or logic.
+	 * It provides flexibility for passing dynamic information to the modal window based on the specific use case or requirements.
+	 */
+	data?: any;
 }
 
 /**
@@ -184,6 +201,8 @@ export class HubModalConfig implements Required<HubModalOptions> {
 	headerSelector: string;
 	footerSelector: string;
 	dismissSelector: string = '[data-dismiss="modal"]';
+	closeSelector: string = '[data-close="modal"]';
+	data: any;
 
 	get animation(): boolean {
 		return this._animation ?? true /* this._hubConfig.animation */;
