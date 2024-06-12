@@ -1,5 +1,4 @@
 /*
  * Public API Surface of modal
  */
-
-export * from './lib/modal';
+export * from './lib/modal.module';
