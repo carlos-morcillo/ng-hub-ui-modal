@@ -1,4 +1,13 @@
 /*
  * Public API Surface of modal
  */
-export * from './lib/modal.module';
+export {
+	ModalDismissReasons,
+	HubActiveModal,
+	HubModal,
+	HubModalConfig,
+	HubModalModule,
+	HubModalOptions,
+	HubModalUpdatableOptions,
+	HubModalRef
+} from './lib/modal.module';

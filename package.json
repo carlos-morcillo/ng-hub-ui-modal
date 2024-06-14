@@ -1,6 +1,6 @@
 {
 	"name": "ng-hub-ui-modal",
-	"version": "1.2.1",
+	"version": "1.2.4",
 	"peerDependencies": {
 		"@angular/common": ">=16.0.0",
 		"@angular/core": ">=16.0.0",
@@ -24,7 +24,7 @@
 		"decoupled",
 		"independent"
 	],
-	"description": "Paginated table/list",
+	"description": "Standalone boomodalt",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/carlos-morcillo/ng-hub-ui-modal.git"

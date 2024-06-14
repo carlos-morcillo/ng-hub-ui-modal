@@ -433,7 +433,6 @@ export class HubModalStack {
 		options: HubModalOptions
 	) {
 		if (options.closeSelector) {
-			debugger;
 			const dismissaable: NodeListOf<Element> =
 				container.querySelectorAll(options.closeSelector);
 			for (const item of Array.from(dismissaable)) {
