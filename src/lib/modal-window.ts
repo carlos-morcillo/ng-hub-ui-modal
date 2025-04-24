@@ -1,4 +1,4 @@
-import { DOCUMENT, NgIf } from '@angular/common';
+import { DOCUMENT } from '@angular/common';
 import {
 	Component,
 	ElementRef,
@@ -24,21 +24,20 @@ import {
 } from 'ng-hub-ui-utils';
 
 @Component({
-	selector: 'hub-modal-window',
-	standalone: true,
-	imports: [NgIf],
-	host: {
-		'[class]': '"modal d-block" + (windowClass ? " " + windowClass : "")',
-		'[class.fade]': 'animation',
-		role: 'dialog',
-		tabindex: '-1',
-		'[attr.aria-modal]': 'true',
-		'[attr.aria-labelledby]': 'ariaLabelledBy',
-		'[attr.aria-describedby]': 'ariaDescribedBy'
-	},
-	template: `
+    selector: 'hub-modal-window',
+    imports: [],
+    host: {
+        '[class]': '"modal d-block" + (windowClass ? " " + windowClass : "")',
+        '[class.fade]': 'animation',
+        role: 'dialog',
+        tabindex: '-1',
+        '[attr.aria-modal]': 'true',
+        '[attr.aria-labelledby]': 'ariaLabelledBy',
+        '[attr.aria-describedby]': 'ariaDescribedBy'
+    },
+    template: `
 		<div
-			#dialog
+		  #dialog
 			[class]="
 				'modal-dialog' +
 				(size ? ' modal-' + size : '') +
@@ -47,35 +46,34 @@ import {
 				(scrollable ? ' modal-dialog-scrollable' : '') +
 				(modalDialogClass ? ' ' + modalDialogClass : '')
 			"
-			role="document"
-		>
-			<div class="modal-content">
-				<ng-container *ngIf="singleContent; else multipleContent">
-					<ng-content></ng-content>
-				</ng-container>
-				<ng-template #multipleContent>
-					<div class="modal-header">
-						<ng-content />
-						<button
-							type="button"
-							class="btn-close"
-							data-bs-dismiss="modal"
-							aria-label="Close"
-							(click)="dismiss(null)"
-						></button>
-					</div>
-					<div class="modal-body">
-						<ng-content />
-					</div>
-					<div class="modal-footer">
-						<ng-content />
-					</div>
-				</ng-template>
-			</div>
+		  role="document"
+		  >
+		  <div class="modal-content">
+		    @if (singleContent) {
+		      <ng-content></ng-content>
+		    } @else {
+		      <div class="modal-header">
+		        <ng-content />
+		        <button
+		          type="button"
+		          class="btn-close"
+		          data-bs-dismiss="modal"
+		          aria-label="Close"
+		          (click)="dismiss(null)"
+		        ></button>
+		      </div>
+		      <div class="modal-body">
+		        <ng-content />
+		      </div>
+		      <div class="modal-footer">
+		        <ng-content />
+		      </div>
+		    }
+		  </div>
 		</div>
-	`,
-	encapsulation: ViewEncapsulation.None,
-	styleUrl: './modal.scss'
+		`,
+    encapsulation: ViewEncapsulation.None,
+    styleUrl: './modal.scss'
 })
 export class HubModalWindow implements OnInit, OnDestroy {
 	private _document = inject(DOCUMENT);
