@@ -23,28 +23,28 @@ npm install ng-hub-ui-modal
 
 ## Usage
 
-1. Import the `ModalModule` into your Angular module:
+1. Import the `HubModalModule` into your Angular module:
 
 ```typescript
-import { ModalModule } from 'ng-hub-ui-modal';
+import { HubModalModule } from 'ng-hub-ui-modal';
 
 @NgModule({
   imports: [
     // ...
-    ModalModule
+    HubModalModule
   ]
 })
 export class AppModule {}
 ```
 
-2. Inject the `ModalService` into your component:
+2. Inject the `HubModal` into your component:
 
 ```typescript
-import { ModalService } from 'ng-hub-ui-modal';
+import { HubModal } from 'ng-hub-ui-modal';
 
 @Component({...})
 export class MyComponent {
-  constructor(private modalService: ModalService) {}
+  constructor(private modalService: HubModal) {}
 
   openModal() {
     const modalRef = this.modalService.open(MyModalComponent, {
@@ -80,9 +80,9 @@ export class MyModalComponent {}
 
 ## Documentation
 
-### ModalService
+### HubModal
 
-The `ModalService` is the main entry point for creating and managing modals in your application.
+The `HubModal` is the main entry point for creating and managing modals in your application.
 
 #### `open(component, options?)`
 
@@ -192,7 +192,7 @@ You can target these classes or add your own classes to customize the modal's ap
 
 ```typescript
 import { Component } from '@angular/core';
-import { ModalService } from 'ng-hub-ui-modal';
+import { HubModal } from 'ng-hub-ui-modal';
 
 @Component({
   selector: 'app-example',
@@ -201,7 +201,7 @@ import { ModalService } from 'ng-hub-ui-modal';
   `
 })
 export class ExampleComponent {
-  constructor(private modalService: ModalService) {}
+  constructor(private modalService: HubModal) {}
 
   openModal() {
     const modalRef = this.modalService.open(BasicModalComponent);
@@ -229,7 +229,7 @@ export class BasicModalComponent {}
 
 ```typescript
 import { Component, Inject } from '@angular/core';
-import { ModalService, MODAL_DATA } from 'ng-hub-ui-modal';
+import { HubModal, MODAL_DATA } from 'ng-hub-ui-modal';
 
 @Component({
   selector: 'app-example',
@@ -238,7 +238,7 @@ import { ModalService, MODAL_DATA } from 'ng-hub-ui-modal';
   `
 })
 export class ExampleComponent {
-  constructor(private modalService: ModalService) {}
+  constructor(private modalService: HubModal) {}
 
   openModal() {
     const modalRef = this.modalService.open(DataModalComponent, {
@@ -274,7 +274,7 @@ export class DataModalComponent {
 
 ```typescript
 import { Component } from '@angular/core';
-import { ModalService } from 'ng-hub-ui-modal';
+import { HubModal } from 'ng-hub-ui-modal';
 
 @Component({
   selector: 'app-example',
@@ -296,7 +296,7 @@ import { ModalService } from 'ng-hub-ui-modal';
   `
 })
 export class ExampleComponent {
-  constructor(private modalService: ModalService) {}
+  constructor(private modalService: HubModal) {}
 
   openModal() {
     const modalRef = this.modalService.open(null, {
@@ -312,7 +312,7 @@ export class ExampleComponent {
 
 ```typescript
 import { Component } from '@angular/core';
-import { ModalService } from 'ng-hub-ui-modal';
+import { HubModal } from 'ng-hub-ui-modal';
 
 @Component({
   selector: 'app-example',
@@ -331,7 +331,7 @@ import { ModalService } from 'ng-hub-ui-modal';
   `
 })
 export class ExampleComponent {
-  constructor(private modalService: ModalService) {}
+  constructor(private modalService: HubModal) {}
 
   openModal() {
     const modalRef = this.modalService.open(null, {
