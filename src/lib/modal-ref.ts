@@ -1,10 +1,10 @@
 import { ComponentRef } from '@angular/core';
+import { ContentRef, isDefined, isPromise } from 'ng-hub-ui-utils';
 import { Observable, of, Subject, zip } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { HubModalBackdrop } from './modal-backdrop';
-import { HubModalWindow } from './modal-window';
 import { HubModalOptions, HubModalUpdatableOptions } from './modal-config';
-import { ContentRef, isDefined, isPromise } from 'ng-hub-ui-utils';
+import { HubModalWindow } from './modal-window';
 
 /**
  * A reference to the currently opened (active) modal.
@@ -52,7 +52,7 @@ const BACKDROP_ATTRIBUTES: string[] = ['animation', 'backdropClass'];
 /**
  * A reference to the newly opened modal returned by the `HubModal.open()` method.
  */
-export class HubModalRef {
+export class HubModalRef<T = any> {
 	private _closed = new Subject<any>();
 	private _dismissed = new Subject<any>();
 	private _hidden = new Subject<void>();
@@ -98,7 +98,7 @@ export class HubModalRef {
 	 *
 	 * When a `TemplateRef` is used as the content or when the modal is closed, will return `undefined`.
 	 */
-	get componentInstance(): any {
+	get componentInstance(): T | void {
 		if (this._contentRef && this._contentRef.componentRef) {
 			return this._contentRef.componentRef.instance;
 		}

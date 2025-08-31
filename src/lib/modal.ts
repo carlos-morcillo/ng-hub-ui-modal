@@ -25,8 +25,12 @@ export class HubModal {
 	 *
 	 * Also see the [`HubModalOptions`](#/components/modal/api#HubModalOptions) for the list of supported options.
 	 */
-	open(content: any, options: HubModalOptions = {}): HubModalRef {
-		const combinedOptions = { ...this._config, animation: this._config.animation, ...options };
+	open<T = any>(content: T, options: HubModalOptions = {}): HubModalRef<T> {
+		const combinedOptions = {
+			...this._config,
+			animation: this._config.animation,
+			...options
+		};
 		return this._modalStack.open(this._injector, content, combinedOptions);
 	}
 
