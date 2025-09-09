@@ -237,15 +237,15 @@ export class HubModalStack {
 		activeModal: HubActiveModal,
 		options: HubModalOptions
 	): ContentRef {
-		const context = {
-			$implicit: activeModal,
-			close(result) {
-				activeModal.close(result);
-			},
-			dismiss(reason) {
-				activeModal.dismiss(reason);
-			}
-		};
+        const context = {
+            $implicit: activeModal,
+            close(result: any) {
+                activeModal.close(result);
+            },
+            dismiss(reason: any) {
+                activeModal.dismiss(reason);
+            }
+        };
 		const viewRef = templateRef.createEmbeddedView(context);
 		this._applicationRef.attachView(viewRef);
 

@@ -1,9 +1,9 @@
 import {
-	Component,
-	Injectable,
-	Injector,
-	OnDestroy,
-	ViewChild
+  Component,
+  Injectable,
+  Injector,
+  OnDestroy,
+  viewChild
 } from '@angular/core';
 import {
 	ComponentFixture,
@@ -1460,12 +1460,12 @@ describe('hub-modal', () => {
 				`
 			})
 			class TestAnimationComponent {
-				@ViewChild('content', { static: true }) content;
+				readonly content = viewChild('content');
 
 				constructor(private modalService: HubModal) {}
 
 				open(backdrop: boolean | 'static' = true, keyboard = true) {
-					return this.modalService.open(this.content, {
+					return this.modalService.open(this.content(), {
 						backdrop,
 						keyboard
 					});
@@ -1885,13 +1885,12 @@ class TestComponent {
 	name = 'World';
 	openedModal: HubModalRef;
 	show = true;
-	@ViewChild('content', { static: true }) tplContent;
-	@ViewChild('destroyableContent', { static: true }) tplDestroyableContent;
-	@ViewChild('contentWithClose', { static: true }) tplContentWithClose;
-	@ViewChild('contentWithDismiss', { static: true }) tplContentWithDismiss;
-	@ViewChild('contentWithImplicitContext', { static: true })
-	tplContentWithImplicitContext;
-	@ViewChild('contentWithIf', { static: true }) tplContentWithIf;
+	readonly tplContent = viewChild('content');
+	readonly tplDestroyableContent = viewChild('destroyableContent');
+	readonly tplContentWithClose = viewChild('contentWithClose');
+	readonly tplContentWithDismiss = viewChild('contentWithDismiss');
+	readonly tplContentWithImplicitContext = viewChild('contentWithImplicitContext');
+	readonly tplContentWithIf = viewChild('contentWithIf');
 
 	constructor(public modalService: HubModal) {}
 
@@ -1913,28 +1912,28 @@ class TestComponent {
 		this.modalService.dismissAll(reason);
 	}
 	openTpl(options?: HubModalOptions) {
-		return this.modalService.open(this.tplContent, options);
+		return this.modalService.open(this.tplContent(), options);
 	}
 	openCmpt(cmptType: any, options?: HubModalOptions) {
 		return this.modalService.open(cmptType, options);
 	}
 	openDestroyableTpl(options?: HubModalOptions) {
-		return this.modalService.open(this.tplDestroyableContent, options);
+		return this.modalService.open(this.tplDestroyableContent(), options);
 	}
 	openTplClose(options?: HubModalOptions) {
-		return this.modalService.open(this.tplContentWithClose, options);
+		return this.modalService.open(this.tplContentWithClose(), options);
 	}
 	openTplDismiss(options?: HubModalOptions) {
-		return this.modalService.open(this.tplContentWithDismiss, options);
+		return this.modalService.open(this.tplContentWithDismiss(), options);
 	}
 	openTplImplicitContext(options?: HubModalOptions) {
 		return this.modalService.open(
-			this.tplContentWithImplicitContext,
+			this.tplContentWithImplicitContext(),
 			options
 		);
 	}
 	openTplIf(options?: HubModalOptions) {
-		return this.modalService.open(this.tplContentWithIf, options);
+		return this.modalService.open(this.tplContentWithIf(), options);
 	}
 	get activeInstances() {
 		return this.modalService.activeInstances;

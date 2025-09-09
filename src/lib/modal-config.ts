@@ -182,24 +182,24 @@ export type HubModalUpdatableOptions = Pick<
 @Injectable({ providedIn: 'root' })
 export class HubModalConfig implements Required<HubModalOptions> {
 	// private _hubConfig = inject(HubConfig);
-	private _animation: boolean;
+	private _animation?: boolean;
 
-	ariaLabelledBy: string;
-	ariaDescribedBy: string;
+	ariaLabelledBy!: string;
+	ariaDescribedBy!: string;
 	backdrop: boolean | 'static' = true;
-	beforeDismiss: () => boolean | Promise<boolean>;
-	centered: boolean;
-	container: string | HTMLElement;
+	beforeDismiss!: () => boolean | Promise<boolean>;
+	centered!: boolean;
+	container!: string | HTMLElement;
 	fullscreen: 'sm' | 'md' | 'lg' | 'xl' | 'xxl' | boolean | string = false;
-	injector: Injector;
+	injector!: Injector;
 	keyboard = true;
-	scrollable: boolean;
-	size: 'sm' | 'lg' | 'xl' | string;
-	windowClass: string;
-	modalDialogClass: string;
-	backdropClass: string;
-	headerSelector: string;
-	footerSelector: string;
+	scrollable!: boolean;
+	size!: 'sm' | 'lg' | 'xl' | string;
+	windowClass!: string;
+	modalDialogClass!: string;
+	backdropClass!: string;
+	headerSelector!: string;
+	footerSelector!: string;
 	dismissSelector: string = '[data-dismiss="modal"]';
 	closeSelector: string = '[data-close="modal"]';
 	data: any;

@@ -59,27 +59,31 @@ export class HubModalRef<T = any> {
 	private _resolve!: (result?: any) => void;
 	private _reject!: (reason?: any) => void;
 
-	private _applyWindowOptions(
-		windowInstance: HubModalWindow,
-		options: HubModalOptions
-	): void {
-		WINDOW_ATTRIBUTES.forEach((optionName: string) => {
-			if (isDefined(options[optionName])) {
-				windowInstance[optionName] = options[optionName];
-			}
-		});
-	}
+    private _applyWindowOptions(
+        windowInstance: HubModalWindow,
+        options: HubModalOptions
+    ): void {
+        WINDOW_ATTRIBUTES.forEach((optionName: string) => {
+            const opts: any = options as any;
+            const win: any = windowInstance as any;
+            if (isDefined(opts[optionName])) {
+                win[optionName] = opts[optionName];
+            }
+        });
+    }
 
-	private _applyBackdropOptions(
-		backdropInstance: HubModalBackdrop,
-		options: HubModalOptions
-	): void {
-		BACKDROP_ATTRIBUTES.forEach((optionName: string) => {
-			if (isDefined(options[optionName])) {
-				backdropInstance[optionName] = options[optionName];
-			}
-		});
-	}
+    private _applyBackdropOptions(
+        backdropInstance: HubModalBackdrop,
+        options: HubModalOptions
+    ): void {
+        BACKDROP_ATTRIBUTES.forEach((optionName: string) => {
+            const opts: any = options as any;
+            const back: any = backdropInstance as any;
+            if (isDefined(opts[optionName])) {
+                back[optionName] = opts[optionName];
+            }
+        });
+    }
 
 	/**
 	 * Updates options of an opened modal.
@@ -204,15 +208,15 @@ export class HubModalRef<T = any> {
 				this._dismiss(reason);
 			} else {
 				const dismiss = this._beforeDismiss();
-				if (isPromise(dismiss)) {
-					dismiss.then(
-						(result) => {
-							if (result !== false) {
-								this._dismiss(reason);
-							}
-						},
-						() => {}
-					);
+                if (isPromise(dismiss as any)) {
+                    (dismiss as Promise<boolean>).then(
+                        (result) => {
+                            if (result !== false) {
+                                this._dismiss(reason);
+                            }
+                        },
+                        () => {}
+                    );
 				} else if (dismiss !== false) {
 					this._dismiss(reason);
 				}

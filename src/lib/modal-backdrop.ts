@@ -1,11 +1,11 @@
 import {
-	Component,
-	ElementRef,
-	inject,
-	Input,
-	NgZone,
-	OnInit,
-	ViewEncapsulation
+  Component,
+  ElementRef,
+  inject,
+  NgZone,
+  OnInit,
+  ViewEncapsulation,
+  input
 } from '@angular/core';
 import { hubRunTransition, reflow } from 'ng-hub-ui-utils';
 import { Observable } from 'rxjs';
@@ -18,9 +18,9 @@ import { take } from 'rxjs/operators';
 	template: '',
 	host: {
 		'[class]':
-			'"modal-backdrop" + (backdropClass ? " " + backdropClass : "")',
-		'[class.show]': '!animation',
-		'[class.fade]': 'animation',
+			'"modal-backdrop" + (backdropClass() ? " " + backdropClass() : "")',
+		'[class.show]': '!animation()',
+		'[class.fade]': 'animation()',
 		style: 'z-index: 1055'
 	}
 })
@@ -28,8 +28,8 @@ export class HubModalBackdrop implements OnInit {
 	private _nativeElement = inject(ElementRef).nativeElement as HTMLElement;
 	private _zone = inject(NgZone);
 
-	@Input() animation: boolean;
-	@Input() backdropClass: string;
+    readonly animation = input<boolean>(true);
+    readonly backdropClass = input<string>();
 
 	ngOnInit() {
 		this._zone.onStable
@@ -45,7 +45,7 @@ export class HubModalBackdrop implements OnInit {
 						}
 						element.classList.add('show');
 					},
-					{ animation: this.animation, runningTransition: 'continue' }
+					{ animation: this.animation(), runningTransition: 'continue' }
 				);
 			});
 	}
@@ -56,7 +56,7 @@ export class HubModalBackdrop implements OnInit {
 			this._nativeElement,
 			({ classList }) => classList.remove('show'),
 			{
-				animation: this.animation,
+				animation: this.animation(),
 				runningTransition: 'stop'
 			}
 		);

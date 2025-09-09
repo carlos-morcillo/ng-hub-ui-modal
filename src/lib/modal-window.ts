@@ -1,16 +1,15 @@
 import { DOCUMENT } from '@angular/common';
 import {
-	Component,
-	ElementRef,
-	EventEmitter,
-	inject,
-	Input,
-	NgZone,
-	OnDestroy,
-	OnInit,
-	Output,
-	ViewChild,
-	ViewEncapsulation
+  Component,
+  ElementRef,
+  inject,
+  NgZone,
+  OnDestroy,
+  OnInit,
+  ViewEncapsulation,
+  input,
+  output,
+  viewChild
 } from '@angular/core';
 import { fromEvent, Observable, Subject, zip } from 'rxjs';
 import { filter, switchMap, take, takeUntil, tap } from 'rxjs/operators';
@@ -27,24 +26,24 @@ import {
     selector: 'hub-modal-window',
     imports: [],
     host: {
-        '[class]': '"modal d-block" + (windowClass ? " " + windowClass : "")',
-        '[class.fade]': 'animation',
+        '[class]': '"modal d-block" + (windowClass() ? " " + windowClass() : "")',
+        '[class.fade]': 'animation()',
         role: 'dialog',
         tabindex: '-1',
         '[attr.aria-modal]': 'true',
-        '[attr.aria-labelledby]': 'ariaLabelledBy',
-        '[attr.aria-describedby]': 'ariaDescribedBy'
+        '[attr.aria-labelledby]': 'ariaLabelledBy()',
+        '[attr.aria-describedby]': 'ariaDescribedBy()'
     },
     template: `
 		<div
 		  #dialog
 			[class]="
 				'modal-dialog' +
-				(size ? ' modal-' + size : '') +
-				(centered ? ' modal-dialog-centered' : '') +
+				(size() ? ' modal-' + size() : '') +
+				(centered() ? ' modal-dialog-centered' : '') +
 				fullscreenClass +
-				(scrollable ? ' modal-dialog-scrollable' : '') +
-				(modalDialogClass ? ' ' + modalDialogClass : '')
+				(scrollable() ? ' modal-dialog-scrollable' : '') +
+				(modalDialogClass() ? ' ' + modalDialogClass() : '')
 			"
 		  role="document"
 		  >
@@ -83,39 +82,39 @@ export class HubModalWindow implements OnInit, OnDestroy {
 	private _closed$ = new Subject<void>();
 	private _elWithFocus: Element | null = null; // element that is focused prior to modal opening
 
-	@ViewChild('dialog', { static: true })
-	private _dialogEl: ElementRef<HTMLElement>;
+    private readonly _dialogEl = viewChild.required<ElementRef<HTMLElement>>('dialog');
 
-	@Input() animation: boolean;
-	@Input() ariaLabelledBy: string;
-	@Input() ariaDescribedBy: string;
-	@Input() backdrop: boolean | string = true;
-	@Input() centered: string;
-	@Input() fullscreen: string | boolean;
-	@Input() keyboard = true;
-	@Input() scrollable: string;
-	@Input() size: string;
-	@Input() windowClass: string;
-	@Input() modalDialogClass: string;
+    readonly animation = input<boolean>(true);
+    readonly ariaLabelledBy = input<string>();
+    readonly ariaDescribedBy = input<string>();
+    readonly backdrop = input<boolean | string>(true);
+    readonly centered = input<boolean>();
+    readonly fullscreen = input<string | boolean>();
+    readonly keyboard = input(true);
+    readonly scrollable = input<boolean>();
+    readonly size = input<string>();
+    readonly windowClass = input<string>();
+    readonly modalDialogClass = input<string>();
 
 	singleContent!: boolean;
 
-	@Output('dismiss') dismissEvent = new EventEmitter();
+	readonly dismissEvent = output({ alias: 'dismiss' });
 
 	shown = new Subject<void>();
 	hidden = new Subject<void>();
 
 	get fullscreenClass(): string {
-		return this.fullscreen === true
+		const fullscreen = this.fullscreen();
+  return fullscreen === true
 			? ' modal-fullscreen'
-			: isString(this.fullscreen)
-			? ` modal-fullscreen-${this.fullscreen}-down`
+			: isString(fullscreen)
+			? ` modal-fullscreen-${fullscreen}-down`
 			: '';
 	}
 
-	dismiss(reason): void {
-		this.dismissEvent.emit(reason);
-	}
+    dismiss(reason: any): void {
+        this.dismissEvent.emit(reason);
+    }
 
 	ngOnInit() {
 		this._elWithFocus = this._document.activeElement;
@@ -134,7 +133,7 @@ export class HubModalWindow implements OnInit, OnDestroy {
 	hide(): Observable<any> {
 		const { nativeElement } = this._elRef;
 		const context: TransitionOptions<any> = {
-			animation: this.animation,
+			animation: this.animation(),
 			runningTransition: 'stop'
 		};
 
@@ -146,7 +145,7 @@ export class HubModalWindow implements OnInit, OnDestroy {
 		);
 		const dialogTransition$ = hubRunTransition(
 			this._zone,
-			this._dialogEl.nativeElement,
+			this._dialogEl().nativeElement,
 			() => {},
 			context
 		);
@@ -165,7 +164,7 @@ export class HubModalWindow implements OnInit, OnDestroy {
 
 	private _show() {
 		const context: TransitionOptions<any> = {
-			animation: this.animation,
+			animation: this.animation(),
 			runningTransition: 'continue'
 		};
 
@@ -182,7 +181,7 @@ export class HubModalWindow implements OnInit, OnDestroy {
 		);
 		const dialogTransition$ = hubRunTransition(
 			this._zone,
-			this._dialogEl.nativeElement,
+			this._dialogEl().nativeElement,
 			() => {},
 			context
 		);
@@ -205,7 +204,7 @@ export class HubModalWindow implements OnInit, OnDestroy {
 					filter((e) => e.key === 'Escape')
 				)
 				.subscribe((event) => {
-					if (this.keyboard) {
+					if (this.keyboard()) {
 						requestAnimationFrame(() => {
 							if (!event.defaultPrevented) {
 								this._zone.run(() =>
@@ -213,7 +212,7 @@ export class HubModalWindow implements OnInit, OnDestroy {
 								);
 							}
 						});
-					} else if (this.backdrop === 'static') {
+					} else if (this.backdrop() === 'static') {
 						this._bumpBackdrop();
 					}
 				});
@@ -221,7 +220,7 @@ export class HubModalWindow implements OnInit, OnDestroy {
 			// We're listening to 'mousedown' and 'mouseup' to prevent modal from closing when pressing the mouse
 			// inside the modal dialog and releasing it outside
 			let preventClose = false;
-			fromEvent<MouseEvent>(this._dialogEl.nativeElement, 'mousedown')
+			fromEvent<MouseEvent>(this._dialogEl().nativeElement, 'mousedown')
 				.pipe(
 					takeUntil(this._closed$),
 					tap(() => (preventClose = false)),
@@ -245,9 +244,10 @@ export class HubModalWindow implements OnInit, OnDestroy {
 				.pipe(takeUntil(this._closed$))
 				.subscribe(({ target }) => {
 					if (nativeElement === target) {
-						if (this.backdrop === 'static') {
+						const backdrop = this.backdrop();
+      if (backdrop === 'static') {
 							this._bumpBackdrop();
-						} else if (this.backdrop === true && !preventClose) {
+						} else if (backdrop === true && !preventClose) {
 							this._zone.run(() =>
 								this.dismiss(ModalDismissReasons.BACKDROP_CLICK)
 							);
@@ -278,24 +278,24 @@ export class HubModalWindow implements OnInit, OnDestroy {
 		}
 	}
 
-	private _restoreFocus() {
-		const body = this._document.body;
-		const elWithFocus = this._elWithFocus;
+    private _restoreFocus() {
+        const body = this._document.body;
+        const elWithFocus = this._elWithFocus;
 
-		let elementToFocus;
-		if (elWithFocus && elWithFocus['focus'] && body.contains(elWithFocus)) {
-			elementToFocus = elWithFocus;
-		} else {
-			elementToFocus = body;
-		}
-		this._zone.runOutsideAngular(() => {
-			setTimeout(() => elementToFocus.focus());
-			this._elWithFocus = null;
-		});
-	}
+        let elementToFocus: HTMLElement;
+        if (elWithFocus instanceof HTMLElement && body.contains(elWithFocus)) {
+            elementToFocus = elWithFocus;
+        } else {
+            elementToFocus = body as unknown as HTMLElement;
+        }
+        this._zone.runOutsideAngular(() => {
+            setTimeout(() => elementToFocus.focus());
+            this._elWithFocus = null;
+        });
+    }
 
 	private _bumpBackdrop() {
-		if (this.backdrop === 'static') {
+		if (this.backdrop() === 'static') {
 			hubRunTransition(
 				this._zone,
 				this._elRef.nativeElement,
@@ -303,7 +303,7 @@ export class HubModalWindow implements OnInit, OnDestroy {
 					classList.add('modal-static');
 					return () => classList.remove('modal-static');
 				},
-				{ animation: this.animation, runningTransition: 'continue' }
+				{ animation: this.animation(), runningTransition: 'continue' }
 			);
 		}
 	}
