@@ -7,6 +7,7 @@ export {
 	HubModal,
 	HubModalConfig,
 	HubModalModule,
+	HubModalPlacement,
 	HubModalRef
 } from './lib/modal.module';
 export type { HubModalOptions, HubModalUpdatableOptions } from './lib/modal.module';

@@ -1,13 +1,13 @@
 import { inject } from '@angular/core/testing';
 
 import { HubModalConfig } from './modal-config';
-import { HubConfig } from '../hub-config';
+import { HubModalPlacement } from './modal-placement';
 
 describe('HubModalConfig', () => {
 	it('should have sensible default values', inject(
-		[HubModalConfig, HubConfig],
-		(config: HubModalConfig, hubConfig: HubConfig) => {
-			expect(config.animation).toBe(hubConfig.animation);
+		[HubModalConfig],
+		(config: HubModalConfig) => {
+			expect(config.animation).toBe(true);
 			expect(config.ariaLabelledBy).toBeUndefined();
 			expect(config.ariaLabelledBy).toBeUndefined();
 			expect(config.ariaDescribedBy).toBeUndefined();
@@ -15,6 +15,7 @@ describe('HubModalConfig', () => {
 			expect(config.backdropClass).toBeUndefined();
 			expect(config.beforeDismiss).toBeUndefined();
 			expect(config.centered).toBeUndefined();
+			expect(config.placement).toBe(HubModalPlacement.Center);
 			expect(config.container).toBeUndefined();
 			expect(config.injector).toBeUndefined();
 			expect(config.fullscreen).toBe(false);

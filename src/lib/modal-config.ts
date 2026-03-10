@@ -1,4 +1,5 @@
 import { Injectable, Injector } from '@angular/core';
+import { HubModalPlacement } from './modal-placement';
 // import { HubConfig } from '../hub-config';
 
 /**
@@ -55,6 +56,13 @@ export interface HubModalOptions {
 	 * @since 1.1.0
 	 */
 	centered?: boolean;
+
+	/**
+	 * Controls where the modal is placed within the viewport.
+	 *
+	 * Default value is `'center'`.
+	 */
+	placement?: HubModalPlacement;
 
 	/**
 	 * A selector specifying the element all new modal windows should be appended to.
@@ -164,6 +172,7 @@ export type HubModalUpdatableOptions = Pick<
 	| 'ariaLabelledBy'
 	| 'ariaDescribedBy'
 	| 'centered'
+	| 'placement'
 	| 'fullscreen'
 	| 'backdropClass'
 	| 'size'
@@ -189,6 +198,7 @@ export class HubModalConfig implements Required<HubModalOptions> {
 	backdrop: boolean | 'static' = true;
 	beforeDismiss!: () => boolean | Promise<boolean>;
 	centered!: boolean;
+	placement: HubModalPlacement = HubModalPlacement.Center;
 	container!: string | HTMLElement;
 	fullscreen: 'sm' | 'md' | 'lg' | 'xl' | 'xxl' | boolean | string = false;
 	injector!: Injector;

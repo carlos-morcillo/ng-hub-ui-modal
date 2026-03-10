@@ -7,17 +7,17 @@ describe('hub-modal-backdrop', () => {
 		const fixture = TestBed.createComponent(HubModalBackdrop);
 
 		fixture.detectChanges();
-		expect(fixture.nativeElement).toHaveCssClass('modal-backdrop');
-		expect(fixture.nativeElement).toHaveCssClass('show');
-		expect(fixture.nativeElement).not.toHaveCssClass('fade');
+		expect(fixture.nativeElement).toHaveClass('hub-modal__backdrop');
+		expect(fixture.nativeElement).toHaveClass('show');
+		expect(fixture.nativeElement).not.toHaveClass('fade');
 	});
 
 	it('should render correct CSS classes for animations', () => {
 		const fixture = TestBed.createComponent(HubModalBackdrop);
-		fixture.componentInstance.animation = true;
+		fixture.componentRef.setInput('animation', true);
 
 		fixture.detectChanges();
-		expect(fixture.nativeElement).toHaveCssClass('show');
-		expect(fixture.nativeElement).toHaveCssClass('fade');
+		expect(fixture.nativeElement).toHaveClass('show');
+		expect(fixture.nativeElement).toHaveClass('fade');
 	});
 });

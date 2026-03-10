@@ -12,13 +12,7 @@ import {
 	TemplateRef,
 	Type
 } from '@angular/core';
-import {
-	ContentRef,
-	hubFocusTrap,
-	isDefined,
-	isString,
-	ScrollBar
-} from 'ng-hub-ui-utils';
+import { ContentRef, hubFocusTrap, isDefined, isString, ScrollBar } from 'ng-hub-ui-utils';
 import { Subject } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { HubModalBackdrop } from './modal-backdrop';
@@ -26,6 +20,11 @@ import { HubModalOptions, HubModalUpdatableOptions } from './modal-config';
 import { HubActiveModal, HubModalRef } from './modal-ref';
 import { HubModalWindow } from './modal-window';
 
+/**
+ * A service that manages the stack of currently active modal windows.
+ * It is responsible for creating, attaching, and orchestrating the rendering
+ * of the modal dialogue, its backdrop, and its content.
+ */
 @Injectable({ providedIn: 'root' })
 export class HubModalStack {
 	private _applicationRef = inject(ApplicationRef);
@@ -47,13 +46,8 @@ export class HubModalStack {
 		// Trap focus on active WindowCmpt
 		this._activeWindowCmptHasChanged.subscribe(() => {
 			if (this._windowCmpts.length) {
-				const activeWindowCmpt =
-					this._windowCmpts[this._windowCmpts.length - 1];
-				hubFocusTrap(
-					ngZone,
-					activeWindowCmpt.location.nativeElement,
-					this._activeWindowCmptHasChanged
-				);
+				const activeWindowCmpt = this._windowCmpts[this._windowCmpts.length - 1];
+				hubFocusTrap(ngZone, activeWindowCmpt.location.nativeElement, this._activeWindowCmptHasChanged);
 				this._revertAriaHidden();
 				this._setAriaHidden(activeWindowCmpt.location.nativeElement);
 			}
@@ -74,24 +68,25 @@ export class HubModalStack {
 		}
 	}
 
-	open(
-		contentInjector: Injector,
-		content: any,
-		options: HubModalOptions
-	): HubModalRef {
+	/**
+	 * Opens a new modal window configured with the provided options.
+	 *
+	 * @param contentInjector The dependency injector to be used for the modal content component.
+	 * @param content The content to display inside the modal. Can be a component class, a template reference, or a string.
+	 * @param options Configuration options that dictate how the modal is rendered and behaves.
+	 * @returns An instance of `HubModalRef` which can be used to control the modal or subscribe to its events.
+	 * @throws Error if the specified container element is not found in the DOM.
+	 */
+	open(contentInjector: Injector, content: any, options: HubModalOptions): HubModalRef {
 		const containerEl =
 			options.container instanceof HTMLElement
 				? options.container
 				: isDefined(options.container)
-				? this._document.querySelector(options.container!)
-				: this._document.body;
+					? this._document.querySelector(options.container!)
+					: this._document.body;
 
 		if (!containerEl) {
-			throw new Error(
-				`The specified modal container "${
-					options.container || 'body'
-				}" was not found in the DOM.`
-			);
+			throw new Error(`The specified modal container "${options.container || 'body'}" was not found in the DOM.`);
 		}
 
 		this._hideScrollBar();
@@ -99,29 +94,13 @@ export class HubModalStack {
 		const activeModal = new HubActiveModal();
 
 		contentInjector = options.injector || contentInjector;
-		const environmentInjector =
-			contentInjector.get(EnvironmentInjector, null) ||
-			this._environmentInjector;
-		const contentRef = this._getContentRef(
-			contentInjector,
-			environmentInjector,
-			content,
-			activeModal,
-			options
-		);
+		const environmentInjector = contentInjector.get(EnvironmentInjector, null) || this._environmentInjector;
+		const contentRef = this._getContentRef(contentInjector, environmentInjector, content, activeModal, options);
 
 		const backdropCmptRef: ComponentRef<HubModalBackdrop> | undefined =
-			options.backdrop !== false
-				? this._attachBackdrop(containerEl)
-				: undefined;
-		const windowCmptRef: ComponentRef<HubModalWindow> =
-			this._attachWindowComponent(containerEl, contentRef.nodes, options);
-		const hubModalRef: HubModalRef = new HubModalRef(
-			windowCmptRef,
-			contentRef,
-			backdropCmptRef,
-			options.beforeDismiss
-		);
+			options.backdrop !== false ? this._attachBackdrop(containerEl) : undefined;
+		const windowCmptRef: ComponentRef<HubModalWindow> = this._attachWindowComponent(containerEl, contentRef.nodes, options);
+		const hubModalRef: HubModalRef = new HubModalRef(windowCmptRef, contentRef, backdropCmptRef, options.beforeDismiss);
 
 		this._registerModalRef(hubModalRef);
 		this._registerWindowCmpt(windowCmptRef);
@@ -132,7 +111,7 @@ export class HubModalStack {
 		hubModalRef.hidden.pipe(take(1)).subscribe(() =>
 			Promise.resolve(true).then(() => {
 				if (!this._modalRefs.length) {
-					this._document.body.classList.remove('modal-open');
+					this._document.body.classList.remove('hub-modal-open');
 					this._restoreScrollBar();
 					this._revertAriaHidden();
 				}
@@ -152,7 +131,7 @@ export class HubModalStack {
 
 		hubModalRef.update(options);
 		if (this._modalRefs.length === 1) {
-			this._document.body.classList.add('modal-open');
+			this._document.body.classList.add('hub-modal-open');
 		}
 
 		if (backdropCmptRef && backdropCmptRef.instance) {
@@ -162,21 +141,34 @@ export class HubModalStack {
 		return hubModalRef;
 	}
 
+	/**
+	 * Allows observing the array of active modal instances.
+	 *
+	 * @returns An event emitter that streams changes to the active modal references.
+	 */
 	get activeInstances() {
 		return this._activeInstances;
 	}
 
+	/**
+	 * Dismisses all currently open modal windows.
+	 *
+	 * @param reason Optional reason to pass to the dismissal routines of the active modals.
+	 */
 	dismissAll(reason?: any) {
 		this._modalRefs.forEach((hubModalRef) => hubModalRef.dismiss(reason));
 	}
 
+	/**
+	 * Checks whether there are any currently open modal windows.
+	 *
+	 * @returns `true` if at least one modal is active, `false` otherwise.
+	 */
 	hasOpenModals(): boolean {
 		return this._modalRefs.length > 0;
 	}
 
-	private _attachBackdrop(
-		containerEl: Element
-	): ComponentRef<HubModalBackdrop> {
+	private _attachBackdrop(containerEl: Element): ComponentRef<HubModalBackdrop> {
 		let backdropCmptRef = createComponent(HubModalBackdrop, {
 			environmentInjector: this._applicationRef.injector,
 			elementInjector: this._injector
@@ -188,23 +180,21 @@ export class HubModalStack {
 
 	private _attachWindowComponent(
 		containerEl: Element,
-		[headerNodes, bodyNodes, footerNodes]: Node[][],
+		contentNodes: Node[][],
 		options: HubModalOptions
 	): ComponentRef<HubModalWindow> {
-		const singleContent =
-			!options.headerSelector && !options.footerSelector;
+		const singleContent = !options.headerSelector && !options.footerSelector;
 		let windowCmptRef = createComponent(HubModalWindow, {
 			environmentInjector: this._applicationRef.injector,
-			elementInjector: this._injector,
-			projectableNodes: singleContent
-				? [bodyNodes]
-				: [[], headerNodes, bodyNodes, footerNodes]
+			elementInjector: this._injector
 		});
 
 		Object.assign(windowCmptRef.instance, { singleContent });
 
 		this._applicationRef.attachView(windowCmptRef.hostView);
 		containerEl.appendChild(windowCmptRef.location.nativeElement);
+		windowCmptRef.changeDetectorRef.detectChanges();
+		windowCmptRef.instance.attachContent(contentNodes);
 		return windowCmptRef;
 	}
 
@@ -222,13 +212,7 @@ export class HubModalStack {
 		} else if (isString(content)) {
 			return this._createFromString(content);
 		} else {
-			return this._createFromComponent(
-				contentInjector,
-				environmentInjector,
-				content,
-				activeModal,
-				options
-			);
+			return this._createFromComponent(contentInjector, environmentInjector, content, activeModal, options);
 		}
 	}
 
@@ -237,15 +221,15 @@ export class HubModalStack {
 		activeModal: HubActiveModal,
 		options: HubModalOptions
 	): ContentRef {
-        const context = {
-            $implicit: activeModal,
-            close(result: any) {
-                activeModal.close(result);
-            },
-            dismiss(reason: any) {
-                activeModal.dismiss(reason);
-            }
-        };
+		const context = {
+			$implicit: activeModal,
+			close(result: any) {
+				activeModal.close(result);
+			},
+			dismiss(reason: any) {
+				activeModal.dismiss(reason);
+			}
+		};
 		const viewRef = templateRef.createEmbeddedView(context);
 		this._applicationRef.attachView(viewRef);
 
@@ -257,19 +241,9 @@ export class HubModalStack {
 
 		return new ContentRef(
 			[
-				options.headerSelector
-					? extractAndRemoveNodesBySelector(
-							containerNode,
-							options.headerSelector
-					  )
-					: [],
-				containerNode.childNodes as any,
-				options.footerSelector
-					? extractAndRemoveNodesBySelector(
-							containerNode,
-							options.footerSelector
-					  )
-					: []
+				options.headerSelector ? extractAndRemoveNodesBySelector(containerNode, options.headerSelector) : [],
+				Array.from(containerNode.childNodes),
+				options.footerSelector ? extractAndRemoveNodesBySelector(containerNode, options.footerSelector) : []
 			],
 			viewRef
 		);
@@ -302,8 +276,7 @@ export class HubModalStack {
 			});
 		}
 
-		const componentNativeEl: HTMLElement =
-			componentRef.location.nativeElement;
+		const componentNativeEl: HTMLElement = componentRef.location.nativeElement;
 		if (options.scrollable) {
 			componentNativeEl.classList.add('component-host-scrollable');
 		}
@@ -316,19 +289,9 @@ export class HubModalStack {
 		// and use `[Array.from(componentNativeEl.childNodes)]` instead and remove the above CSS class.
 		return new ContentRef(
 			[
-				options.headerSelector
-					? extractAndRemoveNodesBySelector(
-							componentNativeEl,
-							options.headerSelector
-					  )
-					: [],
-				componentNativeEl.childNodes as any,
-				options.footerSelector
-					? extractAndRemoveNodesBySelector(
-							componentNativeEl,
-							options.footerSelector
-					  )
-					: []
+				options.headerSelector ? extractAndRemoveNodesBySelector(componentNativeEl, options.headerSelector) : [],
+				Array.from(componentNativeEl.childNodes),
+				options.footerSelector ? extractAndRemoveNodesBySelector(componentNativeEl, options.footerSelector) : []
 			],
 			componentRef.hostView,
 			componentRef
@@ -340,10 +303,7 @@ export class HubModalStack {
 		if (parent && element !== this._document.body) {
 			Array.from(parent.children).forEach((sibling) => {
 				if (sibling !== element && sibling.nodeName !== 'SCRIPT') {
-					this._ariaHiddenValues.set(
-						sibling,
-						sibling.getAttribute('aria-hidden')
-					);
+					this._ariaHiddenValues.set(sibling, sibling.getAttribute('aria-hidden'));
 					sibling.setAttribute('aria-hidden', 'true');
 				}
 			});
@@ -401,14 +361,9 @@ export class HubModalStack {
 	 * may include properties such as `dismissSelector`, which is used to specify a CSS selector for elements that, when clicked, will
 	 * dismiss the modal by calling the `dismiss` method on the `context` object.
 	 */
-	private _addDismissEventListener(
-		container: HTMLElement,
-		context: HubActiveModal,
-		options: HubModalOptions
-	) {
+	private _addDismissEventListener(container: HTMLElement, context: HubActiveModal, options: HubModalOptions) {
 		if (options.dismissSelector) {
-			const dismissaable: NodeListOf<Element> =
-				container.querySelectorAll(options.dismissSelector);
+			const dismissaable: NodeListOf<Element> = container.querySelectorAll(options.dismissSelector);
 			for (const item of Array.from(dismissaable)) {
 				item.addEventListener('click', () => context.dismiss());
 			}
@@ -427,18 +382,11 @@ export class HubModalStack {
 	 * may include properties such as `closeSelector`, which is used to specify the selector for elements that can trigger the modal
 	 * to close when clicked.
 	 */
-	private _addCloseEventListener(
-		container: HTMLElement,
-		context: HubActiveModal,
-		options: HubModalOptions
-	) {
+	private _addCloseEventListener(container: HTMLElement, context: HubActiveModal, options: HubModalOptions) {
 		if (options.closeSelector) {
-			const dismissaable: NodeListOf<Element> =
-				container.querySelectorAll(options.closeSelector);
+			const dismissaable: NodeListOf<Element> = container.querySelectorAll(options.closeSelector);
 			for (const item of Array.from(dismissaable)) {
-				const clickEventListeners = item.addEventListener('click', () =>
-					context.close()
-				);
+				const clickEventListeners = item.addEventListener('click', () => context.close());
 			}
 		}
 	}
@@ -455,10 +403,7 @@ export class HubModalStack {
  * @returns An array of nodes that were extracted from the container element based on the provided selector, and then removes those
  * nodes from the DOM.
  */
-function extractAndRemoveNodesBySelector(
-	container: HTMLElement,
-	selector: string
-): Array<Node> {
+function extractAndRemoveNodesBySelector(container: HTMLElement, selector: string): Array<Node> {
 	let containerNodes = container.querySelectorAll(selector);
 
 	const nodes = Array.from(containerNodes).reduce((acc, c) => {

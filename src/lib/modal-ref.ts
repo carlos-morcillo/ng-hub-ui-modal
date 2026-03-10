@@ -40,6 +40,7 @@ const WINDOW_ATTRIBUTES: string[] = [
 	'ariaDescribedBy',
 	'backdrop',
 	'centered',
+	'placement',
 	'fullscreen',
 	'keyboard',
 	'scrollable',
@@ -59,31 +60,23 @@ export class HubModalRef<T = any> {
 	private _resolve!: (result?: any) => void;
 	private _reject!: (reason?: any) => void;
 
-    private _applyWindowOptions(
-        windowInstance: HubModalWindow,
-        options: HubModalOptions
-    ): void {
-        WINDOW_ATTRIBUTES.forEach((optionName: string) => {
-            const opts: any = options as any;
-            const win: any = windowInstance as any;
-            if (isDefined(opts[optionName])) {
-                win[optionName] = opts[optionName];
-            }
-        });
-    }
+	private _applyWindowOptions(windowComponentRef: ComponentRef<HubModalWindow>, options: HubModalOptions): void {
+		WINDOW_ATTRIBUTES.forEach((optionName: string) => {
+			const opts: any = options as any;
+			if (isDefined(opts[optionName])) {
+				windowComponentRef.setInput(optionName, opts[optionName]);
+			}
+		});
+	}
 
-    private _applyBackdropOptions(
-        backdropInstance: HubModalBackdrop,
-        options: HubModalOptions
-    ): void {
-        BACKDROP_ATTRIBUTES.forEach((optionName: string) => {
-            const opts: any = options as any;
-            const back: any = backdropInstance as any;
-            if (isDefined(opts[optionName])) {
-                back[optionName] = opts[optionName];
-            }
-        });
-    }
+	private _applyBackdropOptions(backdropComponentRef: ComponentRef<HubModalBackdrop>, options: HubModalOptions): void {
+		BACKDROP_ATTRIBUTES.forEach((optionName: string) => {
+			const opts: any = options as any;
+			if (isDefined(opts[optionName])) {
+				backdropComponentRef.setInput(optionName, opts[optionName]);
+			}
+		});
+	}
 
 	/**
 	 * Updates options of an opened modal.
@@ -91,9 +84,9 @@ export class HubModalRef<T = any> {
 	 * @since 14.2.0
 	 */
 	update(options: HubModalUpdatableOptions): void {
-		this._applyWindowOptions(this._windowCmptRef.instance, options);
+		this._applyWindowOptions(this._windowCmptRef, options);
 		if (this._backdropCmptRef && this._backdropCmptRef.instance) {
-			this._applyBackdropOptions(this._backdropCmptRef.instance, options);
+			this._applyBackdropOptions(this._backdropCmptRef, options);
 		}
 	}
 
@@ -208,15 +201,15 @@ export class HubModalRef<T = any> {
 				this._dismiss(reason);
 			} else {
 				const dismiss = this._beforeDismiss();
-                if (isPromise(dismiss as any)) {
-                    (dismiss as Promise<boolean>).then(
-                        (result) => {
-                            if (result !== false) {
-                                this._dismiss(reason);
-                            }
-                        },
-                        () => {}
-                    );
+				if (isPromise(dismiss as any)) {
+					(dismiss as Promise<boolean>).then(
+						(result) => {
+							if (result !== false) {
+								this._dismiss(reason);
+							}
+						},
+						() => {}
+					);
 				} else if (dismiss !== false) {
 					this._dismiss(reason);
 				}
@@ -226,9 +219,7 @@ export class HubModalRef<T = any> {
 
 	private _removeModalElements() {
 		const windowTransition$ = this._windowCmptRef.instance.hide();
-		const backdropTransition$ = this._backdropCmptRef
-			? this._backdropCmptRef.instance.hide()
-			: of(undefined);
+		const backdropTransition$ = this._backdropCmptRef ? this._backdropCmptRef.instance.hide() : of(undefined);
 
 		// hiding window
 		windowTransition$.subscribe(() => {

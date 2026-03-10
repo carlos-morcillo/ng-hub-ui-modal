@@ -1,7 +1,524 @@
-hub-modal-window {
-	.component-host-scrollable {
+@use 'sass:map';
+
+:root,
+:host {
+	--hub-ref-color-white: #ffffff;
+	--hub-ref-color-black: #000000;
+	--hub-ref-border-width: 1px;
+	--hub-ref-radius-lg: 0.5rem;
+	--hub-ref-space-2: 0.5rem;
+	--hub-ref-space-3: 1rem;
+	--hub-ref-font-size-lg: 1.25rem;
+	--hub-ref-line-height-base: 1.5;
+	--hub-sys-zindex-modal: 1055;
+	--hub-sys-surface-page: #ffffff;
+	--hub-sys-text-primary: #212529;
+	--hub-sys-border-color-default: #dee2e6;
+	--hub-sys-shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+	--hub-sys-opacity-50: 0.5;
+	--hub-sys-opacity-0: 0;
+	--hub-sys-transition-base: all 0.2s ease-in-out;
+}
+
+$hub-modal-sizes: (
+	sm: 300px,
+	lg: 800px,
+	xl: 1140px
+);
+
+$hub-modal-side-placements: (
+	start: (
+		margin-right: auto,
+		margin-left: 0,
+		transform: translateX(-100%)
+	),
+	end: (
+		margin-right: 0,
+		margin-left: auto,
+		transform: translateX(100%)
+	)
+);
+
+$hub-modal-vertical-placements: (
+	top: (
+		justify-content: flex-start,
+		transform: translateY(-100%)
+	),
+	bottom: (
+		justify-content: flex-end,
+		transform: translateY(100%)
+	)
+);
+
+$hub-modal-fullscreen-breakpoints: (
+	sm: 575.98px,
+	md: 767.98px,
+	lg: 991.98px,
+	xl: 1199.98px,
+	xxl: 1399.98px
+);
+
+body.hub-modal-open {
+	overflow: hidden;
+}
+
+.hub-modal {
+	--hub-modal-z-index: var(--hub-sys-zindex-modal, 1055);
+	--hub-modal-width: auto;
+	--hub-modal-max-width: 500px;
+	--hub-modal-margin-y: 1.75rem;
+	--hub-modal-margin-x: auto;
+	--hub-modal-margin-top: var(--hub-modal-margin-y, 1.75rem);
+	--hub-modal-margin-right: var(--hub-modal-margin-x, auto);
+	--hub-modal-margin-bottom: var(--hub-modal-margin-y, 1.75rem);
+	--hub-modal-margin-left: var(--hub-modal-margin-x, auto);
+	--hub-modal-margin-block: calc(
+		var(--hub-modal-margin-top, 1.75rem) +
+			var(--hub-modal-margin-bottom, 1.75rem)
+	);
+	--hub-modal-margin: var(--hub-modal-margin-top) var(--hub-modal-margin-right)
+		var(--hub-modal-margin-bottom) var(--hub-modal-margin-left);
+	--hub-modal-placement-start-margin-top: var(
+		--hub-modal-margin-top,
+		1.75rem
+	);
+	--hub-modal-placement-start-margin-right: auto;
+	--hub-modal-placement-start-margin-bottom: var(
+		--hub-modal-margin-bottom,
+		1.75rem
+	);
+	--hub-modal-placement-start-margin-left: 0;
+	--hub-modal-placement-start-margin-block: calc(
+		var(--hub-modal-placement-start-margin-top, 1.75rem) +
+			var(--hub-modal-placement-start-margin-bottom, 1.75rem)
+	);
+	--hub-modal-placement-start-margin: var(
+			--hub-modal-placement-start-margin-top
+		)
+		var(--hub-modal-placement-start-margin-right)
+		var(--hub-modal-placement-start-margin-bottom)
+		var(--hub-modal-placement-start-margin-left);
+	--hub-modal-placement-end-margin-top: var(--hub-modal-margin-top, 1.75rem);
+	--hub-modal-placement-end-margin-right: 0;
+	--hub-modal-placement-end-margin-bottom: var(
+		--hub-modal-margin-bottom,
+		1.75rem
+	);
+	--hub-modal-placement-end-margin-left: auto;
+	--hub-modal-placement-end-margin-block: calc(
+		var(--hub-modal-placement-end-margin-top, 1.75rem) +
+			var(--hub-modal-placement-end-margin-bottom, 1.75rem)
+	);
+	--hub-modal-placement-end-margin: var(--hub-modal-placement-end-margin-top)
+		var(--hub-modal-placement-end-margin-right)
+		var(--hub-modal-placement-end-margin-bottom)
+		var(--hub-modal-placement-end-margin-left);
+	--hub-modal-placement-top-margin-top: 0;
+	--hub-modal-placement-top-margin-right: auto;
+	--hub-modal-placement-top-margin-bottom: 0;
+	--hub-modal-placement-top-margin-left: auto;
+	--hub-modal-placement-top-margin-block: calc(
+		var(--hub-modal-placement-top-margin-top, 0px) +
+			var(--hub-modal-placement-top-margin-bottom, 0px)
+	);
+	--hub-modal-placement-top-margin: var(--hub-modal-placement-top-margin-top)
+		var(--hub-modal-placement-top-margin-right)
+		var(--hub-modal-placement-top-margin-bottom)
+		var(--hub-modal-placement-top-margin-left);
+	--hub-modal-placement-bottom-margin-top: 0;
+	--hub-modal-placement-bottom-margin-right: auto;
+	--hub-modal-placement-bottom-margin-bottom: 0;
+	--hub-modal-placement-bottom-margin-left: auto;
+	--hub-modal-placement-bottom-margin-block: calc(
+		var(--hub-modal-placement-bottom-margin-top, 0px) +
+			var(--hub-modal-placement-bottom-margin-bottom, 0px)
+	);
+	--hub-modal-placement-bottom-margin: var(
+			--hub-modal-placement-bottom-margin-top
+		)
+		var(--hub-modal-placement-bottom-margin-right)
+		var(--hub-modal-placement-bottom-margin-bottom)
+		var(--hub-modal-placement-bottom-margin-left);
+	--hub-modal-color: var(--hub-sys-text-primary, #212529);
+	--hub-modal-bg: var(--hub-sys-surface-page, #ffffff);
+	--hub-modal-border-color: var(--hub-sys-border-color-default, #dee2e6);
+	--hub-modal-border-width: var(--hub-ref-border-width, 1px);
+	--hub-modal-border-radius: var(--hub-ref-radius-lg, 0.5rem);
+	--hub-modal-placement-start-border-radius: 0
+		var(--hub-modal-border-radius, var(--hub-ref-radius-lg, 0.5rem))
+		var(--hub-modal-border-radius, var(--hub-ref-radius-lg, 0.5rem)) 0;
+	--hub-modal-placement-end-border-radius: var(
+			--hub-modal-border-radius,
+			var(--hub-ref-radius-lg, 0.5rem)
+		)
+		0 0 var(--hub-modal-border-radius, var(--hub-ref-radius-lg, 0.5rem));
+	--hub-modal-placement-top-border-radius: 0 0
+		var(--hub-modal-border-radius, var(--hub-ref-radius-lg, 0.5rem))
+		var(--hub-modal-border-radius, var(--hub-ref-radius-lg, 0.5rem));
+	--hub-modal-placement-bottom-border-radius: var(
+			--hub-modal-border-radius,
+			var(--hub-ref-radius-lg, 0.5rem)
+		)
+		var(--hub-modal-border-radius, var(--hub-ref-radius-lg, 0.5rem)) 0 0;
+	--hub-modal-inner-border-radius: calc(
+		var(--hub-modal-border-radius, var(--hub-ref-radius-lg, 0.5rem)) - var(
+				--hub-modal-border-width,
+				var(--hub-ref-border-width, 1px)
+			)
+	);
+	--hub-modal-box-shadow: var(--hub-sys-shadow-lg, 0 1rem 3rem rgba(0, 0, 0, 0.175));
+	--hub-modal-header-padding-x: var(--hub-ref-space-3, 1rem);
+	--hub-modal-header-padding-y: var(--hub-ref-space-3, 1rem);
+	--hub-modal-header-gap: var(--hub-ref-space-2, 0.5rem);
+	--hub-modal-header-border-color: var(--hub-sys-border-color-default, #dee2e6);
+	--hub-modal-header-border-width: var(--hub-ref-border-width, 1px);
+	--hub-modal-title-font-size: var(--hub-ref-font-size-lg, 1.25rem);
+	--hub-modal-title-font-weight: 500;
+	--hub-modal-title-line-height: var(--hub-ref-line-height-base, 1.5);
+	--hub-modal-title-margin: 0;
+	--hub-modal-body-padding-x: var(--hub-ref-space-3, 1rem);
+	--hub-modal-body-padding-y: var(--hub-ref-space-3, 1rem);
+	--hub-modal-footer-padding-x: var(--hub-ref-space-3, 1rem);
+	--hub-modal-footer-padding-y: var(--hub-ref-space-3, 1rem);
+	--hub-modal-footer-gap: var(--hub-ref-space-2, 0.5rem);
+	--hub-modal-footer-bg: var(--hub-modal-bg, var(--hub-sys-surface-page, #ffffff));
+	--hub-modal-footer-border-color: var(--hub-sys-border-color-default, #dee2e6);
+	--hub-modal-footer-border-width: var(--hub-ref-border-width, 1px);
+	--hub-modal-close-color: var(--hub-sys-text-primary, #212529);
+	--hub-modal-close-size: 1.25rem;
+	--hub-modal-close-line-height: 1;
+	--hub-modal-close-padding: 0;
+	--hub-modal-close-opacity: 0.5;
+	--hub-modal-close-hover-opacity: 0.75;
+	--hub-modal-backdrop-bg: var(--hub-ref-color-black, #000000);
+	--hub-modal-backdrop-opacity: var(--hub-sys-opacity-50, 0.5);
+	--hub-modal-backdrop-opacity-hidden: var(--hub-sys-opacity-0, 0);
+	--hub-modal-backdrop-transition: opacity 0.15s linear;
+	--hub-modal-fade-transform: translate(0, -50px);
+	--hub-modal-show-transform: none;
+	--hub-modal-transition: var(--hub-sys-transition-base, all 0.2s ease-in-out);
+	--hub-modal-scale-transform: scale(1.02);
+	--hub-modal-backdrop-z-index: calc(var(--hub-modal-z-index, var(--hub-sys-zindex-modal, 1055)) - 1);
+
+	position: fixed;
+	inset: 0;
+	display: block;
+	width: 100%;
+	height: 100%;
+	overflow-x: hidden;
+	overflow-y: auto;
+	outline: 0;
+	pointer-events: auto;
+	z-index: var(--hub-modal-z-index, var(--hub-sys-zindex-modal, 1055));
+	color: var(--hub-modal-color, var(--hub-sys-text-primary, #212529));
+
+	&--placement-top,
+	&--placement-bottom {
+		display: flex;
+		justify-content: center;
+	}
+
+	&--placement-top {
+		align-items: flex-start;
+	}
+
+	&--placement-bottom {
+		align-items: flex-end;
+	}
+
+	&__dialog {
+		position: relative;
+		width: var(--hub-modal-width, auto);
+		max-width: var(--hub-modal-max-width, 500px);
+		margin: var(--hub-modal-margin, 1.75rem auto);
+		pointer-events: none;
+	}
+
+	@each $size-name, $size-width in $hub-modal-sizes {
+		&__dialog--#{$size-name} {
+			--hub-modal-max-width: #{$size-width};
+		}
+	}
+
+	&__dialog--centered {
+		display: flex;
+		align-items: center;
+		min-height: calc(100% - var(--hub-modal-margin-block, 3.5rem));
+	}
+
+	&__dialog--centered-vertical {
+		display: flex;
+		align-items: center;
+		min-height: calc(100% - var(--hub-modal-margin-block, 3.5rem));
+	}
+
+	@each $placement-name, $placement-config in $hub-modal-side-placements {
+		&__dialog--placement-#{$placement-name} {
+			@if $placement-name == start {
+				margin: var(
+					--hub-modal-placement-start-margin,
+					var(--hub-modal-margin-top, 1.75rem) auto
+						var(--hub-modal-margin-bottom, 1.75rem) 0
+				);
+			} @else if $placement-name == end {
+				margin: var(
+					--hub-modal-placement-end-margin,
+					var(--hub-modal-margin-top, 1.75rem) 0
+						var(--hub-modal-margin-bottom, 1.75rem) auto
+				);
+			}
+			--hub-modal-fade-transform: #{map.get($placement-config, transform)};
+		}
+	}
+
+	@each $placement-name, $placement-config in $hub-modal-vertical-placements {
+		&__dialog--placement-#{$placement-name} {
+			@if $placement-name == top {
+				margin: var(--hub-modal-placement-top-margin, 0 auto 0 auto);
+			} @else if $placement-name == bottom {
+				margin: var(--hub-modal-placement-bottom-margin, 0 auto 0 auto);
+			}
+			--hub-modal-fade-transform: #{map.get($placement-config, transform)};
+		}
+	}
+
+	&__dialog--scrollable {
+		display: flex;
+		max-height: calc(100% - var(--hub-modal-margin-block, 3.5rem));
+	}
+
+	.hub-modal__dialog--placement-start.hub-modal__dialog--centered-vertical {
+		min-height: calc(100% - var(--hub-modal-placement-start-margin-block, 3.5rem));
+	}
+
+	.hub-modal__dialog--placement-end.hub-modal__dialog--centered-vertical {
+		min-height: calc(100% - var(--hub-modal-placement-end-margin-block, 3.5rem));
+	}
+
+	.hub-modal__dialog--placement-start.hub-modal__dialog--scrollable {
+		max-height: calc(100% - var(--hub-modal-placement-start-margin-block, 3.5rem));
+	}
+
+	.hub-modal__dialog--placement-end.hub-modal__dialog--scrollable {
+		max-height: calc(100% - var(--hub-modal-placement-end-margin-block, 3.5rem));
+	}
+
+	.hub-modal__dialog--placement-top.hub-modal__dialog--scrollable {
+		max-height: calc(100% - var(--hub-modal-placement-top-margin-block, 0px));
+	}
+
+	.hub-modal__dialog--placement-bottom.hub-modal__dialog--scrollable {
+		max-height: calc(
+			100% - var(--hub-modal-placement-bottom-margin-block, 0px)
+		);
+	}
+
+	&__content {
+		position: relative;
 		display: flex;
 		flex-direction: column;
+		width: 100%;
+		pointer-events: auto;
+		outline: 0;
+		color: var(--hub-modal-color, var(--hub-sys-text-primary, #212529));
+		background-color: var(--hub-modal-bg, var(--hub-sys-surface-page, #ffffff));
+		border: var(--hub-modal-border-width, var(--hub-ref-border-width, 1px)) solid
+			var(--hub-modal-border-color, var(--hub-sys-border-color-default, #dee2e6));
+		border-radius: var(--hub-modal-border-radius, var(--hub-ref-radius-lg, 0.5rem));
+		box-shadow: var(--hub-modal-box-shadow, var(--hub-sys-shadow-lg, 0 1rem 3rem rgba(0, 0, 0, 0.175)));
+	}
+
+	&__dialog--scrollable &__content {
+		max-height: 100%;
 		overflow: hidden;
+	}
+
+	@each $placement-name, $placement-config in $hub-modal-side-placements {
+		&__dialog--placement-#{$placement-name} &__content {
+			@if $placement-name == start {
+				border-radius: var(--hub-modal-placement-start-border-radius);
+			} @else if $placement-name == end {
+				border-radius: var(--hub-modal-placement-end-border-radius);
+			}
+		}
+	}
+
+	@each $placement-name, $placement-config in $hub-modal-vertical-placements {
+		&__dialog--placement-#{$placement-name} &__content {
+			@if $placement-name == top {
+				border-radius: var(--hub-modal-placement-top-border-radius);
+			} @else if $placement-name == bottom {
+				border-radius: var(--hub-modal-placement-bottom-border-radius);
+			}
+		}
+	}
+
+	&__header {
+		display: flex;
+		align-items: center;
+		gap: var(--hub-modal-header-gap, var(--hub-ref-space-2, 0.5rem));
+		padding: var(--hub-modal-header-padding-y, var(--hub-ref-space-3, 1rem))
+			var(--hub-modal-header-padding-x, var(--hub-ref-space-3, 1rem));
+		border-bottom: var(--hub-modal-header-border-width, var(--hub-ref-border-width, 1px)) solid
+			var(--hub-modal-header-border-color, var(--hub-sys-border-color-default, #dee2e6));
+		border-top-left-radius: var(
+			--hub-modal-inner-border-radius,
+			calc(
+				var(--hub-modal-border-radius, var(--hub-ref-radius-lg, 0.5rem)) - var(
+						--hub-modal-border-width,
+						var(--hub-ref-border-width, 1px)
+					)
+			)
+		);
+		border-top-right-radius: var(
+			--hub-modal-inner-border-radius,
+			calc(
+				var(--hub-modal-border-radius, var(--hub-ref-radius-lg, 0.5rem)) - var(
+						--hub-modal-border-width,
+						var(--hub-ref-border-width, 1px)
+					)
+			)
+		);
+	}
+
+	&__header .modal-title {
+		font-size: var(--hub-modal-title-font-size, var(--hub-ref-font-size-lg, 1.25rem));
+		font-weight: var(--hub-modal-title-font-weight, 500);
+		line-height: var(--hub-modal-title-line-height, var(--hub-ref-line-height-base, 1.5));
+		margin: var(--hub-modal-title-margin, 0);
+	}
+
+	&__body {
+		position: relative;
+		flex: 1 1 auto;
+		padding: var(--hub-modal-body-padding-y, var(--hub-ref-space-3, 1rem))
+			var(--hub-modal-body-padding-x, var(--hub-ref-space-3, 1rem));
+	}
+
+	&__dialog--scrollable &__body {
+		overflow-y: auto;
+	}
+
+	&__footer {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: flex-end;
+		gap: var(--hub-modal-footer-gap, var(--hub-ref-space-2, 0.5rem));
+		padding: var(--hub-modal-footer-padding-y, var(--hub-ref-space-3, 1rem))
+			var(--hub-modal-footer-padding-x, var(--hub-ref-space-3, 1rem));
+		color: var(--hub-modal-color, var(--hub-sys-text-primary, #212529));
+		background-color: var(--hub-modal-footer-bg, var(--hub-modal-bg, var(--hub-sys-surface-page, #ffffff)));
+		border-top: var(--hub-modal-footer-border-width, var(--hub-ref-border-width, 1px)) solid
+			var(--hub-modal-footer-border-color, var(--hub-sys-border-color-default, #dee2e6));
+		border-bottom-right-radius: var(
+			--hub-modal-inner-border-radius,
+			calc(
+				var(--hub-modal-border-radius, var(--hub-ref-radius-lg, 0.5rem)) - var(
+						--hub-modal-border-width,
+						var(--hub-ref-border-width, 1px)
+					)
+			)
+		);
+		border-bottom-left-radius: var(
+			--hub-modal-inner-border-radius,
+			calc(
+				var(--hub-modal-border-radius, var(--hub-ref-radius-lg, 0.5rem)) - var(
+						--hub-modal-border-width,
+						var(--hub-ref-border-width, 1px)
+					)
+			)
+		);
+	}
+
+	&__close {
+		margin-left: auto;
+		padding: var(--hub-modal-close-padding, 0);
+		font-size: var(--hub-modal-close-size, 1.25rem);
+		line-height: var(--hub-modal-close-line-height, 1);
+		background: transparent;
+		border: 0;
+		cursor: pointer;
+		color: var(--hub-modal-close-color, var(--hub-sys-text-primary, #212529));
+		opacity: var(--hub-modal-close-opacity, 0.5);
+
+		&::before {
+			content: '\00D7';
+		}
+
+		&:hover,
+		&:focus {
+			opacity: var(--hub-modal-close-hover-opacity, 0.75);
+		}
+	}
+
+	&.fade &__dialog {
+		transform: var(--hub-modal-fade-transform, translate(0, -50px));
+		transition: var(--hub-modal-transition, var(--hub-sys-transition-base, all 0.2s ease-in-out));
+	}
+
+	&.show &__dialog {
+		transform: var(--hub-modal-show-transform, none);
+	}
+
+	&.hub-modal--static &__dialog {
+		transform: var(--hub-modal-scale-transform, scale(1.02));
+	}
+
+	&__dialog--fullscreen {
+		width: 100%;
+		max-width: 100%;
+		height: 100%;
+		margin: 0;
+	}
+
+	&__dialog--fullscreen &__content {
+		height: 100%;
+		border: 0;
+		border-radius: 0;
+	}
+
+	&__dialog--fullscreen &__body {
+		overflow-y: auto;
+	}
+
+}
+
+@each $breakpoint-name, $breakpoint-width in $hub-modal-fullscreen-breakpoints {
+	@media (max-width: $breakpoint-width) {
+		.hub-modal {
+			&__dialog--fullscreen-#{$breakpoint-name}-down {
+				width: 100%;
+				max-width: 100%;
+				height: 100%;
+				margin: 0;
+			}
+
+			&__dialog--fullscreen-#{$breakpoint-name}-down &__content {
+				height: 100%;
+				border: 0;
+				border-radius: 0;
+			}
+
+			&__dialog--fullscreen-#{$breakpoint-name}-down &__body {
+				overflow-y: auto;
+			}
+		}
+	}
+}
+
+.hub-modal__backdrop {
+	position: fixed;
+	inset: 0;
+	opacity: var(--hub-modal-backdrop-opacity-hidden, var(--hub-sys-opacity-0, 0));
+	z-index: var(--hub-modal-backdrop-z-index, 1054);
+	background-color: var(--hub-modal-backdrop-bg, var(--hub-ref-color-black, #000000));
+	pointer-events: none;
+
+	&.fade {
+		transition: var(--hub-modal-backdrop-transition, opacity 0.15s linear);
+	}
+
+	&.show {
+		opacity: var(--hub-modal-backdrop-opacity, var(--hub-sys-opacity-50, 0.5));
 	}
 }

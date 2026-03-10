@@ -7,12 +7,14 @@
 		"declarationMap": true,
 		"inlineSources": true,
 		"types": [],
-		"strictPropertyInitialization": false
-	},
-	"angularCompilerOptions": {
+		"strictPropertyInitialization": false,
+		"paths": {
+			"ng-hub-ui-utils": [
+				"../../dist/utils"
+			]
+		}
 	},
 	"exclude": [
 		"**/*.spec.ts"
-	],
-	
+	]
 }
