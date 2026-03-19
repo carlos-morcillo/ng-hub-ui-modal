@@ -1,25 +1,5 @@
 @use 'sass:map';
 
-:root,
-:host {
-	--hub-ref-color-white: #ffffff;
-	--hub-ref-color-black: #000000;
-	--hub-ref-border-width: 1px;
-	--hub-ref-radius-lg: 0.5rem;
-	--hub-ref-space-2: 0.5rem;
-	--hub-ref-space-3: 1rem;
-	--hub-ref-font-size-lg: 1.25rem;
-	--hub-ref-line-height-base: 1.5;
-	--hub-sys-zindex-modal: 1055;
-	--hub-sys-surface-page: #ffffff;
-	--hub-sys-text-primary: #212529;
-	--hub-sys-border-color-default: #dee2e6;
-	--hub-sys-shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.175);
-	--hub-sys-opacity-50: 0.5;
-	--hub-sys-opacity-0: 0;
-	--hub-sys-transition-base: all 0.2s ease-in-out;
-}
-
 $hub-modal-sizes: (
 	sm: 300px,
 	lg: 800px,

@@ -68,11 +68,11 @@ describe('HubModal', () => {
 	});
 
 	it('should expose activeInstances from the stack', (done) => {
-		modalStack.activeInstances.emit([]);
 		service.activeInstances.subscribe((instances) => {
 			expect(instances).toEqual([]);
 			done();
 		});
+		modalStack.activeInstances.emit([]);
 	});
 
 	it('should delegate dismissAll to the stack', () => {

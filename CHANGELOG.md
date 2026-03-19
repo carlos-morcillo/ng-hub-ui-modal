@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.0.1] - 2026-03-19
+
+### Changed
+
+- Removed hardcoded design system token defaults (`--hub-ref-*`, `--hub-sys-*`) from the
+  component stylesheet. These tokens now rely solely on the host application's design system
+  layer; all `--hub-modal-*` variables retain their literal fallback values for standalone usage.
+
+### Fixed
+
+- Fixed `modal-backdrop.spec.ts` tests: added required `animation` input initialization and
+  `async`/`await fixture.whenStable()` for proper async test stability.
+- Fixed `modal.spec.ts` event subscription ordering: subscribe before emitting to ensure
+  handler is registered in time.
+
 ## [21.0.0] - 2026-03-10
 
 ### Added
