@@ -147,8 +147,10 @@ body.hub-modal-open {
 			)
 	);
 	--hub-modal-box-shadow: var(--hub-sys-shadow-lg, 0 1rem 3rem rgba(0, 0, 0, 0.175));
-	--hub-modal-header-padding-x: var(--hub-ref-space-3, 1rem);
-	--hub-modal-header-padding-y: var(--hub-ref-space-3, 1rem);
+	--hub-modal-padding-x: var(--hub-ref-space-3, 1rem);
+	--hub-modal-padding-y: var(--hub-ref-space-3, 1rem);
+	--hub-modal-header-padding-x: var(--hub-modal-padding-x);
+	--hub-modal-header-padding-y: var(--hub-modal-padding-y);
 	--hub-modal-header-gap: var(--hub-ref-space-2, 0.5rem);
 	--hub-modal-header-border-color: var(--hub-sys-border-color-default, #dee2e6);
 	--hub-modal-header-border-width: var(--hub-ref-border-width, 1px);
@@ -156,10 +158,10 @@ body.hub-modal-open {
 	--hub-modal-title-font-weight: 500;
 	--hub-modal-title-line-height: var(--hub-ref-line-height-base, 1.5);
 	--hub-modal-title-margin: 0;
-	--hub-modal-body-padding-x: var(--hub-ref-space-3, 1rem);
-	--hub-modal-body-padding-y: var(--hub-ref-space-3, 1rem);
-	--hub-modal-footer-padding-x: var(--hub-ref-space-3, 1rem);
-	--hub-modal-footer-padding-y: var(--hub-ref-space-3, 1rem);
+	--hub-modal-body-padding-x: var(--hub-modal-padding-x);
+	--hub-modal-body-padding-y: var(--hub-modal-padding-y);
+	--hub-modal-footer-padding-x: var(--hub-modal-padding-x);
+	--hub-modal-footer-padding-y: var(--hub-modal-padding-y);
 	--hub-modal-footer-gap: var(--hub-ref-space-2, 0.5rem);
 	--hub-modal-footer-bg: var(--hub-modal-bg, var(--hub-sys-surface-page, #ffffff));
 	--hub-modal-footer-border-color: var(--hub-sys-border-color-default, #dee2e6);
@@ -448,6 +450,7 @@ body.hub-modal-open {
 		width: 100%;
 		max-width: 100%;
 		height: 100%;
+		max-height: 100%;
 		margin: 0;
 	}
 
@@ -455,9 +458,13 @@ body.hub-modal-open {
 		height: 100%;
 		border: 0;
 		border-radius: 0;
+		display: flex;
+		flex-direction: column;
 	}
 
 	&__dialog--fullscreen &__body {
+		flex: 1 1 auto;
+		min-height: 0;
 		overflow-y: auto;
 	}
 
@@ -470,6 +477,7 @@ body.hub-modal-open {
 				width: 100%;
 				max-width: 100%;
 				height: 100%;
+				max-height: 100%;
 				margin: 0;
 			}
 
@@ -477,9 +485,13 @@ body.hub-modal-open {
 				height: 100%;
 				border: 0;
 				border-radius: 0;
+				display: flex;
+				flex-direction: column;
 			}
 
 			&__dialog--fullscreen-#{$breakpoint-name}-down &__body {
+				flex: 1 1 auto;
+				min-height: 0;
 				overflow-y: auto;
 			}
 		}
