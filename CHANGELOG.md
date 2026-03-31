@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.0.2] - 2026-03-31
+
+### Changed
+
+- Standardized modal padding variables.
+
+### Fixed
+
+- Improved fullscreen modal layout responsiveness.
+
 ## [21.0.1] - 2026-03-19
 
 ### Changed

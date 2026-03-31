@@ -46,13 +46,15 @@ The fallback chain follows: `component -> sys -> ref -> literal`.
 | `--hub-modal-placement-bottom-border-radius` | `var(--hub-modal-border-radius) var(--hub-modal-border-radius) 0 0` |
 | `--hub-modal-inner-border-radius` | `calc(var(--hub-modal-border-radius, var(--hub-ref-radius-lg, 0.5rem)) - var(--hub-modal-border-width, var(--hub-ref-border-width, 1px)))` |
 | `--hub-modal-box-shadow` | `var(--hub-sys-shadow-lg, 0 1rem 3rem rgba(0, 0, 0, 0.175))` |
+| `--hub-modal-padding-x` | `var(--hub-ref-space-3, 1rem)` |
+| `--hub-modal-padding-y` | `var(--hub-ref-space-3, 1rem)` |
 
 ### Header and title
 
 | Variable name | Initial value |
 | --- | --- |
-| `--hub-modal-header-padding-x` | `var(--hub-ref-space-3, 1rem)` |
-| `--hub-modal-header-padding-y` | `var(--hub-ref-space-3, 1rem)` |
+| `--hub-modal-header-padding-x` | `var(--hub-modal-padding-x)` |
+| `--hub-modal-header-padding-y` | `var(--hub-modal-padding-y)` |
 | `--hub-modal-header-gap` | `var(--hub-ref-space-2, 0.5rem)` |
 | `--hub-modal-header-border-color` | `var(--hub-sys-border-color-default, #dee2e6)` |
 | `--hub-modal-header-border-width` | `var(--hub-ref-border-width, 1px)` |
@@ -64,10 +66,10 @@ The fallback chain follows: `component -> sys -> ref -> literal`.
 
 | Variable name | Initial value |
 | --- | --- |
-| `--hub-modal-body-padding-x` | `var(--hub-ref-space-3, 1rem)` |
-| `--hub-modal-body-padding-y` | `var(--hub-ref-space-3, 1rem)` |
-| `--hub-modal-footer-padding-x` | `var(--hub-ref-space-3, 1rem)` |
-| `--hub-modal-footer-padding-y` | `var(--hub-ref-space-3, 1rem)` |
+| `--hub-modal-body-padding-x` | `var(--hub-modal-padding-x)` |
+| `--hub-modal-body-padding-y` | `var(--hub-modal-padding-y)` |
+| `--hub-modal-footer-padding-x` | `var(--hub-modal-padding-x)` |
+| `--hub-modal-footer-padding-y` | `var(--hub-modal-padding-y)` |
 | `--hub-modal-footer-gap` | `var(--hub-ref-space-2, 0.5rem)` |
 | `--hub-modal-footer-bg` | `var(--hub-modal-bg, var(--hub-sys-surface-page, #ffffff))` |
 | `--hub-modal-footer-border-color` | `var(--hub-sys-border-color-default, #dee2e6)` |

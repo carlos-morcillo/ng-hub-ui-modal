@@ -578,8 +578,8 @@ Full reference: [docs/css-variables-reference.md](./docs/css-variables-reference
 | `--hub-modal-border-radius`    | `0.5rem`           | Dialog corner radius      |
 | `--hub-modal-bg`               | system surface     | Background color          |
 | `--hub-modal-color`            | system text        | Text color                |
-| `--hub-modal-header-padding-x` | `1rem`             | Header horizontal padding |
-| `--hub-modal-body-padding-x`   | `1rem`             | Body horizontal padding   |
+| `--hub-modal-padding-x`        | `1rem`             | Content horizontal padding|
+| `--hub-modal-padding-y`        | `1rem`             | Content vertical padding  |
 | `--hub-modal-backdrop-opacity` | `0.5`              | Backdrop opacity          |
 | `--hub-modal-transition`       | `0.2s ease-in-out` | Animation speed           |
 
