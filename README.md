@@ -1,5 +1,7 @@
 # ng-hub-ui-modal
 
+[Español](./README.es.md) | **English**
+
 [![NPM Version](https://img.shields.io/npm/v/ng-hub-ui-modal.svg)](https://www.npmjs.com/package/ng-hub-ui-modal)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Angular](https://img.shields.io/badge/Angular-21-red.svg)](https://angular.io)
@@ -11,18 +13,33 @@
 
 ---
 
+## Documentation and Live Examples
+
+This package is part of [Hub UI](https://hubui.dev/), a collection of Angular component libraries for standalone apps.
+
+- Docs: https://hubui.dev/modal/overview/
+- Live examples: https://hubui.dev/modal/examples/
+- Hub UI: https://hubui.dev/
+
+---
+
 ## 🧩 Library Family `ng-hub-ui`
 
 This library is part of the **ng-hub-ui** ecosystem:
 
 - [**ng-hub-ui-accordion**](https://www.npmjs.com/package/ng-hub-ui-accordion)
+- [**ng-hub-ui-action-sheet**](https://www.npmjs.com/package/ng-hub-ui-action-sheet)
 - [**ng-hub-ui-avatar**](https://www.npmjs.com/package/ng-hub-ui-avatar)
 - [**ng-hub-ui-board**](https://www.npmjs.com/package/ng-hub-ui-board)
 - [**ng-hub-ui-breadcrumbs**](https://www.npmjs.com/package/ng-hub-ui-breadcrumbs)
 - [**ng-hub-ui-calendar**](https://www.npmjs.com/package/ng-hub-ui-calendar)
+- [**ng-hub-ui-dropdown**](https://www.npmjs.com/package/ng-hub-ui-dropdown)
+- [**ng-hub-ui-history**](https://www.npmjs.com/package/ng-hub-ui-history)
 - [**➡️ ng-hub-ui-modal**](https://www.npmjs.com/package/ng-hub-ui-modal) ← _you are here_
+- [**ng-hub-ui-nav**](https://www.npmjs.com/package/ng-hub-ui-nav)
 - [**ng-hub-ui-paginable**](https://www.npmjs.com/package/ng-hub-ui-paginable)
 - [**ng-hub-ui-portal**](https://www.npmjs.com/package/ng-hub-ui-portal)
+- [**ng-hub-ui-sortable**](https://www.npmjs.com/package/ng-hub-ui-sortable)
 - [**ng-hub-ui-stepper**](https://www.npmjs.com/package/ng-hub-ui-stepper)
 - [**ng-hub-ui-utils**](https://www.npmjs.com/package/ng-hub-ui-utils)
 
