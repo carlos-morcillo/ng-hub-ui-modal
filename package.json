@@ -1,37 +1,38 @@
 {
-	"name": "ng-hub-ui-modal",
-	"version": "21.0.2",
-	"peerDependencies": {
-		"@angular/common": ">=16.0.0",
-		"@angular/core": ">=16.0.0",
-		"ng-hub-ui-utils": "^1.0.0"
-	},
-	"dependencies": {
-		"tslib": "^2.3.0"
-	},
-	"sideEffects": false,
-	"keywords": [
-		"angular",
-		"modal",
-		"ui",
-		"bootstrap",
-		"popup",
-		"overlay",
-		"dialog",
-		"lightbox",
-		"component",
-		"customizable",
-		"decoupled",
-		"independent"
-	],
-	"description": "Standalone boomodalt",
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/carlos-morcillo/ng-hub-ui-modal.git"
-	},
-	"author": "Carlos Morcillo <carlos.morcillo@me.com>",
-	"license": "MIT",
-	"bugs": {
-		"url": "https://github.com/carlos-morcillo/ng-hub-ui-modal/issues"
-	}
+  "name": "ng-hub-ui-modal",
+  "version": "22.0.0",
+  "peerDependencies": {
+    "@angular/common": ">=16.0.0",
+    "@angular/core": ">=16.0.0",
+    "ng-hub-ui-utils": "^1.0.0"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "sideEffects": false,
+  "keywords": [
+    "angular",
+    "modal",
+    "ui",
+    "bootstrap",
+    "popup",
+    "overlay",
+    "dialog",
+    "lightbox",
+    "component",
+    "customizable",
+    "decoupled",
+    "independent"
+  ],
+  "description": "Standalone, signal-based modal/dialog service and components for Angular (ng-hub-ui family).",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/carlos-morcillo/ng-hub-ui-modal.git"
+  },
+  "author": "Carlos Morcillo <carlos.morcillo@me.com> (https://www.carlosmorcillo.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/carlos-morcillo/ng-hub-ui-modal/issues"
+  },
+  "homepage": "https://hubui.dev/"
 }

@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [22.0.0] - 2026-06-17
+
+### Changed
+
+- Aligned with Angular 22.
+- README documentation standardized.
+
+
+## [21.0.3] - 2026-06-14
+
+### Fixed
+
+- Guard `parentNode` when removing the modal window and backdrop elements during teardown, preventing a `Cannot read properties of null (reading 'removeChild')` error when an element is already detached.
+
 ## [21.0.2] - 2026-03-31
 
 ### Changed
