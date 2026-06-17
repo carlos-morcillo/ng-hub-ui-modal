@@ -224,7 +224,7 @@ export class HubModalRef<T = any> {
 		// hiding window
 		windowTransition$.subscribe(() => {
 			const { nativeElement } = this._windowCmptRef.location;
-			nativeElement.parentNode.removeChild(nativeElement);
+			nativeElement.parentNode?.removeChild(nativeElement);
 			this._windowCmptRef.destroy();
 			this._contentRef?.viewRef?.destroy();
 
@@ -236,7 +236,7 @@ export class HubModalRef<T = any> {
 		backdropTransition$.subscribe(() => {
 			if (this._backdropCmptRef) {
 				const { nativeElement } = this._backdropCmptRef.location;
-				nativeElement.parentNode.removeChild(nativeElement);
+				nativeElement.parentNode?.removeChild(nativeElement);
 				this._backdropCmptRef.destroy();
 				this._backdropCmptRef = <any>null;
 			}
