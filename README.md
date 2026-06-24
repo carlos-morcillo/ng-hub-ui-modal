@@ -506,6 +506,7 @@ All options accepted by `HubModal.open()`.
 | `keyboard`         | `boolean`                                                    | `true`                   | Whether ESC key dismisses the modal.                        |
 | `scrollable`       | `boolean`                                                    | `false`                  | Makes the modal body scroll internally.                     |
 | `size`             | `'sm' \| 'lg' \| 'xl' \| string`                             | —                        | Controls the width of the modal dialog.                     |
+| `variant`          | `'primary' \| 'success' \| 'danger' \| 'warning' \| 'info' \| string` | —              | Semantic accent for meaningful dialogs: top accent bar + accent-tinted surface, borders and title. Any custom string reads `--hub-sys-color-<variant>` from the host. |
 | `windowClass`      | `string`                                                     | —                        | Extra class added to the `hub-modal` host element.          |
 | `modalDialogClass` | `string`                                                     | —                        | Extra class added to the `hub-modal__dialog` element.       |
 | `backdropClass`    | `string`                                                     | —                        | Extra class added to the `hub-modal__backdrop` element.     |
@@ -521,7 +522,7 @@ All options accepted by `HubModal.open()`.
 
 A subset of `HubModalOptions` that can be updated on an already-open modal via `HubModalRef.update()`.
 
-`ariaLabelledBy`, `ariaDescribedBy`, `centered`, `placement`, `fullscreen`, `backdropClass`, `size`, `windowClass`, `modalDialogClass`.
+`ariaLabelledBy`, `ariaDescribedBy`, `centered`, `placement`, `fullscreen`, `backdropClass`, `size`, `variant`, `windowClass`, `modalDialogClass`.
 
 ---
 
@@ -615,6 +616,48 @@ hub-modal-window {
 	--hub-modal-backdrop-opacity: 0.7;
 }
 ```
+
+### Semantic Variants
+
+Set `variant` to give a dialog a semantic accent (a destructive confirm, a success notice…). A variant recolours the whole dialog: a top accent bar, an accent-tinted background, accent-tinted borders (outer + header/footer rules) and an accent title.
+
+```typescript
+this.modal.open(ConfirmDialogComponent, { variant: 'danger' });
+```
+
+The built-in values (`primary` · `success` · `danger` · `warning` · `info`) map to the design-system colours, but **any string is accepted** — the modal reads `--hub-sys-color-<variant>` from the host application. The variant is also updatable via `HubModalRef.update()` / `HubActiveModal.update()`, and can be applied directly with `windowClass: 'hub-modal--<variant>'`.
+
+These tokens drive the accent system:
+
+| Variable                       | Default                                | Description                                                            |
+| ------------------------------ | -------------------------------------- | --------------------------------------------------------------------- |
+| `--hub-modal-accent`           | `var(--hub-sys-color-primary)`         | Base accent colour; a variant re-bases it from `--hub-sys-color-<v>`. |
+| `--hub-modal-accent-subtle`    | `color-mix(accent 8%, surface)`        | Accent-tinted dialog background used under a variant.                 |
+| `--hub-modal-accent-border`    | `color-mix(accent 35%, surface)`       | Accent-tinted border colour (outer + header/footer rules).            |
+| `--hub-modal-accent-bar-width` | `var(--hub-ref-space-1, 4px)`          | Thickness of the top accent bar.                                      |
+| `--hub-modal-title-color`      | neutral (`--hub-modal-color`)          | Title colour; a variant re-points it to the accent.                  |
+
+### Sass theme mixin
+
+For full one-call theming, use the `hub-modal-theme()` mixin. Every parameter is optional and defaults to `null`, so only the ones you pass are emitted as `--hub-modal-*` overrides; the rest keep their defaults. Apply it to the class you pass as `windowClass` (or to `.hub-modal` to theme every dialog).
+
+```scss
+@use 'ng-hub-ui-modal/styles/mixins/modal-theme' as *;
+
+.branded-dialog {
+	@include hub-modal-theme(
+		$accent: var(--hub-sys-color-success),
+		$bg: #f6fff9,
+		$border-color: #b7e4c7,
+		$border-radius: 0.75rem,
+		$box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.2)
+	);
+}
+
+// this.modal.open(MyDialog, { windowClass: 'branded-dialog' });
+```
+
+It covers accent, surfaces, colour, title, borders/radius/shadow, header/body/footer padding & gaps and the backdrop — token-based, with no Bootstrap dependency.
 
 ### Bootstrap Integration (optional)
 

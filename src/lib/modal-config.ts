@@ -110,6 +110,19 @@ export interface HubModalOptions {
 	size?: 'sm' | 'lg' | 'xl' | string;
 
 	/**
+	 * Semantic accent of the modal, for meaningful dialogs (a destructive
+	 * confirmation, a success notice…). Adds a coloured top bar to the dialog by
+	 * applying the `hub-modal--<variant>` class to the window.
+	 *
+	 * The built-in values (`'primary'` · `'success'` · `'danger'` · `'warning'`
+	 * · `'info'`) map to the design-system colours, but **any string is accepted**
+	 * — the modal reads `--hub-sys-color-<variant>` from the host application.
+	 *
+	 * If not specified, the modal is rendered neutral (no accent bar).
+	 */
+	variant?: 'primary' | 'success' | 'danger' | 'warning' | 'info' | (string & {});
+
+	/**
 	 * A custom class to append to the modal window.
 	 */
 	windowClass?: string;
@@ -176,6 +189,7 @@ export type HubModalUpdatableOptions = Pick<
 	| 'fullscreen'
 	| 'backdropClass'
 	| 'size'
+	| 'variant'
 	| 'windowClass'
 	| 'modalDialogClass'
 >;
@@ -205,6 +219,7 @@ export class HubModalConfig implements Required<HubModalOptions> {
 	keyboard = true;
 	scrollable!: boolean;
 	size!: 'sm' | 'lg' | 'xl' | string;
+	variant!: 'primary' | 'success' | 'danger' | 'warning' | 'info' | (string & {});
 	windowClass!: string;
 	modalDialogClass!: string;
 	backdropClass!: string;

@@ -325,6 +325,7 @@ this.modal.activeInstances.subscribe((refs) => console.log(refs.length + ' abier
 | `keyboard`         | `boolean`                           | `true`                   | Permite cerrar con la tecla ESC.                                |
 | `scrollable`       | `boolean`                           | `false`                  | Activa el scroll interno del body del modal.                    |
 | `size`             | `'sm' \| 'lg' \| 'xl' \| string`    | —                        | Ancho predefinido del diálogo.                                  |
+| `variant`          | `'primary' \| 'success' \| 'danger' \| 'warning' \| 'info' \| string` | — | Acento semántico para diálogos con significado: barra de acento superior + superficie, bordes y título tintados con el acento. Cualquier cadena personalizada lee `--hub-sys-color-<variant>` del host. |
 | `windowClass`      | `string`                            | —                        | Clase extra en el host `.hub-modal`.                            |
 | `modalDialogClass` | `string`                            | —                        | Clase extra en `.hub-modal__dialog`.                            |
 | `backdropClass`    | `string`                            | —                        | Clase extra en `.hub-modal__backdrop`.                          |
@@ -335,6 +336,12 @@ this.modal.activeInstances.subscribe((refs) => console.log(refs.length + ' abier
 | `data`             | `any`                               | —                        | Datos adicionales que se asignan a la instancia del componente. |
 | `container`        | `string \| HTMLElement`             | `body`                   | Contenedor DOM donde se inserta el modal.                       |
 | `injector`         | `Injector`                          | —                        | Inyector personalizado para el componente de contenido.         |
+
+### HubModalUpdatableOptions
+
+Subconjunto de `HubModalOptions` que puede actualizarse en un modal ya abierto mediante `HubModalRef.update()`:
+
+`ariaLabelledBy`, `ariaDescribedBy`, `centered`, `placement`, `fullscreen`, `backdropClass`, `size`, `variant`, `windowClass`, `modalDialogClass`.
 
 ### HubModalPlacement
 
@@ -381,6 +388,48 @@ hub-modal-window {
 	--hub-modal-backdrop-opacity: 0.7;
 }
 ```
+
+### Variantes semánticas
+
+Usa `variant` para dar a un diálogo un acento semántico (una confirmación destructiva, un aviso de éxito…). Una variante recolorea todo el diálogo: una barra de acento superior, un fondo tintado con el acento, bordes tintados (exterior + reglas de cabecera/pie) y un título con el color del acento.
+
+```typescript
+this.modal.open(ConfirmDialogComponent, { variant: 'danger' });
+```
+
+Los valores predefinidos (`primary` · `success` · `danger` · `warning` · `info`) se asignan a los colores del design-system, pero **se acepta cualquier cadena** — el modal lee `--hub-sys-color-<variant>` de la aplicación host. La variante también es actualizable mediante `HubModalRef.update()` / `HubActiveModal.update()`, y puede aplicarse directamente con `windowClass: 'hub-modal--<variant>'`.
+
+Estos tokens controlan el sistema de acento:
+
+| Variable                       | Default                                | Descripción                                                          |
+| ------------------------------ | -------------------------------------- | ------------------------------------------------------------------- |
+| `--hub-modal-accent`           | `var(--hub-sys-color-primary)`         | Color de acento base; una variante lo rebasa desde `--hub-sys-color-<v>`. |
+| `--hub-modal-accent-subtle`    | `color-mix(accent 8%, surface)`        | Fondo del diálogo tintado con el acento, usado bajo una variante.   |
+| `--hub-modal-accent-border`    | `color-mix(accent 35%, surface)`       | Color de borde tintado con el acento (exterior + reglas cabecera/pie). |
+| `--hub-modal-accent-bar-width` | `var(--hub-ref-space-1, 4px)`          | Grosor de la barra de acento superior.                              |
+| `--hub-modal-title-color`      | neutro (`--hub-modal-color`)           | Color del título; una variante lo reapunta al acento.               |
+
+### Mixin de tema Sass
+
+Para una tematización completa en una sola llamada, usa el mixin `hub-modal-theme()`. Cada parámetro es opcional y por defecto vale `null`, por lo que solo se emiten los que pases como overrides `--hub-modal-*`; el resto mantiene sus valores por defecto. Aplícalo a la clase que pases como `windowClass` (o a `.hub-modal` para tematizar todos los diálogos).
+
+```scss
+@use 'ng-hub-ui-modal/styles/mixins/modal-theme' as *;
+
+.branded-dialog {
+	@include hub-modal-theme(
+		$accent: var(--hub-sys-color-success),
+		$bg: #f6fff9,
+		$border-color: #b7e4c7,
+		$border-radius: 0.75rem,
+		$box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.2)
+	);
+}
+
+// this.modal.open(MyDialog, { windowClass: 'branded-dialog' });
+```
+
+Cubre acento, superficies, color, título, bordes/radio/sombra, padding y gaps de cabecera/cuerpo/pie y el backdrop — basado en tokens, sin dependencia de Bootstrap.
 
 ### Integración con Bootstrap (opcional)
 

@@ -44,6 +44,14 @@ body.hub-modal-open {
 
 .hub-modal {
 	--hub-modal-z-index: var(--hub-sys-zindex-modal, 1055);
+	// Semantic accent — used only when a `variant` is set (e.g. a danger confirm
+	// dialog). The variant re-bases `--hub-modal-accent`; the subtle / border
+	// roles are then generated from it with color-mix(), so one accent recolours
+	// the whole dialog (top bar + tinted background + accent border + title).
+	--hub-modal-accent: var(--hub-sys-color-primary, #0d6efd);
+	--hub-modal-accent-subtle: color-mix(in srgb, var(--hub-modal-accent) 8%, var(--hub-sys-surface-page, #ffffff));
+	--hub-modal-accent-border: color-mix(in srgb, var(--hub-modal-accent) 35%, var(--hub-sys-surface-page, #ffffff));
+	--hub-modal-accent-bar-width: var(--hub-ref-space-1, 4px);
 	--hub-modal-width: auto;
 	--hub-modal-max-width: 500px;
 	--hub-modal-margin-y: 1.75rem;
@@ -159,6 +167,8 @@ body.hub-modal-open {
 	--hub-modal-title-line-height: var(--hub-ref-line-height-base, 1.5);
 	--hub-modal-title-margin-x: 0;
 	--hub-modal-title-margin-y: 0;
+	// Title colour — neutral by default; a `variant` re-points it to the accent.
+	--hub-modal-title-color: var(--hub-modal-color, var(--hub-sys-text-primary, #212529));
 	--hub-modal-body-padding-x: var(--hub-modal-padding-x);
 	--hub-modal-body-padding-y: var(--hub-modal-padding-y);
 	--hub-modal-footer-padding-x: var(--hub-modal-padding-x);
@@ -337,6 +347,32 @@ body.hub-modal-open {
 		}
 	}
 
+	// ── Semantic variants ────────────────────────────────────────────────
+	// Opt-in accent for meaningful dialogs (a destructive confirm, a success
+	// notice…). Activated with the `variant` option on `HubModal.open()` —
+	// `{ variant: 'danger' }` — or directly via `windowClass: 'hub-modal--danger'`.
+	// Each variant re-bases `--hub-modal-accent`; the derived subtle / border
+	// roles recompute from it, recolouring the whole dialog: a top accent bar, a
+	// lightly accent-tinted background, accent-tinted borders (outer + header +
+	// footer rules) and an accent title. The built-in five map to the
+	// design-system colours, but any `--hub-sys-color-<name>` the host app
+	// defines works too. A neutral modal (no variant) is unaffected — these
+	// only apply under a variant modifier (never on the unrelated `--static` state).
+	@each $variant in (primary, success, danger, warning, info) {
+		&--#{$variant} {
+			--hub-modal-accent: var(--hub-sys-color-#{$variant}, var(--hub-modal-accent));
+			--hub-modal-bg: var(--hub-modal-accent-subtle);
+			--hub-modal-border-color: var(--hub-modal-accent-border);
+			--hub-modal-header-border-color: var(--hub-modal-accent-border);
+			--hub-modal-footer-border-color: var(--hub-modal-accent-border);
+			--hub-modal-title-color: var(--hub-modal-accent);
+
+			.hub-modal__content {
+				border-top: var(--hub-modal-accent-bar-width, 4px) solid var(--hub-modal-accent);
+			}
+		}
+	}
+
 	&__header {
 		display: flex;
 		align-items: center;
@@ -366,6 +402,7 @@ body.hub-modal-open {
 	}
 
 	&__header .modal-title {
+		color: var(--hub-modal-title-color, var(--hub-modal-color, var(--hub-sys-text-primary, #212529)));
 		font-size: var(--hub-modal-title-font-size, var(--hub-ref-font-size-lg, 1.25rem));
 		font-weight: var(--hub-modal-title-font-weight, 500);
 		line-height: var(--hub-modal-title-line-height, var(--hub-ref-line-height-base, 1.5));

@@ -1,0 +1,142 @@
+// ─────────────────────────────────────────────────────────────────────────
+// hub-modal-theme — one-call theming for `<hub-modal>` dialogs
+// ─────────────────────────────────────────────────────────────────────────
+//
+// Override any of the `--hub-modal-*` design tokens in a single include. Every
+// parameter is OPTIONAL and defaults to `null`: only the parameters you pass
+// are emitted, so the rest keep the component's defaults. Token-based and
+// self-contained (no Bootstrap dependencies).
+//
+// Because modals are opened through the `HubModal` service, theme them on the
+// class you pass as `windowClass` (or on `.hub-modal` to theme them all):
+//
+// @example
+//
+//   @use 'ng-hub-ui-modal/styles/mixins/modal-theme' as *;
+//
+//   .branded-dialog {
+//     @include hub-modal-theme(
+//       $accent: var(--hub-sys-color-success),
+//       $bg: #f6fff9,
+//       $border-color: #b7e4c7,
+//       $border-radius: 0.75rem,
+//       $box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.2)
+//     );
+//   }
+//
+//   // this.modal.open(MyDialog, { windowClass: 'branded-dialog' });
+//
+// scss-docs-start hub-modal-theme
+@mixin hub-modal-theme(
+	// ── Semantic accent (top bar + tinted bg/border/title under a variant) ──
+	$accent: null,
+	$accent-subtle: null,
+	$accent-border: null,
+	$accent-bar-width: null,
+	// ── Dialog surface ──
+	$bg: null,
+	$color: null,
+	$title-color: null,
+	$border-color: null,
+	$border-width: null,
+	$border-radius: null,
+	$box-shadow: null,
+	$max-width: null,
+	// ── Header ──
+	$header-padding-x: null,
+	$header-padding-y: null,
+	$header-gap: null,
+	$header-border-color: null,
+	// ── Body ──
+	$body-padding-x: null,
+	$body-padding-y: null,
+	// ── Footer ──
+	$footer-padding-x: null,
+	$footer-padding-y: null,
+	$footer-gap: null,
+	$footer-border-color: null,
+	// ── Backdrop ──
+	$backdrop-bg: null
+) {
+	// Semantic accent
+	@if $accent != null {
+		--hub-modal-accent: #{$accent};
+	}
+	@if $accent-subtle != null {
+		--hub-modal-accent-subtle: #{$accent-subtle};
+	}
+	@if $accent-border != null {
+		--hub-modal-accent-border: #{$accent-border};
+	}
+	@if $accent-bar-width != null {
+		--hub-modal-accent-bar-width: #{$accent-bar-width};
+	}
+
+	// Dialog surface
+	@if $bg != null {
+		--hub-modal-bg: #{$bg};
+	}
+	@if $color != null {
+		--hub-modal-color: #{$color};
+	}
+	@if $title-color != null {
+		--hub-modal-title-color: #{$title-color};
+	}
+	@if $border-color != null {
+		--hub-modal-border-color: #{$border-color};
+	}
+	@if $border-width != null {
+		--hub-modal-border-width: #{$border-width};
+	}
+	@if $border-radius != null {
+		--hub-modal-border-radius: #{$border-radius};
+	}
+	@if $box-shadow != null {
+		--hub-modal-box-shadow: #{$box-shadow};
+	}
+	@if $max-width != null {
+		--hub-modal-max-width: #{$max-width};
+	}
+
+	// Header
+	@if $header-padding-x != null {
+		--hub-modal-header-padding-x: #{$header-padding-x};
+	}
+	@if $header-padding-y != null {
+		--hub-modal-header-padding-y: #{$header-padding-y};
+	}
+	@if $header-gap != null {
+		--hub-modal-header-gap: #{$header-gap};
+	}
+	@if $header-border-color != null {
+		--hub-modal-header-border-color: #{$header-border-color};
+	}
+
+	// Body
+	@if $body-padding-x != null {
+		--hub-modal-body-padding-x: #{$body-padding-x};
+	}
+	@if $body-padding-y != null {
+		--hub-modal-body-padding-y: #{$body-padding-y};
+	}
+
+	// Footer
+	@if $footer-padding-x != null {
+		--hub-modal-footer-padding-x: #{$footer-padding-x};
+	}
+	@if $footer-padding-y != null {
+		--hub-modal-footer-padding-y: #{$footer-padding-y};
+	}
+	@if $footer-gap != null {
+		--hub-modal-footer-gap: #{$footer-gap};
+	}
+	@if $footer-border-color != null {
+		--hub-modal-footer-border-color: #{$footer-border-color};
+	}
+
+	// Backdrop
+	@if $backdrop-bg != null {
+		--hub-modal-backdrop-bg: #{$backdrop-bg};
+	}
+}
+// scss-docs-end hub-modal-theme

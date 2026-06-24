@@ -45,6 +45,7 @@ const WINDOW_ATTRIBUTES: string[] = [
 	'keyboard',
 	'scrollable',
 	'size',
+	'variant',
 	'windowClass',
 	'modalDialogClass'
 ];

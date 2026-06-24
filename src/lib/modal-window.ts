@@ -26,7 +26,8 @@ import { HubModalPlacement } from './modal-placement';
 	selector: 'hub-modal-window',
 	imports: [],
 	host: {
-		'[class]': '"hub-modal" + hostPlacementClass + (windowClass() ? " " + windowClass() : "")',
+		'[class]':
+			'"hub-modal" + hostPlacementClass + (variant() ? " hub-modal--" + variant() : "") + (windowClass() ? " " + windowClass() : "")',
 		'[class.fade]': 'animation()',
 		role: 'dialog',
 		tabindex: '-1',
@@ -133,6 +134,13 @@ export class HubModalWindow implements OnInit, OnDestroy {
 	 * Specifies the size of the modal (`'sm'`, `'lg'`, `'xl'`, etc.).
 	 */
 	readonly size = input<string>();
+
+	/**
+	 * Semantic accent of the modal (`'primary'`, `'success'`, `'danger'`,
+	 * `'warning'`, `'info'`, or any custom token name). Applies the
+	 * `hub-modal--<variant>` class, which paints an accent top bar on the dialog.
+	 */
+	readonly variant = input<string>();
 
 	/**
 	 * A custom CSS class to append to the modal window wrapper.

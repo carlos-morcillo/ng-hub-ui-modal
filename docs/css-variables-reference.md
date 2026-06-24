@@ -49,6 +49,17 @@ The fallback chain follows: `component -> sys -> ref -> literal`.
 | `--hub-modal-padding-x` | `var(--hub-ref-space-3, 1rem)` |
 | `--hub-modal-padding-y` | `var(--hub-ref-space-3, 1rem)` |
 
+### Semantic accent (variants)
+
+Applied only when a `variant` is set (e.g. `{ variant: 'danger' }` or `windowClass: 'hub-modal--danger'`). A variant re-bases `--hub-modal-accent`; the `subtle` / `border` roles are then derived from it with `color-mix()`, recolouring the whole dialog (top bar, tinted background, accent borders, accent title). A neutral modal is unaffected.
+
+| Variable name | Initial value |
+| --- | --- |
+| `--hub-modal-accent` | `var(--hub-sys-color-primary, #0d6efd)` |
+| `--hub-modal-accent-subtle` | `color-mix(in srgb, var(--hub-modal-accent) 8%, var(--hub-sys-surface-page, #ffffff))` |
+| `--hub-modal-accent-border` | `color-mix(in srgb, var(--hub-modal-accent) 35%, var(--hub-sys-surface-page, #ffffff))` |
+| `--hub-modal-accent-bar-width` | `var(--hub-ref-space-1, 4px)` |
+
 ### Header and title
 
 | Variable name | Initial value |
@@ -61,6 +72,9 @@ The fallback chain follows: `component -> sys -> ref -> literal`.
 | `--hub-modal-title-font-size` | `var(--hub-ref-font-size-lg, 1.25rem)` |
 | `--hub-modal-title-font-weight` | `500` |
 | `--hub-modal-title-line-height` | `var(--hub-ref-line-height-base, 1.5)` |
+| `--hub-modal-title-margin-x` | `0` |
+| `--hub-modal-title-margin-y` | `0` |
+| `--hub-modal-title-color` | `var(--hub-modal-color, var(--hub-sys-text-primary, #212529))` |
 
 ### Body and footer
 
@@ -82,6 +96,8 @@ The fallback chain follows: `component -> sys -> ref -> literal`.
 | `--hub-modal-close-color` | `var(--hub-sys-text-primary, #212529)` |
 | `--hub-modal-close-opacity` | `0.5` |
 | `--hub-modal-close-hover-opacity` | `0.75` |
+| `--hub-modal-close-padding-x` | `0` |
+| `--hub-modal-close-padding-y` | `0` |
 
 ### Backdrop
 

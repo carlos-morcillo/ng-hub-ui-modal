@@ -2,6 +2,25 @@
 
 This document details the breaking changes introduced in major versions of `ng-hub-ui-modal` and how to migrate your codebase.
 
+## Version 22.1.0
+
+### Removed shorthand CSS tokens (`--hub-modal-close-padding`, `--hub-modal-title-margin`)
+
+The uniform shorthand tokens that set padding/margin equally on every side have been removed in favour of the canonical directional `-x` / `-y` token pairs used across the design system. This change is purely token-level — there is **no visual change** for the default modal.
+
+**Removed:**
+
+- `--hub-modal-close-padding`
+- `--hub-modal-title-margin`
+
+**Migration Steps:**
+If you set either of the removed shorthands in your global stylesheets or theme layer, replace each one with its directional `-x` / `-y` pair:
+
+- `--hub-modal-close-padding: <value>;` becomes `--hub-modal-close-padding-x: <value>; --hub-modal-close-padding-y: <value>;`
+- `--hub-modal-title-margin: <value>;` becomes `--hub-modal-title-margin-x: <value>; --hub-modal-title-margin-y: <value>;`
+
+> The dialog's per-side margin system — `--hub-modal-margin-x` / `--hub-modal-margin-y` plus the placement margins — is **unchanged**.
+
 ## Version 21.0.0
 
 ### Modal CSS BEM Standardization
