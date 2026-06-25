@@ -51,7 +51,7 @@ body.hub-modal-open {
 	--hub-modal-accent: var(--hub-sys-color-primary, #0d6efd);
 	--hub-modal-accent-subtle: color-mix(in srgb, var(--hub-modal-accent) 8%, var(--hub-sys-surface-page, #ffffff));
 	--hub-modal-accent-border: color-mix(in srgb, var(--hub-modal-accent) 35%, var(--hub-sys-surface-page, #ffffff));
-	--hub-modal-accent-bar-width: var(--hub-ref-space-1, 4px);
+	--hub-modal-accent-bar-width: var(--hub-ref-space-1, 0.25rem);
 	--hub-modal-width: auto;
 	--hub-modal-max-width: 500px;
 	--hub-modal-margin-y: 1.75rem;
@@ -163,7 +163,7 @@ body.hub-modal-open {
 	--hub-modal-header-border-color: var(--hub-sys-border-color-default, #dee2e6);
 	--hub-modal-header-border-width: var(--hub-ref-border-width, 1px);
 	--hub-modal-title-font-size: var(--hub-ref-font-size-lg, 1.25rem);
-	--hub-modal-title-font-weight: 500;
+	--hub-modal-title-font-weight: var(--hub-ref-font-weight-medium, 500);
 	--hub-modal-title-line-height: var(--hub-ref-line-height-base, 1.5);
 	--hub-modal-title-margin-x: 0;
 	--hub-modal-title-margin-y: 0;
@@ -178,7 +178,7 @@ body.hub-modal-open {
 	--hub-modal-footer-border-color: var(--hub-sys-border-color-default, #dee2e6);
 	--hub-modal-footer-border-width: var(--hub-ref-border-width, 1px);
 	--hub-modal-close-color: var(--hub-sys-text-primary, #212529);
-	--hub-modal-close-size: 1.25rem;
+	--hub-modal-close-size: var(--hub-ref-font-size-lg, 1.25rem);
 	--hub-modal-close-line-height: 1;
 	--hub-modal-close-padding-x: 0;
 	--hub-modal-close-padding-y: 0;
@@ -368,7 +368,7 @@ body.hub-modal-open {
 			--hub-modal-title-color: var(--hub-modal-accent);
 
 			.hub-modal__content {
-				border-top: var(--hub-modal-accent-bar-width, 4px) solid var(--hub-modal-accent);
+				border-top: var(--hub-modal-accent-bar-width, 0.25rem) solid var(--hub-modal-accent);
 			}
 		}
 	}
@@ -404,7 +404,7 @@ body.hub-modal-open {
 	&__header .modal-title {
 		color: var(--hub-modal-title-color, var(--hub-modal-color, var(--hub-sys-text-primary, #212529)));
 		font-size: var(--hub-modal-title-font-size, var(--hub-ref-font-size-lg, 1.25rem));
-		font-weight: var(--hub-modal-title-font-weight, 500);
+		font-weight: var(--hub-modal-title-font-weight, var(--hub-ref-font-weight-medium, 500));
 		line-height: var(--hub-modal-title-line-height, var(--hub-ref-line-height-base, 1.5));
 		margin: var(--hub-modal-title-margin-y, 0) var(--hub-modal-title-margin-x, 0);
 	}
@@ -454,7 +454,7 @@ body.hub-modal-open {
 	&__close {
 		margin-left: auto;
 		padding: var(--hub-modal-close-padding-y, 0) var(--hub-modal-close-padding-x, 0);
-		font-size: var(--hub-modal-close-size, 1.25rem);
+		font-size: var(--hub-modal-close-size, var(--hub-ref-font-size-lg, 1.25rem));
 		line-height: var(--hub-modal-close-line-height, 1);
 		background: transparent;
 		border: 0;
