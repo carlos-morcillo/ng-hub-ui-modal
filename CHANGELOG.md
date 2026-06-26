@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [22.2.0] - 2026-06-26
+
+### Changed
+
+- Canonical `zindex` token names (BREAKING): `--hub-modal-z-index` → `--hub-modal-zindex`, `--hub-modal-backdrop-z-index` → `--hub-modal-backdrop-zindex` (no hyphen, matching the `--hub-sys-zindex-*` convention).
+- **Accent system migrated to the open-set "local accent slot" pattern.** A modal `variant` now re-bases a single `--hub-modal-accent` slot, and the role family — `--hub-modal-accent-emphasis`, `--hub-modal-accent-subtle`, `--hub-modal-accent-border` and the new `--hub-modal-accent-on` (contrast colour) — is derived **locally** from it with `color-mix(in oklch, …)` / relative color, mirroring the `ng-hub-ui-ds` engine. The built-in variant list grew from 5 to the **nine canonical accents** (`primary · secondary · success · danger · warning · info · neutral · light · dark`). Because the roles re-derive from the slot, **any custom accent** (e.g. a `brand` the host app adds to the ds `$hub-accents` map) recolours the whole dialog with one rule that only re-bases `--hub-modal-accent` — open it with `{ variant: 'brand' }` or `windowClass: 'hub-modal--brand'`, no library recompilation.
+
+### Added
+
+- New token `--hub-modal-accent-on` (grayscale contrast flip driven by the accent's own lightness, ready for accent-filled surfaces) and `--hub-modal-accent-emphasis`.
+
+### Fixed
+
+- Migrated the accent `color-mix()` derivations (`--hub-modal-accent-subtle` / `-border`) from the `srgb` colour space to `oklch` for perceptually uniform tints, matching `ng-hub-ui-ds`. The subtle tint is now derived at 12% (was 8%).
+
 ## [22.1.2] - 2026-06-26
 
 ### Fixed

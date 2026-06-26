@@ -23,7 +23,7 @@ The fallback chain follows: `component -> sys -> ref -> literal`.
 
 | Variable name | Initial value |
 | --- | --- |
-| `--hub-modal-z-index` | `var(--hub-sys-zindex-modal, 1055)` |
+| `--hub-modal-zindex` | `var(--hub-sys-zindex-modal, 1055)` |
 | `--hub-modal-width` | `100%` |
 | `--hub-modal-max-width` | `500px` |
 | `--hub-modal-margin` | `1.75rem auto` |

@@ -43,14 +43,19 @@ body.hub-modal-open {
 }
 
 .hub-modal {
-	--hub-modal-z-index: var(--hub-sys-zindex-modal, 1055);
+	--hub-modal-zindex: var(--hub-sys-zindex-modal, 1055);
 	// Semantic accent — used only when a `variant` is set (e.g. a danger confirm
-	// dialog). The variant re-bases `--hub-modal-accent`; the subtle / border
-	// roles are then generated from it with color-mix(), so one accent recolours
-	// the whole dialog (top bar + tinted background + accent border + title).
+	// dialog). The variant re-bases the single `--hub-modal-accent` slot; the role
+	// family is then derived LOCALLY from it (mirroring the ds engine), so one
+	// accent — a known variant or a custom `brand` — recolours the whole dialog
+	// (top bar + tinted background + accent border + accent title) with no
+	// recompilation. `-on` is a grayscale contrast flip driven by the accent's own
+	// lightness, ready for accent-filled surfaces.
 	--hub-modal-accent: var(--hub-sys-color-primary, #0d6efd);
-	--hub-modal-accent-subtle: color-mix(in srgb, var(--hub-modal-accent) 8%, var(--hub-sys-surface-page, #ffffff));
-	--hub-modal-accent-border: color-mix(in srgb, var(--hub-modal-accent) 35%, var(--hub-sys-surface-page, #ffffff));
+	--hub-modal-accent-emphasis: color-mix(in oklch, var(--hub-modal-accent) 80%, var(--hub-sys-color-ink, #212529));
+	--hub-modal-accent-subtle: color-mix(in oklch, var(--hub-modal-accent) 12%, var(--hub-sys-surface-page, #ffffff));
+	--hub-modal-accent-on: oklch(from var(--hub-modal-accent) clamp(0, (0.62 - l) * 1000, 1) 0 h);
+	--hub-modal-accent-border: color-mix(in oklch, var(--hub-modal-accent) 35%, var(--hub-sys-surface-page, #ffffff));
 	--hub-modal-accent-bar-width: var(--hub-ref-space-1, 0.25rem);
 	--hub-modal-width: auto;
 	--hub-modal-max-width: 500px;
@@ -192,7 +197,7 @@ body.hub-modal-open {
 	--hub-modal-show-transform: none;
 	--hub-modal-transition: var(--hub-sys-transition-base, all 0.2s ease-in-out);
 	--hub-modal-scale-transform: scale(1.02);
-	--hub-modal-backdrop-z-index: calc(var(--hub-modal-z-index, var(--hub-sys-zindex-modal, 1055)) - 1);
+	--hub-modal-backdrop-zindex: calc(var(--hub-modal-zindex, var(--hub-sys-zindex-modal, 1055)) - 1);
 
 	position: fixed;
 	inset: 0;
@@ -203,7 +208,7 @@ body.hub-modal-open {
 	overflow-y: auto;
 	outline: 0;
 	pointer-events: auto;
-	z-index: var(--hub-modal-z-index, var(--hub-sys-zindex-modal, 1055));
+	z-index: var(--hub-modal-zindex, var(--hub-sys-zindex-modal, 1055));
 	color: var(--hub-modal-color, var(--hub-sys-text-primary, #212529));
 
 	&--placement-top,
@@ -347,18 +352,29 @@ body.hub-modal-open {
 		}
 	}
 
-	// ── Semantic variants ────────────────────────────────────────────────
+	// ── Semantic variants (open set) ─────────────────────────────────────
 	// Opt-in accent for meaningful dialogs (a destructive confirm, a success
 	// notice…). Activated with the `variant` option on `HubModal.open()` —
 	// `{ variant: 'danger' }` — or directly via `windowClass: 'hub-modal--danger'`.
-	// Each variant re-bases `--hub-modal-accent`; the derived subtle / border
-	// roles recompute from it, recolouring the whole dialog: a top accent bar, a
-	// lightly accent-tinted background, accent-tinted borders (outer + header +
-	// footer rules) and an accent title. The built-in five map to the
-	// design-system colours, but any `--hub-sys-color-<name>` the host app
-	// defines works too. A neutral modal (no variant) is unaffected — these
-	// only apply under a variant modifier (never on the unrelated `--static` state).
-	@each $variant in (primary, success, danger, warning, info) {
+	// Each variant re-bases the single `--hub-modal-accent` slot; the derived
+	// emphasis / subtle / on / border roles recompute from it locally, recolouring
+	// the whole dialog: a top accent bar, a lightly accent-tinted background,
+	// accent-tinted borders (outer + header + footer rules) and an accent title.
+	// The nine canonical variants map to the design-system colours. A neutral modal
+	// (no variant) is unaffected — these only apply under a variant modifier (never
+	// on the unrelated `--static` state).
+	//
+	// Open-set escape hatch — any custom accent (e.g. a `brand` the host adds to
+	// the ds `$hub-accents` map) works with ONE rule that re-bases the accent slot;
+	// the roles re-derive locally, so no recompilation is needed:
+	//
+	//   .hub-modal--brand {
+	//     --hub-modal-accent: var(--hub-sys-color-brand);
+	//     --hub-modal-bg: var(--hub-modal-accent-subtle);
+	//     --hub-modal-border-color: var(--hub-modal-accent-border);
+	//     --hub-modal-title-color: var(--hub-modal-accent);
+	//   }
+	@each $variant in (primary, secondary, success, danger, warning, info, neutral, light, dark) {
 		&--#{$variant} {
 			--hub-modal-accent: var(--hub-sys-color-#{$variant}, var(--hub-modal-accent));
 			--hub-modal-bg: var(--hub-modal-accent-subtle);
@@ -541,7 +557,7 @@ body.hub-modal-open {
 	position: fixed;
 	inset: 0;
 	opacity: var(--hub-modal-backdrop-opacity-hidden, var(--hub-sys-opacity-0, 0));
-	z-index: var(--hub-modal-backdrop-z-index, 1054);
+	z-index: var(--hub-modal-backdrop-zindex, 1054);
 	background-color: var(--hub-modal-backdrop-bg, var(--hub-ref-color-black, #000000));
 	pointer-events: none;
 
