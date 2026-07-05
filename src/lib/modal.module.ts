@@ -5,7 +5,7 @@ export { HubModalConfig } from './modal-config';
 export type { HubModalOptions, HubModalUpdatableOptions } from './modal-config';
 export { ModalDismissReasons } from './modal-dismiss-reasons';
 export { HubModalPlacement } from './modal-placement';
-export { HubActiveModal, HubModalRef } from './modal-ref';
+export { HUB_MODAL_DATA, HubActiveModal, HubModalRef } from './modal-ref';
 
 @NgModule({ providers: [HubModal] })
 export class HubModalModule {}

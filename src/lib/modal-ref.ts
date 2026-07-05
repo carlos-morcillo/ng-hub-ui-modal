@@ -1,4 +1,4 @@
-import { ComponentRef } from '@angular/core';
+import { ComponentRef, InjectionToken } from '@angular/core';
 import { ContentRef, isDefined, isPromise } from 'ng-hub-ui-utils';
 import { Observable, of, Subject, zip } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -7,12 +7,51 @@ import { HubModalOptions, HubModalUpdatableOptions } from './modal-config';
 import { HubModalWindow } from './modal-window';
 
 /**
+ * Injection token carrying the `HubModalOptions.data` payload down to the modal
+ * content component. Inject it to read the payload in a typed way, mirroring the
+ * Angular CDK `DIALOG_DATA` pattern:
+ *
+ * ```ts
+ * private readonly data = inject(HUB_MODAL_DATA) as MyPayload;
+ * ```
+ *
+ * It is provided alongside `HubActiveModal` in the content component's element
+ * injector and resolves to `null` when no `data` option was supplied.
+ *
+ * @since 22.3.0
+ */
+export const HUB_MODAL_DATA = new InjectionToken<unknown>('HUB_MODAL_DATA');
+
+/**
  * A reference to the currently opened (active) modal.
  *
  * Instances of this class can be injected into your component passed as modal content.
  * So you can `.update()`, `.close()` or `.dismiss()` the modal window from your component.
+ *
+ * The optional generic parameter `D` types the {@link HubActiveModal.data} payload
+ * passed through `HubModalOptions.data`.
  */
-export class HubActiveModal {
+export class HubActiveModal<D = unknown> {
+	/**
+	 * Creates the active modal reference.
+	 *
+	 * @param _data The payload supplied via `HubModalOptions.data`, if any.
+	 */
+	constructor(private readonly _data: D = null as D) {}
+
+	/**
+	 * The typed payload passed to the modal through `HubModalOptions.data`.
+	 *
+	 * Equivalent to injecting the {@link HUB_MODAL_DATA} token, but strongly typed
+	 * when the generic parameter `D` is supplied. Resolves to `null` when no `data`
+	 * option was provided.
+	 *
+	 * @since 22.3.0
+	 */
+	get data(): D {
+		return this._data;
+	}
+
 	/**
 	 * Updates options of an opened modal.
 	 *

@@ -24,7 +24,7 @@ The fallback chain follows: `component -> sys -> ref -> literal`.
 | Variable name | Initial value |
 | --- | --- |
 | `--hub-modal-zindex` | `var(--hub-sys-zindex-modal, 1055)` |
-| `--hub-modal-width` | `100%` |
+| `--hub-modal-width` | `auto` |
 | `--hub-modal-max-width` | `500px` |
 | `--hub-modal-margin` | `1.75rem auto` |
 | `--hub-modal-margin-top` | `var(--hub-modal-margin-y, 1.75rem)` |
@@ -56,9 +56,9 @@ Applied only when a `variant` is set (e.g. `{ variant: 'danger' }` or `windowCla
 | Variable name | Initial value |
 | --- | --- |
 | `--hub-modal-accent` | `var(--hub-sys-color-primary, #0d6efd)` |
-| `--hub-modal-accent-subtle` | `color-mix(in srgb, var(--hub-modal-accent) 8%, var(--hub-sys-surface-page, #ffffff))` |
-| `--hub-modal-accent-border` | `color-mix(in srgb, var(--hub-modal-accent) 35%, var(--hub-sys-surface-page, #ffffff))` |
-| `--hub-modal-accent-bar-width` | `var(--hub-ref-space-1, 4px)` |
+| `--hub-modal-accent-subtle` | `color-mix(in oklch, var(--hub-modal-accent) 12%, var(--hub-sys-surface-page, #ffffff))` |
+| `--hub-modal-accent-border` | `color-mix(in oklch, var(--hub-modal-accent) 35%, var(--hub-sys-surface-page, #ffffff))` |
+| `--hub-modal-accent-bar-width` | `var(--hub-ref-space-1, 0.25rem)` |
 
 ### Header and title
 
@@ -70,7 +70,7 @@ Applied only when a `variant` is set (e.g. `{ variant: 'danger' }` or `windowCla
 | `--hub-modal-header-border-color` | `var(--hub-sys-border-color-default, #dee2e6)` |
 | `--hub-modal-header-border-width` | `var(--hub-ref-border-width, 1px)` |
 | `--hub-modal-title-font-size` | `var(--hub-ref-font-size-lg, 1.25rem)` |
-| `--hub-modal-title-font-weight` | `500` |
+| `--hub-modal-title-font-weight` | `var(--hub-ref-font-weight-medium, 500)` |
 | `--hub-modal-title-line-height` | `var(--hub-ref-line-height-base, 1.5)` |
 | `--hub-modal-title-margin-x` | `0` |
 | `--hub-modal-title-margin-y` | `0` |

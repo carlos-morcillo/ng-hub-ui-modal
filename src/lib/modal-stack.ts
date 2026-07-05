@@ -17,7 +17,7 @@ import { Subject } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { HubModalBackdrop } from './modal-backdrop';
 import { HubModalOptions, HubModalUpdatableOptions } from './modal-config';
-import { HubActiveModal, HubModalRef } from './modal-ref';
+import { HUB_MODAL_DATA, HubActiveModal, HubModalRef } from './modal-ref';
 import { HubModalWindow } from './modal-window';
 
 /**
@@ -91,7 +91,7 @@ export class HubModalStack {
 
 		this._hideScrollBar();
 
-		const activeModal = new HubActiveModal();
+		const activeModal = new HubActiveModal(options.data ?? null);
 
 		contentInjector = options.injector || contentInjector;
 		const environmentInjector = contentInjector.get(EnvironmentInjector, null) || this._environmentInjector;
@@ -262,7 +262,10 @@ export class HubModalStack {
 		options: HubModalOptions
 	): ContentRef {
 		const elementInjector = Injector.create({
-			providers: [{ provide: HubActiveModal, useValue: context }],
+			providers: [
+				{ provide: HubActiveModal, useValue: context },
+				{ provide: HUB_MODAL_DATA, useValue: options.data ?? null }
+			],
 			parent: contentInjector
 		});
 		const componentRef = createComponent(componentType, {
@@ -270,6 +273,12 @@ export class HubModalStack {
 			elementInjector
 		});
 
+		/**
+		 * @deprecated Since 22.3.0. Kept for one release for backward compatibility.
+		 * Prefer reading the payload through the typed `inject(HUB_MODAL_DATA)` token or
+		 * `inject(HubActiveModal).data`. This untyped monkey-patch of a `data` field on the
+		 * component instance will be removed in a future major.
+		 */
 		if (options.data) {
 			Object.assign(componentRef.instance, {
 				data: options.data

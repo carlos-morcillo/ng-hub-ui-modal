@@ -3,6 +3,7 @@
  */
 export {
 	ModalDismissReasons,
+	HUB_MODAL_DATA,
 	HubActiveModal,
 	HubModal,
 	HubModalConfig,

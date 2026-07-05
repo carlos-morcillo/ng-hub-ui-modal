@@ -376,6 +376,30 @@ export class MyModalComponent {
 
 ---
 
+### Typed Data Payload
+
+Pass a `data` payload when opening and read it back **typed** inside the content component via `HUB_MODAL_DATA` (or `HubActiveModal<D>.data`):
+
+```typescript
+import { inject } from '@angular/core';
+import { HubModal, HUB_MODAL_DATA, HubActiveModal } from 'ng-hub-ui-modal';
+
+interface EditUserData {
+	userId: string;
+}
+
+// Opening the modal:
+inject(HubModal).open(EditUserComponent, { data: { userId: '42' } });
+
+// Inside EditUserComponent:
+export class EditUserComponent {
+	protected readonly data = inject<EditUserData>(HUB_MODAL_DATA);
+	// or: private readonly ref = inject<HubActiveModal<EditUserData>>(HubActiveModal); → this.ref.data
+}
+```
+
+---
+
 ### Dismiss and Close Selectors
 
 Automatically bind dismiss/close behaviour to DOM elements inside the modal content using CSS selectors.
@@ -477,13 +501,17 @@ A reference to an open modal returned by `HubModal.open()`.
 
 ### HubActiveModal
 
-Inject into your content component to control the modal from within.
+Inject into your content component to control the modal from within. Generic in the
+payload type — `HubActiveModal<D = unknown>`.
 
-| Method             | Description                                          |
+| Member             | Description                                          |
 | ------------------ | ---------------------------------------------------- |
+| `data`             | Read-only payload passed through the `data` option, typed `D`. Equivalent to `inject(HUB_MODAL_DATA)`; resolves to `null` when no `data` was supplied. |
 | `close(result?)`   | Closes the modal with an optional result.            |
 | `dismiss(reason?)` | Dismisses the modal with an optional reason.         |
 | `update(options)`  | Updates live options (same as `HubModalRef.update`). |
+
+> **Typed payload.** Prefer `inject(HUB_MODAL_DATA)` or `inject(HubActiveModal<MyData>).data` over reading a `data` field off the component instance. The legacy `Object.assign(instance, { data })` monkey-patch is **deprecated** and kept for one release only.
 
 ---
 
@@ -514,7 +542,7 @@ All options accepted by `HubModal.open()`.
 | `footerSelector`   | `string`                                                     | —                        | CSS selector for nodes to project into the footer slot.     |
 | `dismissSelector`  | `string`                                                     | `[data-dismiss="modal"]` | Selector for elements that auto-dismiss the modal on click. |
 | `closeSelector`    | `string`                                                     | `[data-close="modal"]`   | Selector for elements that auto-close the modal on click.   |
-| `data`             | `any`                                                        | —                        | Arbitrary data bound to the content component instance.     |
+| `data`             | `any`                                                        | —                        | Typed payload delivered to the content component via `inject(HUB_MODAL_DATA)` or `inject(HubActiveModal).data` (the legacy instance-field monkey-patch is deprecated). |
 
 ---
 

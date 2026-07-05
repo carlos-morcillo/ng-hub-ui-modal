@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [22.3.0] - 2026-07-05
+
+### Added
+
+- **Typed payload accessor.** A new `HUB_MODAL_DATA` injection token now carries the `HubModalOptions.data` payload to the modal content component, provided in the same element injector as `HubActiveModal`. `HubActiveModal` is now generic (`HubActiveModal<D = unknown>`) and exposes a read-only `data` accessor, so both `inject(HUB_MODAL_DATA)` and `inject(HubActiveModal).data` return the payload in a strongly-typed way (mirroring the Angular CDK `DIALOG_DATA` pattern). Resolves to `null` when no `data` option was supplied. New export: `HUB_MODAL_DATA`.
+
+### Deprecated
+
+- The untyped `Object.assign(componentInstance, { data })` monkey-patch of a `data` field on the content component is deprecated in favour of `HUB_MODAL_DATA` / `HubActiveModal.data`. It is kept for one release for backward compatibility and will be removed in a future major.
+
+## [22.2.1] - 2026-07-02
+
+### Fixed
+
+- Docs: `docs/css-variables-reference.md` default values resynchronized with the actual code declarations (now guarded by the repo-level `tokens-parity` check F).
+
 ## [22.2.0] - 2026-06-26
 
 ### Changed

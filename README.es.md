@@ -249,7 +249,7 @@ this.modal.open(MiFormComponent, {
 
 ### HubActiveModal
 
-Inyecta `HubActiveModal` en el componente de contenido para controlar el modal desde dentro:
+Inyecta `HubActiveModal` en el componente de contenido para controlar el modal desde dentro. Es genérico en el tipo del payload — `HubActiveModal<D = unknown>` — y expone un accesor de solo lectura `data` (equivalente a `inject(HUB_MODAL_DATA)`; `null` si no se pasó `data`). Prefiere `HUB_MODAL_DATA` / `HubActiveModal.data` a leer un campo `data` de la instancia (ese parche `Object.assign` está **obsoleto** y se mantiene solo una versión):
 
 ```typescript
 export class MiModalComponent {
@@ -333,7 +333,7 @@ this.modal.activeInstances.subscribe((refs) => console.log(refs.length + ' abier
 | `footerSelector`   | `string`                            | —                        | Selector CSS para nodos del slot de pie.                        |
 | `dismissSelector`  | `string`                            | `[data-dismiss="modal"]` | Selector para elementos que descartan el modal al hacer clic.   |
 | `closeSelector`    | `string`                            | `[data-close="modal"]`   | Selector para elementos que cierran el modal al hacer clic.     |
-| `data`             | `any`                               | —                        | Datos adicionales que se asignan a la instancia del componente. |
+| `data`             | `any`                               | —                        | Payload tipado entregado al componente de contenido vía `inject(HUB_MODAL_DATA)` o `inject(HubActiveModal).data` (el parche de campo en la instancia está obsoleto). |
 | `container`        | `string \| HTMLElement`             | `body`                   | Contenedor DOM donde se inserta el modal.                       |
 | `injector`         | `Injector`                          | —                        | Inyector personalizado para el componente de contenido.         |
 
