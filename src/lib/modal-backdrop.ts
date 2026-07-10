@@ -1,7 +1,16 @@
-import { Component, ElementRef, inject, input, NgZone, OnInit, ViewEncapsulation } from '@angular/core';
+import {
+	afterNextRender,
+	Component,
+	ElementRef,
+	inject,
+	Injector,
+	input,
+	NgZone,
+	OnInit,
+	ViewEncapsulation
+} from '@angular/core';
 import { hubRunTransition, reflow } from 'ng-hub-ui-utils';
 import { Observable } from 'rxjs';
-import { take } from 'rxjs/operators';
 
 /**
  * Represents the backdrop element associated with an active modal window.
@@ -21,6 +30,7 @@ import { take } from 'rxjs/operators';
 export class HubModalBackdrop implements OnInit {
 	private _nativeElement = inject(ElementRef).nativeElement as HTMLElement;
 	private _zone = inject(NgZone);
+	private _injector = inject(Injector);
 
 	/**
 	 * Determines whether the backdrop should use CSS transitions during its initialization and destruction.
@@ -33,10 +43,11 @@ export class HubModalBackdrop implements OnInit {
 	readonly backdropClass = input<string>();
 
 	ngOnInit() {
-		this._zone.onStable
-			.asObservable()
-			.pipe(take(1))
-			.subscribe(() => {
+		// `NgZone.onStable` never emits under `provideZonelessChangeDetection` (the zone is a
+		// `NoopNgZone`), so the entry transition never ran there. `afterNextRender` fires in
+		// both modes. See the same fix in `HubModalWindowComponent.ngOnInit`.
+		afterNextRender(
+			() => {
 				hubRunTransition(
 					this._zone,
 					this._nativeElement,
@@ -48,7 +59,9 @@ export class HubModalBackdrop implements OnInit {
 					},
 					{ animation: this.animation(), runningTransition: 'continue' }
 				);
-			});
+			},
+			{ injector: this._injector }
+		);
 	}
 
 	/**
