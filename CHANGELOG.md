@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [22.4.1] - 2026-07-10
+
+### Fixed
+
+- **Escape and backdrop click did nothing in a zoneless app.** `HubModalWindowComponent` and `HubModalBackdrop` deferred their entry work to `NgZone.onStable`. Under `provideZonelessChangeDetection()` the injected zone is a `NoopNgZone`, whose `onStable` never emits, so that work never ran. For the backdrop this only cost the fade-in; for the window it meant `_show()` — and therefore `_enableEventHandling()` — never executed, leaving **every** modal in a zoneless application unclosable by <kbd>Esc</kbd> or by clicking the backdrop: no listener had ever been attached. Both now defer with `afterNextRender`, which fires in zoneful and zoneless apps alike. No API change.
+
 ## [22.4.0] - 2026-07-07
 
 ### Changed

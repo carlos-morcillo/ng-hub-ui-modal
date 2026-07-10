@@ -1,8 +1,10 @@
 import { DOCUMENT } from '@angular/common';
 import {
+	afterNextRender,
 	Component,
 	ElementRef,
 	inject,
+	Injector,
 	input,
 	NgZone,
 	OnDestroy,
@@ -75,6 +77,7 @@ export class HubModalWindow implements OnInit, OnDestroy {
 	private _document = inject(DOCUMENT);
 	private _elRef = inject(ElementRef<HTMLElement>);
 	private _zone = inject(NgZone);
+	private _injector = inject(Injector);
 
 	private _closed$ = new Subject<void>();
 	private _elWithFocus: Element | null = null; // element that is focused prior to modal opening
@@ -259,12 +262,16 @@ export class HubModalWindow implements OnInit, OnDestroy {
 
 	ngOnInit() {
 		this._elWithFocus = this._document.activeElement;
-		this._zone.onStable
-			.asObservable()
-			.pipe(take(1))
-			.subscribe(() => {
-				this._show();
-			});
+		// Defer until the window's own DOM is laid out, then run the entry transition and
+		// arm the Escape / backdrop-click handlers.
+		//
+		// This used to wait on `NgZone.onStable`. Under `provideZonelessChangeDetection`
+		// the injected zone is a `NoopNgZone` whose `onStable` never emits, so `_show()`
+		// never ran: the window never got its `show` class and — far worse — never called
+		// `_enableEventHandling()`, leaving every modal in a zoneless app unclosable by
+		// Escape or by clicking the backdrop. `afterNextRender` is the zone-agnostic hook
+		// for "the DOM exists now", and fires in both modes.
+		afterNextRender(() => this._show(), { injector: this._injector });
 	}
 
 	ngOnDestroy() {
