@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [22.4.2] - 2026-07-26
+
+### Fixed
+
+- Declared the real `ng-hub-ui-utils` peer range: `>=22.0.0`. The previous `>=1.0.0` floor allowed resolving a utils major from a different era than the one this library is built and tested against.
+
 ## [22.4.1] - 2026-07-10
 
 ### Fixed
