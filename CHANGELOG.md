@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [22.5.0] - 2026-07-27
+
+### Changed
+
+- **Typed modal flows — no more `as unknown as` casts.** `HubModal.open<C, R, D>(content, options)` now infers the content component type from the class you pass (`content: Type<C> | TemplateRef | string`), so `HubModalRef.componentInstance` is typed as the component *instance* (it used to resolve to the class object type, which forced casts). The new `R` generic types the result flow end to end: `close(result?: R)`, `result: Promise<R>`, `closed: Observable<R>` and `HubActiveModal<D, R>.close(result?: R)`; `HubModalOptions<D>` types the `data` payload, pairing with the existing `HubActiveModal<D>.data`. All generics default to the previous loose types (`any`), so existing call sites compile unchanged; dismiss reasons intentionally stay untyped (internal `ModalDismissReasons` or consumer values).
+
 ## [22.4.2] - 2026-07-26
 
 ### Fixed
