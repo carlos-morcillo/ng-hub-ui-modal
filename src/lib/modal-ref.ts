@@ -31,7 +31,7 @@ export const HUB_MODAL_DATA = new InjectionToken<unknown>('HUB_MODAL_DATA');
  * The optional generic parameter `D` types the {@link HubActiveModal.data} payload
  * passed through `HubModalOptions.data`.
  */
-export class HubActiveModal<D = unknown> {
+export class HubActiveModal<D = unknown, R = any> {
 	/**
 	 * Creates the active modal reference.
 	 *
@@ -63,7 +63,7 @@ export class HubActiveModal<D = unknown> {
 	 *
 	 * The `HubModalRef.result` promise will be resolved with the provided value.
 	 */
-	close(result?: any): void {}
+	close(result?: R): void {}
 
 	/**
 	 * Dismisses the modal with an optional `reason` value.
@@ -93,11 +93,11 @@ const BACKDROP_ATTRIBUTES: string[] = ['animation', 'backdropClass'];
 /**
  * A reference to the newly opened modal returned by the `HubModal.open()` method.
  */
-export class HubModalRef<T = any> {
-	private _closed = new Subject<any>();
+export class HubModalRef<C = any, R = any> {
+	private _closed = new Subject<R>();
 	private _dismissed = new Subject<any>();
 	private _hidden = new Subject<void>();
-	private _resolve!: (result?: any) => void;
+	private _resolve!: (result: R | PromiseLike<R>) => void;
 	private _reject!: (reason?: any) => void;
 
 	private _applyWindowOptions(windowComponentRef: ComponentRef<HubModalWindow>, options: HubModalOptions): void {
@@ -135,7 +135,7 @@ export class HubModalRef<T = any> {
 	 *
 	 * When a `TemplateRef` is used as the content or when the modal is closed, will return `undefined`.
 	 */
-	get componentInstance(): T | void {
+	get componentInstance(): C | void {
 		if (this._contentRef && this._contentRef.componentRef) {
 			return this._contentRef.componentRef.instance;
 		}
@@ -144,7 +144,7 @@ export class HubModalRef<T = any> {
 	/**
 	 * The promise that is resolved when the modal is closed and rejected when the modal is dismissed.
 	 */
-	result: Promise<any>;
+	result: Promise<R>;
 
 	/**
 	 * The observable that emits when the modal is closed via the `.close()` method.
@@ -153,7 +153,7 @@ export class HubModalRef<T = any> {
 	 *
 	 * @since 8.0.0
 	 */
-	get closed(): Observable<any> {
+	get closed(): Observable<R> {
 		return this._closed.asObservable().pipe(takeUntil(this._hidden));
 	}
 
@@ -216,10 +216,12 @@ export class HubModalRef<T = any> {
 	 *
 	 * The `HubMobalRef.result` promise will be resolved with the provided value.
 	 */
-	close(result?: any): void {
+	close(result?: R): void {
 		if (this._windowCmptRef) {
-			this._closed.next(result);
-			this._resolve(result);
+			// `close()` without a value legitimately emits `undefined` through the
+			// `R`-typed stream, mirroring the optional `result` parameter.
+			this._closed.next(result as R);
+			this._resolve(result as R);
 			this._removeModalElements();
 		}
 	}

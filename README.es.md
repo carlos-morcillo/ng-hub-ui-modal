@@ -249,7 +249,7 @@ this.modal.open(MiFormComponent, {
 
 ### HubActiveModal
 
-Inyecta `HubActiveModal` en el componente de contenido para controlar el modal desde dentro. Es genérico en el tipo del payload — `HubActiveModal<D = unknown>` — y expone un accesor de solo lectura `data` (equivalente a `inject(HUB_MODAL_DATA)`; `null` si no se pasó `data`). Prefiere `HUB_MODAL_DATA` / `HubActiveModal.data` a leer un campo `data` de la instancia (ese parche `Object.assign` está **obsoleto** y se mantiene solo una versión):
+Inyecta `HubActiveModal` en el componente de contenido para controlar el modal desde dentro. Es genérico en el tipo del payload y en el del resultado — `HubActiveModal<D = unknown, R = any>` (`close(result?: R)`) — y expone un accesor de solo lectura `data` (equivalente a `inject(HUB_MODAL_DATA)`; `null` si no se pasó `data`). Prefiere `HUB_MODAL_DATA` / `HubActiveModal.data` a leer un campo `data` de la instancia (ese parche `Object.assign` está **obsoleto** y se mantiene solo una versión):
 
 ```typescript
 export class MiModalComponent {
@@ -291,28 +291,48 @@ this.modal.activeInstances.subscribe((refs) => console.log(refs.length + ' abier
 
 ### Servicio HubModal
 
-| Método                    | Descripción                                             |
-| ------------------------- | ------------------------------------------------------- |
-| `open(content, options?)` | Abre un nuevo modal. Devuelve `HubModalRef`.            |
-| `dismissAll(reason?)`     | Descarta todos los modales abiertos.                    |
-| `hasOpenModals()`         | Devuelve `true` si hay al menos un modal abierto.       |
-| `activeInstances`         | `EventEmitter` que emite al cambiar la pila de modales. |
+| Método                              | Descripción                                                     |
+| ----------------------------------- | --------------------------------------------------------------- |
+| `open<C, R, D>(content, options?)`  | Abre un nuevo modal. Devuelve `HubModalRef<C, R>`.              |
+| `dismissAll(reason?)`               | Descarta todos los modales abiertos.                            |
+| `hasOpenModals()`                   | Devuelve `true` si hay al menos un modal abierto.               |
+| `activeInstances`                   | `EventEmitter` que emite al cambiar la pila de modales.         |
+
+`C` se infiere de la clase de componente pasada como `content`, `R` tipa el flujo del resultado y `D` el payload `data` (`HubModalOptions<D>`). Todos los genéricos tienen como defecto los tipos laxos anteriores (`any` / `unknown`), así que los usos sin tipar compilan sin cambios.
+
+#### Resultados tipados
+
+```typescript
+const ref = this.modal.open<ConfirmDialogComponent, boolean>(ConfirmDialogComponent);
+
+ref.componentInstance; // ConfirmDialogComponent | void — sin casts `as unknown as`
+ref.result.then((confirmed) => {
+	// confirmed: boolean
+});
+
+// Dentro del componente de contenido:
+inject<HubActiveModal<unknown, boolean>>(HubActiveModal).close(true); // close(result?: boolean)
+```
 
 ### HubModalRef
 
+Genérico en el componente de contenido y en el tipo del resultado — `HubModalRef<C = any, R = any>`.
+
 | Miembro             | Descripción                                                      |
 | ------------------- | ---------------------------------------------------------------- |
-| `result`            | `Promise` que resuelve en `close()` y rechaza en `dismiss()`.    |
-| `componentInstance` | Instancia del componente de contenido.                           |
-| `close(result?)`    | Cierra el modal.                                                 |
+| `result`            | `Promise<R>` que resuelve en `close()` y rechaza en `dismiss()`. |
+| `componentInstance` | Instancia del componente de contenido (`C \| void`).             |
+| `close(result?: R)` | Cierra el modal.                                                 |
 | `dismiss(reason?)`  | Descarta el modal.                                               |
 | `update(options)`   | Actualiza opciones en tiempo de ejecución.                       |
-| `closed`            | Observable que emite al cerrar con `close()`.                    |
+| `closed`            | `Observable<R>` que emite al cerrar con `close()`.               |
 | `dismissed`         | Observable que emite al descartar.                               |
 | `shown`             | Emite cuando la animación de apertura termina.                   |
 | `hidden`            | Emite cuando la animación de cierre termina y el DOM se elimina. |
 
 ### HubModalOptions
+
+Genérico en el tipo del payload — `HubModalOptions<D = unknown>` tipa la opción `data`, en pareja con `HubActiveModal<D>.data`.
 
 | Opción             | Tipo                                | Default                  | Descripción                                                     |
 | ------------------ | ----------------------------------- | ------------------------ | --------------------------------------------------------------- |
@@ -333,7 +353,7 @@ this.modal.activeInstances.subscribe((refs) => console.log(refs.length + ' abier
 | `footerSelector`   | `string`                            | —                        | Selector CSS para nodos del slot de pie.                        |
 | `dismissSelector`  | `string`                            | `[data-dismiss="modal"]` | Selector para elementos que descartan el modal al hacer clic.   |
 | `closeSelector`    | `string`                            | `[data-close="modal"]`   | Selector para elementos que cierran el modal al hacer clic.     |
-| `data`             | `any`                               | —                        | Payload tipado entregado al componente de contenido vía `inject(HUB_MODAL_DATA)` o `inject(HubActiveModal).data` (el parche de campo en la instancia está obsoleto). |
+| `data`             | `D`                                 | —                        | Payload tipado entregado al componente de contenido vía `inject(HUB_MODAL_DATA)` o `inject(HubActiveModal).data` (el parche de campo en la instancia está obsoleto). |
 | `container`        | `string \| HTMLElement`             | `body`                   | Contenedor DOM donde se inserta el modal.                       |
 | `injector`         | `Injector`                          | —                        | Inyector personalizado para el componente de contenido.         |
 

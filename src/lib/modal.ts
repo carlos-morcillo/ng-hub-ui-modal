@@ -1,4 +1,4 @@
-import { inject, Injectable, Injector } from '@angular/core';
+import { inject, Injectable, Injector, TemplateRef, Type } from '@angular/core';
 
 import { HubModalConfig, HubModalOptions } from './modal-config';
 import { HubModalRef } from './modal-ref';
@@ -24,14 +24,22 @@ export class HubModal {
 	 * use `HubActiveModal` methods to close / dismiss modals from "inside" of your component.
 	 *
 	 * Also see the [`HubModalOptions`](#/components/modal/api#HubModalOptions) for the list of supported options.
+	 *
+	 * Generics: `C` is the content component type (inferred from the class you pass,
+	 * so `componentInstance` is typed without casts), `R` is the result type flowing
+	 * through `close()` / `result` / `closed`, and `D` types the `options.data`
+	 * payload (paired with `HubActiveModal<D>` / `HUB_MODAL_DATA` on the inside).
 	 */
-	open<T = any>(content: T, options: HubModalOptions = {}): HubModalRef<T> {
+	open<C = any, R = any, D = unknown>(
+		content: Type<C> | TemplateRef<any> | string,
+		options: HubModalOptions<D> = {}
+	): HubModalRef<C, R> {
 		const combinedOptions = {
 			...this._config,
 			animation: this._config.animation,
 			...options
 		};
-		return this._modalStack.open(this._injector, content, combinedOptions);
+		return this._modalStack.open(this._injector, content, combinedOptions) as HubModalRef<C, R>;
 	}
 
 	/**

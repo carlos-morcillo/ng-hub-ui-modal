@@ -4,8 +4,11 @@ import { HubModalPlacement } from './modal-placement';
 
 /**
  * Options available when opening new modal windows with `HubModal.open()` method.
+ *
+ * The optional generic parameter `D` types the `data` payload delivered to the
+ * modal content through `HubActiveModal<D>.data` / the `HUB_MODAL_DATA` token.
  */
-export interface HubModalOptions {
+export interface HubModalOptions<D = unknown> {
 	/**
 	 * If `true`, modal opening and closing will be animated.
 	 *
@@ -172,7 +175,7 @@ export interface HubModalOptions {
 	 * to provide custom data to the modal component, which can then be accessed and utilized within the modal content or logic.
 	 * It provides flexibility for passing dynamic information to the modal window based on the specific use case or requirements.
 	 */
-	data?: any;
+	data?: D;
 }
 
 /**

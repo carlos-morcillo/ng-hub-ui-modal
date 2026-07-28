@@ -472,27 +472,44 @@ this.modal.activeInstances.subscribe((refs) => {
 
 The main entry point for opening and managing modals.
 
-| Method            | Signature                              | Description                                           |
-| ----------------- | -------------------------------------- | ----------------------------------------------------- |
-| `open`            | `open(content, options?): HubModalRef` | Opens a new modal with the given content and options. |
-| `dismissAll`      | `dismissAll(reason?): void`            | Dismisses all currently open modals.                  |
-| `hasOpenModals`   | `hasOpenModals(): boolean`             | Returns `true` if at least one modal is open.         |
-| `activeInstances` | `EventEmitter<HubModalRef[]>`          | Emits whenever the stack of open modals changes.      |
+| Method            | Signature                                                       | Description                                           |
+| ----------------- | --------------------------------------------------------------- | ----------------------------------------------------- |
+| `open`            | `open<C, R, D>(content, options?): HubModalRef<C, R>`           | Opens a new modal with the given content and options. |
+| `dismissAll`      | `dismissAll(reason?): void`                                     | Dismisses all currently open modals.                  |
+| `hasOpenModals`   | `hasOpenModals(): boolean`                                      | Returns `true` if at least one modal is open.         |
+| `activeInstances` | `EventEmitter<HubModalRef[]>`                                   | Emits whenever the stack of open modals changes.      |
+
+`C` is inferred from the component class you pass as `content`, `R` types the result flow and `D` the `data` payload. All generics default to the previous loose types (`any` / `unknown`), so untyped call sites compile unchanged.
+
+#### Typed results
+
+```typescript
+const ref = this.modal.open<ConfirmDialogComponent, boolean>(ConfirmDialogComponent);
+
+ref.componentInstance; // ConfirmDialogComponent | void — no `as unknown as` casts
+ref.result.then((confirmed) => {
+	// confirmed: boolean
+});
+
+// Inside the content component:
+inject<HubActiveModal<unknown, boolean>>(HubActiveModal).close(true); // close(result?: boolean)
+```
 
 ---
 
 ### HubModalRef
 
-A reference to an open modal returned by `HubModal.open()`.
+A reference to an open modal returned by `HubModal.open()`. Generic in the content
+component and the result type — `HubModalRef<C = any, R = any>`.
 
 | Member              | Type               | Description                                                 |
 | ------------------- | ------------------ | ----------------------------------------------------------- |
-| `result`            | `Promise<any>`     | Resolves on `close()`, rejects on `dismiss()`.              |
-| `componentInstance` | `T \| void`        | Instance of the content component (if used).                |
-| `close(result?)`    | `void`             | Closes the modal and resolves `result`.                     |
+| `result`            | `Promise<R>`       | Resolves on `close()`, rejects on `dismiss()`.              |
+| `componentInstance` | `C \| void`        | Instance of the content component (if used).                |
+| `close(result?: R)` | `void`             | Closes the modal and resolves `result`.                     |
 | `dismiss(reason?)`  | `void`             | Dismisses the modal and rejects `result`.                   |
 | `update(options)`   | `void`             | Updates modal options after opening.                        |
-| `closed`            | `Observable<any>`  | Emits when the modal is closed via `close()`.               |
+| `closed`            | `Observable<R>`    | Emits when the modal is closed via `close()`.               |
 | `dismissed`         | `Observable<any>`  | Emits when dismissed via `dismiss()` or user interaction.   |
 | `shown`             | `Observable<void>` | Emits once the open animation finishes.                     |
 | `hidden`            | `Observable<void>` | Emits once the close animation finishes and DOM is removed. |
@@ -502,12 +519,12 @@ A reference to an open modal returned by `HubModal.open()`.
 ### HubActiveModal
 
 Inject into your content component to control the modal from within. Generic in the
-payload type — `HubActiveModal<D = unknown>`.
+payload and result types — `HubActiveModal<D = unknown, R = any>`.
 
 | Member             | Description                                          |
 | ------------------ | ---------------------------------------------------- |
 | `data`             | Read-only payload passed through the `data` option, typed `D`. Equivalent to `inject(HUB_MODAL_DATA)`; resolves to `null` when no `data` was supplied. |
-| `close(result?)`   | Closes the modal with an optional result.            |
+| `close(result?: R)` | Closes the modal with an optional result.           |
 | `dismiss(reason?)` | Dismisses the modal with an optional reason.         |
 | `update(options)`  | Updates live options (same as `HubModalRef.update`). |
 
@@ -517,7 +534,8 @@ payload type — `HubActiveModal<D = unknown>`.
 
 ### HubModalOptions
 
-All options accepted by `HubModal.open()`.
+All options accepted by `HubModal.open()`. Generic in the payload type —
+`HubModalOptions<D = unknown>` types the `data` option, pairing with `HubActiveModal<D>.data`.
 
 | Option             | Type                                                         | Default                  | Description                                                 |
 | ------------------ | ------------------------------------------------------------ | ------------------------ | ----------------------------------------------------------- |
@@ -542,7 +560,7 @@ All options accepted by `HubModal.open()`.
 | `footerSelector`   | `string`                                                     | —                        | CSS selector for nodes to project into the footer slot.     |
 | `dismissSelector`  | `string`                                                     | `[data-dismiss="modal"]` | Selector for elements that auto-dismiss the modal on click. |
 | `closeSelector`    | `string`                                                     | `[data-close="modal"]`   | Selector for elements that auto-close the modal on click.   |
-| `data`             | `any`                                                        | —                        | Typed payload delivered to the content component via `inject(HUB_MODAL_DATA)` or `inject(HubActiveModal).data` (the legacy instance-field monkey-patch is deprecated). |
+| `data`             | `D`                                                          | —                        | Typed payload delivered to the content component via `inject(HUB_MODAL_DATA)` or `inject(HubActiveModal).data` (the legacy instance-field monkey-patch is deprecated). |
 
 ---
 
