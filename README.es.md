@@ -15,11 +15,11 @@
 
 ## Documentación y ejemplos en vivo
 
-Este paquete forma parte de [Hub UI](https://hubui.dev/), una colección de bibliotecas de componentes Angular para aplicaciones standalone.
+Este paquete forma parte de [Hub UI](https://hubui.dev/en/), una colección de bibliotecas de componentes Angular para aplicaciones standalone.
 
-- Documentación: https://hubui.dev/modal/overview/
-- Ejemplos en vivo: https://hubui.dev/modal/examples/
-- Hub UI: https://hubui.dev/
+- Documentación: https://hubui.dev/en/modal/overview/
+- Ejemplos en vivo: https://hubui.dev/en/modal/examples/
+- Hub UI: https://hubui.dev/en/
 
 ---
 
