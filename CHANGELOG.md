@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [22.6.0] - 2026-08-17
+
+### Added
+
+- **The dialog now travels between heights instead of jumping.** A modal is sized by whatever it holds, so a wizard step, an async panel or a validation message appearing would snap the box to its new height in a single frame.
+
+    Measured rather than assumed, because the obvious repair does not work: the specified height is `auto` before the change and `auto` after it, and a CSS transition only fires when the specified value changes — the content moved, the property did not. `interpolate-size: allow-keywords` does not help either, for the same reason; it interpolates *to* a keyword, it does not notice a box growing underneath one. In the browser, a content-driven change sampled `200, 200, 200, 200` with it enabled, against `0, 44, 100, 156, 200` for an explicit `0` → `auto`.
+
+    So both heights are measured and animated explicitly, which also behaves identically everywhere rather than only where `interpolate-size` has shipped. Tuned through `--hub-modal-resize-duration` (milliseconds, unitless) and `--hub-modal-resize-easing`, disabled by `[animation]="false"` and by `prefers-reduced-motion`.
+
+    Width already animated and is untouched.
+
 ## [22.5.1] - 2026-08-08
 
 ### Fixed

@@ -51,7 +51,7 @@ import { HubModalPlacement } from './modal-placement';
 			"
 			role="document"
 		>
-			<div class="hub-modal__content">
+			<div #content class="hub-modal__content">
 				@if (singleContent) {
 					<div #bodyContainer class="hub-modal__body"></div>
 				} @else {
@@ -87,11 +87,17 @@ export class HubModalWindow implements OnInit, OnDestroy {
 	private readonly _bodyContainerEl = viewChild<ElementRef<HTMLElement>>('bodyContainer');
 	private readonly _footerContainerEl = viewChild<ElementRef<HTMLElement>>('footerContainer');
 	private readonly _closeButtonEl = viewChild<ElementRef<HTMLButtonElement>>('closeButton');
+	private readonly _contentEl = viewChild<ElementRef<HTMLElement>>('content');
 
 	/**
 	 * Determines whether the modal window should animate its entry and exit.
 	 */
 	readonly animation = input<boolean>(true);
+
+	/** Watches the content box so a change in its height can be animated rather than jumped. */
+	private _resizeObserver: ResizeObserver | null = null;
+	private _lastHeight: number | null = null;
+	private _resizeAnimation: Animation | null = null;
 
 	/**
 	 * Identifier to apply to the `aria-labelledby` attribute of the modal.
@@ -271,11 +277,96 @@ export class HubModalWindow implements OnInit, OnDestroy {
 		// `_enableEventHandling()`, leaving every modal in a zoneless app unclosable by
 		// Escape or by clicking the backdrop. `afterNextRender` is the zone-agnostic hook
 		// for "the DOM exists now", and fires in both modes.
-		afterNextRender(() => this._show(), { injector: this._injector });
+		afterNextRender(
+			() => {
+				this._show();
+				this._observeResize();
+			},
+			{ injector: this._injector }
+		);
 	}
 
 	ngOnDestroy() {
 		this._disableEventHandling();
+		this._resizeObserver?.disconnect();
+		this._resizeObserver = null;
+		this._resizeAnimation?.cancel();
+	}
+
+	/**
+	 * Animates the dialog between heights instead of letting it jump.
+	 *
+	 * A modal is sized by whatever it holds, so its height is `auto` before a change and `auto`
+	 * after it. CSS transitions never fire on that — the specified value did not change, only the
+	 * content did — and `interpolate-size` does not help for the same reason: it interpolates
+	 * *to* a keyword, it does not notice a box growing underneath one. So the two heights are
+	 * measured and animated explicitly, which also keeps the behaviour identical in every
+	 * browser rather than only where `interpolate-size` has shipped.
+	 */
+	private _observeResize(): void {
+		const content = this._contentEl()?.nativeElement;
+
+		if (!content || typeof ResizeObserver === 'undefined') {
+			return;
+		}
+
+		this._resizeObserver = new ResizeObserver(() => {
+			// While our own animation drives the box, every one of its frames comes back through
+			// here. Reacting would cancel and restart it on each frame, which reads as a stutter
+			// rather than a movement.
+			if (this._resizeAnimation) {
+				return;
+			}
+
+			const next = content.getBoundingClientRect().height;
+			const previous = this._lastHeight;
+			this._lastHeight = next;
+
+			// The first callback is the modal arriving, which the entry transition already owns.
+			if (previous === null || Math.abs(next - previous) < 1 || !this._shouldAnimateResize()) {
+				return;
+			}
+
+			this._animateHeight(content, previous, next);
+		});
+
+		this._resizeObserver.observe(content);
+	}
+
+	/** Honours both the modal's own opt-out and the reader's. */
+	private _shouldAnimateResize(): boolean {
+		return this.animation() && !this._document.defaultView?.matchMedia('(prefers-reduced-motion: reduce)').matches;
+	}
+
+	/**
+	 * @param content - The box being resized.
+	 * @param from - Height it is leaving, in pixels.
+	 * @param to - Height it has already reached, in pixels.
+	 */
+	private _animateHeight(content: HTMLElement, from: number, to: number): void {
+		const styles = getComputedStyle(content);
+		const duration = parseFloat(styles.getPropertyValue('--hub-modal-resize-duration')) || 200;
+		const easing = styles.getPropertyValue('--hub-modal-resize-easing').trim() || 'ease-in-out';
+
+		content.style.overflow = 'hidden';
+
+		const animation = content.animate([{ height: `${from}px` }, { height: `${to}px` }], { duration, easing });
+		this._resizeAnimation = animation;
+
+		const settle = () => {
+			content.style.overflow = '';
+
+			if (this._resizeAnimation !== animation) {
+				return;
+			}
+
+			this._resizeAnimation = null;
+			// The content may have moved again while this ran, so record where it truly ended:
+			// the next change has to measure from the real height, not the one we aimed at.
+			this._lastHeight = content.getBoundingClientRect().height;
+		};
+
+		animation.finished.then(settle).catch(settle);
 	}
 
 	/**

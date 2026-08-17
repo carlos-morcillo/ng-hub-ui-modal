@@ -196,6 +196,8 @@ body.hub-modal-open {
 	--hub-modal-fade-transform: translate(0, -50px);
 	--hub-modal-show-transform: none;
 	--hub-modal-transition: var(--hub-sys-transition-base, all 0.2s ease-in-out);
+	--hub-modal-resize-duration: 200;
+	--hub-modal-resize-easing: ease-in-out;
 	--hub-modal-scale-transform: scale(1.02);
 	--hub-modal-backdrop-zindex: calc(var(--hub-modal-zindex, var(--hub-sys-zindex-modal, 1055)) - 1);
 
