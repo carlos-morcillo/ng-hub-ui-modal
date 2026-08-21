@@ -158,6 +158,29 @@ export interface HubModalOptions<D = unknown> {
 	 */
 	footerSelector?: string;
 
+	/**
+	 * Selector for the block whose children become the modal's **body**.
+	 *
+	 * The body is the one slot that has always been implicit: whatever was left over once the
+	 * header and the footer had been taken out. That works while the three parts are written
+	 * in order, and stops working the moment the content has anything else in it — a
+	 * `<ng-container>` holding state, a comment, a stray text node — because leftovers are
+	 * defined by what they are *not*.
+	 *
+	 * Naming it makes the body an ordinary slot like the other two. Nothing is ever dropped:
+	 * whatever matches this selector goes into the body first, and anything left unclaimed by
+	 * any of the three follows it, so adding the selector to existing content cannot lose a
+	 * node.
+	 *
+	 * @example
+	 * this.modal.open(MyModalComponent, {
+	 *   headerSelector: '[hubModalHeader]',
+	 *   bodySelector: '[hubModalBody]',
+	 *   footerSelector: '[hubModalFooter]'
+	 * });
+	 */
+	bodySelector?: string;
+
 	/** Used to specify a custom selector for elements that can trigger the dismissal of the modal window. By providing a CSS selector
 	 * string for `dismissSelector`, you can target specific elements within the modal content that, when interacted with (e.g., clicked),
 	 * will close or dismiss the modal window.
@@ -228,6 +251,7 @@ export class HubModalConfig implements Required<HubModalOptions> {
 	backdropClass!: string;
 	headerSelector!: string;
 	footerSelector!: string;
+	bodySelector!: string;
 	dismissSelector: string = '[data-dismiss="modal"]';
 	closeSelector: string = '[data-close="modal"]';
 	data: any;

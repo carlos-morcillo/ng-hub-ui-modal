@@ -329,8 +329,39 @@ body.hub-modal-open {
 		box-shadow: var(--hub-modal-box-shadow, var(--hub-sys-shadow-lg, 0 1rem 3rem rgba(0, 0, 0, 0.175)));
 	}
 
+	/**
+	 * Every dialog is bounded by the viewport, and its body is what scrolls.
+	 *
+	 * This used to be `scrollable`'s job alone, which put the decision in the wrong hands:
+	 * whether a dialog outgrows the screen depends on its content, on the length of the
+	 * translation and on the height of the window, and the caller knows none of the three
+	 * when it opens the thing. A dialog taller than the screen is never what anyone wanted
+	 * — and what falls off the bottom is the footer, so in a wizard it is the "Next" button.
+	 *
+	 * The cap is stated against the viewport rather than as a percentage of the dialog,
+	 * because `100dvh` is a definite reference and the dialog's own height is `auto`.
+	 * `min-height: 0` is what lets the body shrink below its content so `overflow` has
+	 * something to do — a flex item defaults to `min-height: auto` and refuses.
+	 *
+	 * The discount is a variable so a dialog with no margin around it can zero it instead
+	 * of restating the cap. `scrollable` keeps its own rules: it still says "this dialog
+	 * expects to scroll", and it is what pins the dialog itself.
+	 */
+	&__dialog {
+		--hub-modal-dialog-inset: var(--hub-modal-margin-block, 3.5rem);
+	}
+
+	&__dialog > &__content {
+		max-height: calc(100dvh - var(--hub-modal-dialog-inset));
+		min-height: 0;
+	}
+
+	&__dialog &__body {
+		min-height: 0;
+		overflow-y: auto;
+	}
+
 	&__dialog--scrollable &__content {
-		max-height: 100%;
 		overflow: hidden;
 	}
 
@@ -504,6 +535,9 @@ body.hub-modal-open {
 	}
 
 	&__dialog--fullscreen {
+		// Covers the viewport, so there is no margin to discount from the cap above.
+		--hub-modal-dialog-inset: 0px;
+
 		width: 100%;
 		max-width: 100%;
 		height: 100%;
@@ -523,6 +557,20 @@ body.hub-modal-open {
 		flex: 1 1 auto;
 		min-height: 0;
 		overflow-y: auto;
+	}
+
+	/**
+	 * Full screen and scrollable at once: the content fills the dialog.
+	 *
+	 * `scrollable` caps the content at `100% - $margin-block`, which is right for a
+	 * dialog that floats with a margin around it and wrong for one that covers the
+	 * viewport — there is no margin to discount. And it used to win: written with the
+	 * `.hub-modal` prefix it carries one class more than the fullscreen rule, so a
+	 * dialog asked for both ended up 3.5rem shorter than itself, showing a strip of the
+	 * page underneath along its bottom edge.
+	 */
+	&__dialog--fullscreen#{&}__dialog--scrollable &__content {
+		max-height: 100%;
 	}
 
 }

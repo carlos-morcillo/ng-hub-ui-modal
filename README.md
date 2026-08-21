@@ -558,6 +558,7 @@ All options accepted by `HubModal.open()`. Generic in the payload type —
 | `backdropClass`    | `string`                                                     | —                        | Extra class added to the `hub-modal__backdrop` element.     |
 | `headerSelector`   | `string`                                                     | —                        | CSS selector for nodes to project into the header slot.     |
 | `footerSelector`   | `string`                                                     | —                        | CSS selector for nodes to project into the footer slot.     |
+| `bodySelector`     | `string`                                                     | —                        | CSS selector for nodes to project into the body slot. Without it the body is whatever the other slots left behind; with it the body is placed deliberately, and anything unclaimed still follows it. |
 | `dismissSelector`  | `string`                                                     | `[data-dismiss="modal"]` | Selector for elements that auto-dismiss the modal on click. |
 | `closeSelector`    | `string`                                                     | `[data-close="modal"]`   | Selector for elements that auto-close the modal on click.   |
 | `data`             | `D`                                                          | —                        | Typed payload delivered to the content component via `inject(HUB_MODAL_DATA)` or `inject(HubActiveModal).data` (the legacy instance-field monkey-patch is deprecated). |

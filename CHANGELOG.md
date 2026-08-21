@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+## [22.7.0] - 2026-08-21
+
+### Added
+
+- **`bodySelector`: the body becomes a slot with a name.** It was the one part of a modal with no way to point at it — the body was whatever survived the header and the footer being taken out. That holds while the three parts are written in order and the content contains nothing else, and stops holding the moment it does: leftovers are defined by what they are *not*, so a comment, a stray text node or an `<ng-container>` holding state joined the body, and moving a block in the template changed the result.
+
+    Adding it to content that already works cannot lose anything. Whatever the selector matches goes into the body first, and everything unclaimed by any of the three slots follows it — so the option can only reorder, never drop.
+
+    Fixed alongside it, because naming the body is what exposed it: the body used to be read **between** the header and the footer extractions, so the footer's marker element was still a child when the body was captured and an emptied `<div>` rode along into it. All three slots are taken out first now, and what nobody claimed is the body's.
+
+### Fixed
+
+- **Every dialog is bounded by the viewport, and its body is what scrolls.** This was `scrollable`'s job alone, which put the decision in the wrong hands: whether a dialog outgrows the screen depends on its content, on the length of the translation and on the height of the window, and the caller knows none of the three when it opens the thing. A dialog that outgrew the screen simply extended past it, and what falls off the bottom is the footer — so in a wizard it was the "Next" button, unreachable.
+
+    The cap is stated against the viewport (`100dvh` minus `--hub-modal-dialog-inset`) rather than as a percentage of the dialog, because the dialog's own height is `auto` and a percentage against it is not a definite reference. `min-height: 0` on the content and the body is what lets them shrink below their content so `overflow` has something to do — a flex item defaults to `min-height: auto` and refuses to. `--fullscreen` zeroes the inset, since it covers the viewport and has no margin to discount.
+
+    `scrollable` keeps its own rules and its own meaning: it is what pins the dialog itself, and it still says "this dialog expects to scroll".
+
+    **This changes the default.** A consumer that deliberately let a dialog run past the viewport — expecting the page behind it to scroll — now gets a capped dialog with a scrolling body. Raising `--hub-modal-dialog-inset` is not an escape hatch for that; there is none, on purpose.
+
+
 ## [22.6.0] - 2026-08-17
 
 ### Added

@@ -239,14 +239,7 @@ export class HubModalStack {
 		this._addDismissEventListener(containerNode, context as any, options);
 		this._addCloseEventListener(containerNode, context as any, options);
 
-		return new ContentRef(
-			[
-				options.headerSelector ? extractAndRemoveNodesBySelector(containerNode, options.headerSelector) : [],
-				Array.from(containerNode.childNodes),
-				options.footerSelector ? extractAndRemoveNodesBySelector(containerNode, options.footerSelector) : []
-			],
-			viewRef
-		);
+		return new ContentRef(splitIntoSlots(containerNode, options), viewRef);
 	}
 
 	private _createFromString(content: string): ContentRef {
@@ -297,11 +290,7 @@ export class HubModalStack {
 		// FIXME: we should here get rid of the component nativeElement
 		// and use `[Array.from(componentNativeEl.childNodes)]` instead and remove the above CSS class.
 		return new ContentRef(
-			[
-				options.headerSelector ? extractAndRemoveNodesBySelector(componentNativeEl, options.headerSelector) : [],
-				Array.from(componentNativeEl.childNodes),
-				options.footerSelector ? extractAndRemoveNodesBySelector(componentNativeEl, options.footerSelector) : []
-			],
+			splitIntoSlots(componentNativeEl, options),
 			componentRef.hostView,
 			componentRef
 		);
@@ -412,6 +401,32 @@ export class HubModalStack {
  * @returns An array of nodes that were extracted from the container element based on the provided selector, and then removes those
  * nodes from the DOM.
  */
+/**
+ * Split a container into the modal's three slots, taking nothing out of the document twice.
+ *
+ * Order is load-bearing and used not to be. The old code read the body as
+ * `Array.from(container.childNodes)` **between** the header and the footer extractions, so
+ * the footer's marker element was still a child when the body was captured: the body ended
+ * up carrying an emptied marker `<div>` that the footer had already stripped.
+ *
+ * Every declared slot is taken out first; what nobody claimed is the body's, and it follows
+ * whatever an explicit `bodySelector` matched. That is what makes the new option safe to add
+ * to content that already works — naming the body can reorder it, never lose it.
+ */
+function splitIntoSlots(
+	container: HTMLElement,
+	options: { headerSelector?: string; bodySelector?: string; footerSelector?: string }
+): Node[][] {
+	const header = options.headerSelector ? extractAndRemoveNodesBySelector(container, options.headerSelector) : [];
+	const footer = options.footerSelector ? extractAndRemoveNodesBySelector(container, options.footerSelector) : [];
+	const declaredBody = options.bodySelector ? extractAndRemoveNodesBySelector(container, options.bodySelector) : [];
+
+	// Whatever is left belongs to the body, so nothing a consumer wrote can go missing.
+	const remainder = Array.from(container.childNodes);
+
+	return [header, [...declaredBody, ...remainder], footer];
+}
+
 function extractAndRemoveNodesBySelector(container: HTMLElement, selector: string): Array<Node> {
 	let containerNodes = container.querySelectorAll(selector);
 
