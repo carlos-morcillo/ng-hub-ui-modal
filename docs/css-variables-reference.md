@@ -26,24 +26,24 @@ The fallback chain follows: `component -> sys -> ref -> literal`.
 | `--hub-modal-zindex` | `var(--hub-sys-zindex-modal, 1055)` |
 | `--hub-modal-width` | `auto` |
 | `--hub-modal-max-width` | `500px` |
-| `--hub-modal-margin` | `1.75rem auto` |
+| `--hub-modal-margin` | `var(--hub-modal-margin-top) var(--hub-modal-margin-right) var(--hub-modal-margin-bottom) var(--hub-modal-margin-left)` |
 | `--hub-modal-margin-top` | `var(--hub-modal-margin-y, 1.75rem)` |
 | `--hub-modal-margin-right` | `var(--hub-modal-margin-x, auto)` |
 | `--hub-modal-margin-bottom` | `var(--hub-modal-margin-y, 1.75rem)` |
 | `--hub-modal-margin-left` | `var(--hub-modal-margin-x, auto)` |
-| `--hub-modal-placement-start-margin` | `var(--hub-modal-margin-top, 1.75rem) auto var(--hub-modal-margin-bottom, 1.75rem) 0` |
-| `--hub-modal-placement-end-margin` | `var(--hub-modal-margin-top, 1.75rem) 0 var(--hub-modal-margin-bottom, 1.75rem) auto` |
-| `--hub-modal-placement-top-margin` | `0 auto 0 auto` |
-| `--hub-modal-placement-bottom-margin` | `0 auto 0 auto` |
+| `--hub-modal-placement-start-margin` | `var(--hub-modal-placement-start-margin-top) var(--hub-modal-placement-start-margin-right) var(--hub-modal-placement-start-margin-bottom) var(--hub-modal-placement-start-margin-left)` |
+| `--hub-modal-placement-end-margin` | `var(--hub-modal-placement-end-margin-top) var(--hub-modal-placement-end-margin-right) var(--hub-modal-placement-end-margin-bottom) var(--hub-modal-placement-end-margin-left)` |
+| `--hub-modal-placement-top-margin` | `var(--hub-modal-placement-top-margin-top) var(--hub-modal-placement-top-margin-right) var(--hub-modal-placement-top-margin-bottom) var(--hub-modal-placement-top-margin-left)` |
+| `--hub-modal-placement-bottom-margin` | `var(--hub-modal-placement-bottom-margin-top) var(--hub-modal-placement-bottom-margin-right) var(--hub-modal-placement-bottom-margin-bottom) var(--hub-modal-placement-bottom-margin-left)` |
 | `--hub-modal-color` | `var(--hub-sys-text-primary, #212529)` |
 | `--hub-modal-bg` | `var(--hub-sys-surface-page, #ffffff)` |
 | `--hub-modal-border-color` | `var(--hub-sys-border-color-default, #dee2e6)` |
 | `--hub-modal-border-width` | `var(--hub-ref-border-width, 1px)` |
 | `--hub-modal-border-radius` | `var(--hub-ref-radius-lg, 0.5rem)` |
-| `--hub-modal-placement-start-border-radius` | `0 var(--hub-modal-border-radius) var(--hub-modal-border-radius) 0` |
-| `--hub-modal-placement-end-border-radius` | `var(--hub-modal-border-radius) 0 0 var(--hub-modal-border-radius)` |
-| `--hub-modal-placement-top-border-radius` | `0 0 var(--hub-modal-border-radius) var(--hub-modal-border-radius)` |
-| `--hub-modal-placement-bottom-border-radius` | `var(--hub-modal-border-radius) var(--hub-modal-border-radius) 0 0` |
+| `--hub-modal-placement-start-border-radius` | `0 var(--hub-modal-border-radius, var(--hub-ref-radius-lg, 0.5rem)) var(--hub-modal-border-radius, var(--hub-ref-radius-lg, 0.5rem)) 0` |
+| `--hub-modal-placement-end-border-radius` | `var(--hub-modal-border-radius, var(--hub-ref-radius-lg, 0.5rem)) 0 0 var(--hub-modal-border-radius, var(--hub-ref-radius-lg, 0.5rem))` |
+| `--hub-modal-placement-top-border-radius` | `0 0 var(--hub-modal-border-radius, var(--hub-ref-radius-lg, 0.5rem)) var(--hub-modal-border-radius, var(--hub-ref-radius-lg, 0.5rem))` |
+| `--hub-modal-placement-bottom-border-radius` | `var(--hub-modal-border-radius, var(--hub-ref-radius-lg, 0.5rem)) var(--hub-modal-border-radius, var(--hub-ref-radius-lg, 0.5rem)) 0 0` |
 | `--hub-modal-inner-border-radius` | `calc(var(--hub-modal-border-radius, var(--hub-ref-radius-lg, 0.5rem)) - var(--hub-modal-border-width, var(--hub-ref-border-width, 1px)))` |
 | `--hub-modal-box-shadow` | `var(--hub-sys-shadow-lg, 0 1rem 3rem rgba(0, 0, 0, 0.175))` |
 | `--hub-modal-padding-x` | `var(--hub-ref-space-3, 1rem)` |
