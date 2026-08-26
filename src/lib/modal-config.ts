@@ -257,7 +257,7 @@ export class HubModalConfig implements Required<HubModalOptions> {
 	data: any;
 
 	get animation(): boolean {
-		return this._animation ?? true /* this._hubConfig.animation */;
+		return this._animation ?? true; /* this._hubConfig.animation */
 	}
 	set animation(animation: boolean) {
 		this._animation = animation;

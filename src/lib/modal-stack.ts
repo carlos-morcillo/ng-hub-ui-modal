@@ -289,11 +289,7 @@ export class HubModalStack {
 
 		// FIXME: we should here get rid of the component nativeElement
 		// and use `[Array.from(componentNativeEl.childNodes)]` instead and remove the above CSS class.
-		return new ContentRef(
-			splitIntoSlots(componentNativeEl, options),
-			componentRef.hostView,
-			componentRef
-		);
+		return new ContentRef(splitIntoSlots(componentNativeEl, options), componentRef.hostView, componentRef);
 	}
 
 	private _setAriaHidden(element: Element) {

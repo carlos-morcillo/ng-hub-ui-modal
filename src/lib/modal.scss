@@ -65,93 +65,59 @@ body.hub-modal-open {
 	--hub-modal-margin-right: var(--hub-modal-margin-x, auto);
 	--hub-modal-margin-bottom: var(--hub-modal-margin-y, 1.75rem);
 	--hub-modal-margin-left: var(--hub-modal-margin-x, auto);
-	--hub-modal-margin-block: calc(
-		var(--hub-modal-margin-top, 1.75rem) +
-			var(--hub-modal-margin-bottom, 1.75rem)
-	);
-	--hub-modal-margin: var(--hub-modal-margin-top) var(--hub-modal-margin-right)
-		var(--hub-modal-margin-bottom) var(--hub-modal-margin-left);
-	--hub-modal-placement-start-margin-top: var(
-		--hub-modal-margin-top,
-		1.75rem
-	);
+	--hub-modal-margin-block: calc(var(--hub-modal-margin-top, 1.75rem) + var(--hub-modal-margin-bottom, 1.75rem));
+	--hub-modal-margin: var(--hub-modal-margin-top) var(--hub-modal-margin-right) var(--hub-modal-margin-bottom)
+		var(--hub-modal-margin-left);
+	--hub-modal-placement-start-margin-top: var(--hub-modal-margin-top, 1.75rem);
 	--hub-modal-placement-start-margin-right: auto;
-	--hub-modal-placement-start-margin-bottom: var(
-		--hub-modal-margin-bottom,
-		1.75rem
-	);
+	--hub-modal-placement-start-margin-bottom: var(--hub-modal-margin-bottom, 1.75rem);
 	--hub-modal-placement-start-margin-left: 0;
 	--hub-modal-placement-start-margin-block: calc(
-		var(--hub-modal-placement-start-margin-top, 1.75rem) +
-			var(--hub-modal-placement-start-margin-bottom, 1.75rem)
+		var(--hub-modal-placement-start-margin-top, 1.75rem) + var(--hub-modal-placement-start-margin-bottom, 1.75rem)
 	);
-	--hub-modal-placement-start-margin: var(
-			--hub-modal-placement-start-margin-top
-		)
-		var(--hub-modal-placement-start-margin-right)
-		var(--hub-modal-placement-start-margin-bottom)
+	--hub-modal-placement-start-margin: var(--hub-modal-placement-start-margin-top)
+		var(--hub-modal-placement-start-margin-right) var(--hub-modal-placement-start-margin-bottom)
 		var(--hub-modal-placement-start-margin-left);
 	--hub-modal-placement-end-margin-top: var(--hub-modal-margin-top, 1.75rem);
 	--hub-modal-placement-end-margin-right: 0;
-	--hub-modal-placement-end-margin-bottom: var(
-		--hub-modal-margin-bottom,
-		1.75rem
-	);
+	--hub-modal-placement-end-margin-bottom: var(--hub-modal-margin-bottom, 1.75rem);
 	--hub-modal-placement-end-margin-left: auto;
 	--hub-modal-placement-end-margin-block: calc(
-		var(--hub-modal-placement-end-margin-top, 1.75rem) +
-			var(--hub-modal-placement-end-margin-bottom, 1.75rem)
+		var(--hub-modal-placement-end-margin-top, 1.75rem) + var(--hub-modal-placement-end-margin-bottom, 1.75rem)
 	);
-	--hub-modal-placement-end-margin: var(--hub-modal-placement-end-margin-top)
-		var(--hub-modal-placement-end-margin-right)
-		var(--hub-modal-placement-end-margin-bottom)
-		var(--hub-modal-placement-end-margin-left);
+	--hub-modal-placement-end-margin: var(--hub-modal-placement-end-margin-top) var(--hub-modal-placement-end-margin-right)
+		var(--hub-modal-placement-end-margin-bottom) var(--hub-modal-placement-end-margin-left);
 	--hub-modal-placement-top-margin-top: 0;
 	--hub-modal-placement-top-margin-right: auto;
 	--hub-modal-placement-top-margin-bottom: 0;
 	--hub-modal-placement-top-margin-left: auto;
 	--hub-modal-placement-top-margin-block: calc(
-		var(--hub-modal-placement-top-margin-top, 0px) +
-			var(--hub-modal-placement-top-margin-bottom, 0px)
+		var(--hub-modal-placement-top-margin-top, 0px) + var(--hub-modal-placement-top-margin-bottom, 0px)
 	);
-	--hub-modal-placement-top-margin: var(--hub-modal-placement-top-margin-top)
-		var(--hub-modal-placement-top-margin-right)
-		var(--hub-modal-placement-top-margin-bottom)
-		var(--hub-modal-placement-top-margin-left);
+	--hub-modal-placement-top-margin: var(--hub-modal-placement-top-margin-top) var(--hub-modal-placement-top-margin-right)
+		var(--hub-modal-placement-top-margin-bottom) var(--hub-modal-placement-top-margin-left);
 	--hub-modal-placement-bottom-margin-top: 0;
 	--hub-modal-placement-bottom-margin-right: auto;
 	--hub-modal-placement-bottom-margin-bottom: 0;
 	--hub-modal-placement-bottom-margin-left: auto;
 	--hub-modal-placement-bottom-margin-block: calc(
-		var(--hub-modal-placement-bottom-margin-top, 0px) +
-			var(--hub-modal-placement-bottom-margin-bottom, 0px)
+		var(--hub-modal-placement-bottom-margin-top, 0px) + var(--hub-modal-placement-bottom-margin-bottom, 0px)
 	);
-	--hub-modal-placement-bottom-margin: var(
-			--hub-modal-placement-bottom-margin-top
-		)
-		var(--hub-modal-placement-bottom-margin-right)
-		var(--hub-modal-placement-bottom-margin-bottom)
+	--hub-modal-placement-bottom-margin: var(--hub-modal-placement-bottom-margin-top)
+		var(--hub-modal-placement-bottom-margin-right) var(--hub-modal-placement-bottom-margin-bottom)
 		var(--hub-modal-placement-bottom-margin-left);
 	--hub-modal-color: var(--hub-sys-text-primary, #212529);
 	--hub-modal-bg: var(--hub-sys-surface-page, #ffffff);
 	--hub-modal-border-color: var(--hub-sys-border-color-default, #dee2e6);
 	--hub-modal-border-width: var(--hub-ref-border-width, 1px);
 	--hub-modal-border-radius: var(--hub-ref-radius-lg, 0.5rem);
-	--hub-modal-placement-start-border-radius: 0
-		var(--hub-modal-border-radius, var(--hub-ref-radius-lg, 0.5rem))
+	--hub-modal-placement-start-border-radius: 0 var(--hub-modal-border-radius, var(--hub-ref-radius-lg, 0.5rem))
 		var(--hub-modal-border-radius, var(--hub-ref-radius-lg, 0.5rem)) 0;
-	--hub-modal-placement-end-border-radius: var(
-			--hub-modal-border-radius,
-			var(--hub-ref-radius-lg, 0.5rem)
-		)
-		0 0 var(--hub-modal-border-radius, var(--hub-ref-radius-lg, 0.5rem));
-	--hub-modal-placement-top-border-radius: 0 0
-		var(--hub-modal-border-radius, var(--hub-ref-radius-lg, 0.5rem))
+	--hub-modal-placement-end-border-radius: var(--hub-modal-border-radius, var(--hub-ref-radius-lg, 0.5rem)) 0 0
 		var(--hub-modal-border-radius, var(--hub-ref-radius-lg, 0.5rem));
-	--hub-modal-placement-bottom-border-radius: var(
-			--hub-modal-border-radius,
-			var(--hub-ref-radius-lg, 0.5rem)
-		)
+	--hub-modal-placement-top-border-radius: 0 0 var(--hub-modal-border-radius, var(--hub-ref-radius-lg, 0.5rem))
+		var(--hub-modal-border-radius, var(--hub-ref-radius-lg, 0.5rem));
+	--hub-modal-placement-bottom-border-radius: var(--hub-modal-border-radius, var(--hub-ref-radius-lg, 0.5rem))
 		var(--hub-modal-border-radius, var(--hub-ref-radius-lg, 0.5rem)) 0 0;
 	--hub-modal-inner-border-radius: calc(
 		var(--hub-modal-border-radius, var(--hub-ref-radius-lg, 0.5rem)) - var(
@@ -258,14 +224,12 @@ body.hub-modal-open {
 			@if $placement-name == start {
 				margin: var(
 					--hub-modal-placement-start-margin,
-					var(--hub-modal-margin-top, 1.75rem) auto
-						var(--hub-modal-margin-bottom, 1.75rem) 0
+					var(--hub-modal-margin-top, 1.75rem) auto var(--hub-modal-margin-bottom, 1.75rem) 0
 				);
 			} @else if $placement-name == end {
 				margin: var(
 					--hub-modal-placement-end-margin,
-					var(--hub-modal-margin-top, 1.75rem) 0
-						var(--hub-modal-margin-bottom, 1.75rem) auto
+					var(--hub-modal-margin-top, 1.75rem) 0 var(--hub-modal-margin-bottom, 1.75rem) auto
 				);
 			}
 			--hub-modal-fade-transform: #{map.get($placement-config, transform)};
@@ -309,9 +273,7 @@ body.hub-modal-open {
 	}
 
 	.hub-modal__dialog--placement-bottom.hub-modal__dialog--scrollable {
-		max-height: calc(
-			100% - var(--hub-modal-placement-bottom-margin-block, 0px)
-		);
+		max-height: calc(100% - var(--hub-modal-placement-bottom-margin-block, 0px));
 	}
 
 	&__content {
@@ -572,7 +534,6 @@ body.hub-modal-open {
 	&__dialog--fullscreen#{&}__dialog--scrollable &__content {
 		max-height: 100%;
 	}
-
 }
 
 @each $breakpoint-name, $breakpoint-width in $hub-modal-fullscreen-breakpoints {
