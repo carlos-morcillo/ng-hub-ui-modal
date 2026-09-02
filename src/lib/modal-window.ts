@@ -125,6 +125,11 @@ export class HubModalWindow implements OnInit, OnDestroy {
 	readonly placement = input<HubModalPlacement>(HubModalPlacement.Center);
 
 	/**
+	 * Opens the dialog as a drawer against the edge named by {@link placement}.
+	 */
+	readonly offcanvas = input<boolean>(false);
+
+	/**
 	 * Enables fullscreen mode for the modal, either always (`true`) or below specific breakpoints.
 	 */
 	readonly fullscreen = input<string | boolean>();
@@ -194,16 +199,35 @@ export class HubModalWindow implements OnInit, OnDestroy {
 	 * Computes the CSS class corresponding to the requested modal placement.
 	 */
 	get placementClass(): string {
-		const placement = this.placement();
+		const placement = this.effectivePlacement;
 		return placement && placement !== HubModalPlacement.Center ? ` hub-modal__dialog--placement-${placement}` : '';
+	}
+
+	/**
+	 * The placement the dialog is actually anchored to.
+	 *
+	 * A drawer with no edge is not a drawer, so asking for `offcanvas` without a placement
+	 * resolves to the end edge rather than leaving the mode inert against a centred dialog.
+	 * That is what makes opening one a single decision.
+	 */
+	get effectivePlacement(): HubModalPlacement {
+		const placement = this.placement();
+
+		if (this.offcanvas() && (!placement || placement === HubModalPlacement.Center)) {
+			return HubModalPlacement.End;
+		}
+
+		return placement;
 	}
 
 	/**
 	 * Computes the CSS class applied to the modal host to control viewport anchoring.
 	 */
 	get hostPlacementClass(): string {
-		const placement = this.placement();
-		return placement && placement !== HubModalPlacement.Center ? ` hub-modal--placement-${placement}` : '';
+		const placement = this.effectivePlacement;
+		const placementClass = placement && placement !== HubModalPlacement.Center ? ` hub-modal--placement-${placement}` : '';
+
+		return this.offcanvas() ? `${placementClass} hub-modal--offcanvas` : placementClass;
 	}
 
 	/**

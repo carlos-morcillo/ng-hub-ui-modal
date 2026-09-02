@@ -2,6 +2,66 @@
 
 All notable changes to this project will be documented in this file.
 
+## [22.8.0] - 2026-09-02
+
+### Added
+
+- **`offcanvas`: a dialog that touches the edge it slid out of.**
+
+    `placement` has always slid a dialog in from an edge, with the animation, the focus trap, the
+    backdrop and the escape key. What it never assumed is that a dialog anchored to an edge wants to
+    _touch_ it. Measured on a consumer before this existed: a 56px strip of page showing along the
+    bottom, because the dialog kept the margins of a floating one; rounded corners on the side it was
+    attached to, which reads as a modal somebody placed badly rather than as a drawer; a short panel
+    opening as a half-height box hanging off the top edge, because nothing said a dialog should fill
+    its container; and a width taken from the modal size scale, where `size: 'lg'` is 800px and on an
+    853px window left 53px of the document the drawer is meant to be read _against_ — no context at
+    all.
+
+    `offcanvas: true` settles all four: flush against its edge, square on the side it is attached to,
+    stretched to the full height (or width, from the top or bottom), with the body scrolling so the
+    header and footer stay put, and its own measure through `--hub-modal-offcanvas-width`.
+
+    ```ts
+    // A drawer is one decision. With no placement it opens from the end edge.
+    this.modal.open(MyComponent, { offcanvas: true });
+
+    // Or name the edge.
+    this.modal.open(MyComponent, { offcanvas: true, placement: HubModalPlacement.Start });
+    ```
+
+    **Separate from `placement` rather than implied by it.** Making an edge placement mean "drawer"
+    would change what every existing consumer of it sees, with nothing to catch it — a silent visual
+    break is worse than an extra option. Passing `placement` alone still gives exactly what it gave
+    before, and a spec pins that.
+
+    Three tokens come with it, and the scale of sizes deliberately does not reach any of them:
+    `--hub-modal-offcanvas-width` (`min(28rem, 100%)`), `--hub-modal-offcanvas-height`
+    (`min(60vh, 100%)`, for a sheet from the top or bottom) and `--hub-modal-offcanvas-border-radius`
+    (`0` — exposed anyway, because rounding the _far_ side is a real choice).
+
+### Changed
+
+- **The library's default custom properties are declared on `:root`, not on `.hub-modal`.** This is
+  a contract repair rather than a detail, and it is what made the option above worth building.
+
+    This stylesheet is injected at runtime by the component, so it always lands after a consumer's own
+    sheet. Declared on `.hub-modal`, every default beat a consumer's `.hub-modal { --hub-modal-width: … }`
+    at equal specificity by source order alone — so assigning a token, which is exactly what the
+    composition doctrine asks a consumer to do, did nothing. The only way through was to out-specify
+    the primitive: one consumer had to write `.hub-modal.hub-modal--placement-end` for no reason other
+    than to be read. That cannot be the contract.
+
+    On `:root` there is no fight to win. The values reach the dialog by inheritance, and any
+    declaration closer to it in the tree wins whatever the source order — so `.hub-modal { … }` in a
+    consumer's sheet is now read. Assign on a selector that matches the modal element; a consumer's
+    own `:root` block is still the same element and the same specificity as this one, and would lose
+    to it on order.
+
+    Nothing a modifier re-bases on the element itself moved: the variant classes still re-point
+    `--hub-modal-accent` from `.hub-modal--primary`, and they keep working precisely because an
+    element-level declaration outranks an inherited one.
+
 ## [22.7.1] - 2026-09-01
 
 ### Changed
@@ -12,13 +72,11 @@ All notable changes to this project will be documented in this file.
   reference for the package they were already looking at. Metadata only — no code, no types, no
   styles change, and nothing a consumer imports is affected.
 
-## [Unreleased]
-
 ## [22.7.0] - 2026-08-21
 
 ### Added
 
-- **`bodySelector`: the body becomes a slot with a name.** It was the one part of a modal with no way to point at it — the body was whatever survived the header and the footer being taken out. That holds while the three parts are written in order and the content contains nothing else, and stops holding the moment it does: leftovers are defined by what they are *not*, so a comment, a stray text node or an `<ng-container>` holding state joined the body, and moving a block in the template changed the result.
+- **`bodySelector`: the body becomes a slot with a name.** It was the one part of a modal with no way to point at it — the body was whatever survived the header and the footer being taken out. That holds while the three parts are written in order and the content contains nothing else, and stops holding the moment it does: leftovers are defined by what they are _not_, so a comment, a stray text node or an `<ng-container>` holding state joined the body, and moving a block in the template changed the result.
 
     Adding it to content that already works cannot lose anything. Whatever the selector matches goes into the body first, and everything unclaimed by any of the three slots follows it — so the option can only reorder, never drop.
 
@@ -34,14 +92,13 @@ All notable changes to this project will be documented in this file.
 
     **This changes the default.** A consumer that deliberately let a dialog run past the viewport — expecting the page behind it to scroll — now gets a capped dialog with a scrolling body. Raising `--hub-modal-dialog-inset` is not an escape hatch for that; there is none, on purpose.
 
-
 ## [22.6.0] - 2026-08-17
 
 ### Added
 
 - **The dialog now travels between heights instead of jumping.** A modal is sized by whatever it holds, so a wizard step, an async panel or a validation message appearing would snap the box to its new height in a single frame.
 
-    Measured rather than assumed, because the obvious repair does not work: the specified height is `auto` before the change and `auto` after it, and a CSS transition only fires when the specified value changes — the content moved, the property did not. `interpolate-size: allow-keywords` does not help either, for the same reason; it interpolates *to* a keyword, it does not notice a box growing underneath one. In the browser, a content-driven change sampled `200, 200, 200, 200` with it enabled, against `0, 44, 100, 156, 200` for an explicit `0` → `auto`.
+    Measured rather than assumed, because the obvious repair does not work: the specified height is `auto` before the change and `auto` after it, and a CSS transition only fires when the specified value changes — the content moved, the property did not. `interpolate-size: allow-keywords` does not help either, for the same reason; it interpolates _to_ a keyword, it does not notice a box growing underneath one. In the browser, a content-driven change sampled `200, 200, 200, 200` with it enabled, against `0, 44, 100, 156, 200` for an explicit `0` → `auto`.
 
     So both heights are measured and animated explicitly, which also behaves identically everywhere rather than only where `interpolate-size` has shipped. Tuned through `--hub-modal-resize-duration` (milliseconds, unitless) and `--hub-modal-resize-easing`, disabled by `[animation]="false"` and by `prefers-reduced-motion`.
 
@@ -57,7 +114,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
-- **Typed modal flows — no more `as unknown as` casts.** `HubModal.open<C, R, D>(content, options)` now infers the content component type from the class you pass (`content: Type<C> | TemplateRef | string`), so `HubModalRef.componentInstance` is typed as the component *instance* (it used to resolve to the class object type, which forced casts). The new `R` generic types the result flow end to end: `close(result?: R)`, `result: Promise<R>`, `closed: Observable<R>` and `HubActiveModal<D, R>.close(result?: R)`; `HubModalOptions<D>` types the `data` payload, pairing with the existing `HubActiveModal<D>.data`. All generics default to the previous loose types (`any`), so existing call sites compile unchanged; dismiss reasons intentionally stay untyped (internal `ModalDismissReasons` or consumer values).
+- **Typed modal flows — no more `as unknown as` casts.** `HubModal.open<C, R, D>(content, options)` now infers the content component type from the class you pass (`content: Type<C> | TemplateRef | string`), so `HubModalRef.componentInstance` is typed as the component _instance_ (it used to resolve to the class object type, which forced casts). The new `R` generic types the result flow end to end: `close(result?: R)`, `result: Promise<R>`, `closed: Observable<R>` and `HubActiveModal<D, R>.close(result?: R)`; `HubModalOptions<D>` types the `data` payload, pairing with the existing `HubActiveModal<D>.data`. All generics default to the previous loose types (`any`), so existing call sites compile unchanged; dismiss reasons intentionally stay untyped (internal `ModalDismissReasons` or consumer values).
 
 ## [22.4.2] - 2026-07-26
 
@@ -139,7 +196,6 @@ All notable changes to this project will be documented in this file.
 
 - Aligned with Angular 22.
 - README documentation standardized.
-
 
 ## [21.0.3] - 2026-06-14
 

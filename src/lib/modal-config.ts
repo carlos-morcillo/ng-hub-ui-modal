@@ -68,6 +68,22 @@ export interface HubModalOptions<D = unknown> {
 	placement?: HubModalPlacement;
 
 	/**
+	 * Opens the dialog as a drawer: flush against the edge named by `placement`, square on
+	 * that side, stretched to the full height (or width, from the top or bottom), and
+	 * scrolling in the body so the header and footer stay put.
+	 *
+	 * Separate from `placement` rather than implied by it. An edge placement already ships
+	 * and already means "a floating dialog that enters from this side"; making it mean
+	 * "drawer" would change what every consumer of it sees, with nothing to catch it — a
+	 * silent visual break is worse than an extra option.
+	 *
+	 * With no `placement`, this opens from the end edge, so a drawer is one decision.
+	 *
+	 * Default value is `false`.
+	 */
+	offcanvas?: boolean;
+
+	/**
 	 * A selector specifying the element all new modal windows should be appended to.
 	 * Since v5.3.0 it is also possible to pass the reference to an `HTMLElement`.
 	 *
@@ -212,6 +228,7 @@ export type HubModalUpdatableOptions = Pick<
 	| 'ariaDescribedBy'
 	| 'centered'
 	| 'placement'
+	| 'offcanvas'
 	| 'fullscreen'
 	| 'backdropClass'
 	| 'size'
@@ -239,6 +256,7 @@ export class HubModalConfig implements Required<HubModalOptions> {
 	beforeDismiss!: () => boolean | Promise<boolean>;
 	centered!: boolean;
 	placement: HubModalPlacement = HubModalPlacement.Center;
+	offcanvas = false;
 	container!: string | HTMLElement;
 	fullscreen: 'sm' | 'md' | 'lg' | 'xl' | 'xxl' | boolean | string = false;
 	injector!: Injector;

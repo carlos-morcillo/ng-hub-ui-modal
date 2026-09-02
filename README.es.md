@@ -214,6 +214,37 @@ this.modal.open(MiComponente, {
 | `HubModalPlacement.Top`    | Anclado al borde superior             |
 | `HubModalPlacement.Bottom` | Anclado al borde inferior             |
 
+#### Offcanvas: un cajón que toca su borde
+
+`placement` desliza un diálogo _flotante_ desde un borde y le conserva todo lo de un flotante:
+márgenes, redondeo en las cuatro esquinas y una altura que sale de su contenido. Correcto para un
+diálogo que entra de lado, equivocado para un cajón: los márgenes dejan una franja de página
+asomando por abajo, el redondeo lo despega de su propio borde y un panel corto abre como una caja a
+media altura.
+
+`offcanvas: true` lo zanja:
+
+```typescript
+// Una sola decisión. Sin placement, abre desde el borde final.
+this.modal.open(MyComponent, { offcanvas: true });
+
+// O nombra el borde.
+this.modal.open(MyComponent, { offcanvas: true, placement: HubModalPlacement.Start });
+```
+
+Pegado a su borde, sin redondeo en el lado por el que se pega, estirado al alto completo (o al ancho,
+desde arriba o abajo) y con el cuerpo desplazándose para que la cabecera y el pie no se muevan. Va
+aparte de `placement` a propósito: pasar solo `placement` sigue dando exactamente lo de siempre.
+
+Su ancho no sale de la escala de tallas —`size: 'lg'` son 800px, que en una ventana estrecha tapan el
+documento que el cajón pretende acompañar—. Lo llevan tres tokens:
+
+| Token                                 | Por defecto        | Efecto                                                                            |
+| ------------------------------------- | ------------------ | --------------------------------------------------------------------------------- |
+| `--hub-modal-offcanvas-width`         | `min(28rem, 100%)` | Ancho de un cajón start/end                                                       |
+| `--hub-modal-offcanvas-height`        | `min(60vh, 100%)`  | Alto de una hoja top/bottom                                                       |
+| `--hub-modal-offcanvas-border-radius` | `0`                | Redondeo del contenido; `0 1rem 1rem 0` redondea el lado lejano de un cajón start |
+
 ### Tamaño y pantalla completa
 
 ```typescript
@@ -291,12 +322,12 @@ this.modal.activeInstances.subscribe((refs) => console.log(refs.length + ' abier
 
 ### Servicio HubModal
 
-| Método                              | Descripción                                                     |
-| ----------------------------------- | --------------------------------------------------------------- |
-| `open<C, R, D>(content, options?)`  | Abre un nuevo modal. Devuelve `HubModalRef<C, R>`.              |
-| `dismissAll(reason?)`               | Descarta todos los modales abiertos.                            |
-| `hasOpenModals()`                   | Devuelve `true` si hay al menos un modal abierto.               |
-| `activeInstances`                   | `EventEmitter` que emite al cambiar la pila de modales.         |
+| Método                             | Descripción                                             |
+| ---------------------------------- | ------------------------------------------------------- |
+| `open<C, R, D>(content, options?)` | Abre un nuevo modal. Devuelve `HubModalRef<C, R>`.      |
+| `dismissAll(reason?)`              | Descarta todos los modales abiertos.                    |
+| `hasOpenModals()`                  | Devuelve `true` si hay al menos un modal abierto.       |
+| `activeInstances`                  | `EventEmitter` que emite al cambiar la pila de modales. |
 
 `C` se infiere de la clase de componente pasada como `content`, `R` tipa el flujo del resultado y `D` el payload `data` (`HubModalOptions<D>`). Todos los genéricos tienen como defecto los tipos laxos anteriores (`any` / `unknown`), así que los usos sin tipar compilan sin cambios.
 
@@ -334,28 +365,28 @@ Genérico en el componente de contenido y en el tipo del resultado — `HubModal
 
 Genérico en el tipo del payload — `HubModalOptions<D = unknown>` tipa la opción `data`, en pareja con `HubActiveModal<D>.data`.
 
-| Opción             | Tipo                                | Default                  | Descripción                                                     |
-| ------------------ | ----------------------------------- | ------------------------ | --------------------------------------------------------------- |
-| `animation`        | `boolean`                           | `true`                   | Activa transiciones de apertura/cierre.                         |
-| `backdrop`         | `boolean \| 'static'`               | `true`                   | `'static'` impide cierre al hacer clic fuera.                   |
-| `beforeDismiss`    | `() => boolean \| Promise<boolean>` | —                        | Guard de cierre. Devolver `false` lo cancela.                   |
-| `centered`         | `boolean`                           | `false`                  | Centra el modal en el eje secundario al usar placement lateral. |
-| `placement`        | `HubModalPlacement`                 | `Center`                 | Anclaje del modal en el viewport.                               |
-| `fullscreen`       | `boolean \| string`                 | `false`                  | Pantalla completa siempre o bajo un breakpoint dado.            |
-| `keyboard`         | `boolean`                           | `true`                   | Permite cerrar con la tecla ESC.                                |
-| `scrollable`       | `boolean`                           | `false`                  | Activa el scroll interno del body del modal.                    |
-| `size`             | `'sm' \| 'lg' \| 'xl' \| string`    | —                        | Ancho predefinido del diálogo.                                  |
-| `variant`          | `'primary' \| 'success' \| 'danger' \| 'warning' \| 'info' \| string` | — | Acento semántico para diálogos con significado: barra de acento superior + superficie, bordes y título tintados con el acento. Cualquier cadena personalizada lee `--hub-sys-color-<variant>` del host. |
-| `windowClass`      | `string`                            | —                        | Clase extra en el host `.hub-modal`.                            |
-| `modalDialogClass` | `string`                            | —                        | Clase extra en `.hub-modal__dialog`.                            |
-| `backdropClass`    | `string`                            | —                        | Clase extra en `.hub-modal__backdrop`.                          |
-| `headerSelector`   | `string`                            | —                        | Selector CSS para nodos del slot de cabecera.                   |
-| `footerSelector`   | `string`                            | —                        | Selector CSS para nodos del slot de pie.                        |
-| `dismissSelector`  | `string`                            | `[data-dismiss="modal"]` | Selector para elementos que descartan el modal al hacer clic.   |
-| `closeSelector`    | `string`                            | `[data-close="modal"]`   | Selector para elementos que cierran el modal al hacer clic.     |
-| `data`             | `D`                                 | —                        | Payload tipado entregado al componente de contenido vía `inject(HUB_MODAL_DATA)` o `inject(HubActiveModal).data` (el parche de campo en la instancia está obsoleto). |
-| `container`        | `string \| HTMLElement`             | `body`                   | Contenedor DOM donde se inserta el modal.                       |
-| `injector`         | `Injector`                          | —                        | Inyector personalizado para el componente de contenido.         |
+| Opción             | Tipo                                                                  | Default                  | Descripción                                                                                                                                                                                             |
+| ------------------ | --------------------------------------------------------------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `animation`        | `boolean`                                                             | `true`                   | Activa transiciones de apertura/cierre.                                                                                                                                                                 |
+| `backdrop`         | `boolean \| 'static'`                                                 | `true`                   | `'static'` impide cierre al hacer clic fuera.                                                                                                                                                           |
+| `beforeDismiss`    | `() => boolean \| Promise<boolean>`                                   | —                        | Guard de cierre. Devolver `false` lo cancela.                                                                                                                                                           |
+| `centered`         | `boolean`                                                             | `false`                  | Centra el modal en el eje secundario al usar placement lateral.                                                                                                                                         |
+| `placement`        | `HubModalPlacement`                                                   | `Center`                 | Anclaje del modal en el viewport.                                                                                                                                                                       |
+| `fullscreen`       | `boolean \| string`                                                   | `false`                  | Pantalla completa siempre o bajo un breakpoint dado.                                                                                                                                                    |
+| `keyboard`         | `boolean`                                                             | `true`                   | Permite cerrar con la tecla ESC.                                                                                                                                                                        |
+| `scrollable`       | `boolean`                                                             | `false`                  | Activa el scroll interno del body del modal.                                                                                                                                                            |
+| `size`             | `'sm' \| 'lg' \| 'xl' \| string`                                      | —                        | Ancho predefinido del diálogo.                                                                                                                                                                          |
+| `variant`          | `'primary' \| 'success' \| 'danger' \| 'warning' \| 'info' \| string` | —                        | Acento semántico para diálogos con significado: barra de acento superior + superficie, bordes y título tintados con el acento. Cualquier cadena personalizada lee `--hub-sys-color-<variant>` del host. |
+| `windowClass`      | `string`                                                              | —                        | Clase extra en el host `.hub-modal`.                                                                                                                                                                    |
+| `modalDialogClass` | `string`                                                              | —                        | Clase extra en `.hub-modal__dialog`.                                                                                                                                                                    |
+| `backdropClass`    | `string`                                                              | —                        | Clase extra en `.hub-modal__backdrop`.                                                                                                                                                                  |
+| `headerSelector`   | `string`                                                              | —                        | Selector CSS para nodos del slot de cabecera.                                                                                                                                                           |
+| `footerSelector`   | `string`                                                              | —                        | Selector CSS para nodos del slot de pie.                                                                                                                                                                |
+| `dismissSelector`  | `string`                                                              | `[data-dismiss="modal"]` | Selector para elementos que descartan el modal al hacer clic.                                                                                                                                           |
+| `closeSelector`    | `string`                                                              | `[data-close="modal"]`   | Selector para elementos que cierran el modal al hacer clic.                                                                                                                                             |
+| `data`             | `D`                                                                   | —                        | Payload tipado entregado al componente de contenido vía `inject(HUB_MODAL_DATA)` o `inject(HubActiveModal).data` (el parche de campo en la instancia está obsoleto).                                    |
+| `container`        | `string \| HTMLElement`                                               | `body`                   | Contenedor DOM donde se inserta el modal.                                                                                                                                                               |
+| `injector`         | `Injector`                                                            | —                        | Inyector personalizado para el componente de contenido.                                                                                                                                                 |
 
 ### HubModalUpdatableOptions
 
@@ -421,13 +452,13 @@ Los valores predefinidos (`primary` · `success` · `danger` · `warning` · `in
 
 Estos tokens controlan el sistema de acento:
 
-| Variable                       | Default                                | Descripción                                                          |
-| ------------------------------ | -------------------------------------- | ------------------------------------------------------------------- |
-| `--hub-modal-accent`           | `var(--hub-sys-color-primary)`         | Color de acento base; una variante lo rebasa desde `--hub-sys-color-<v>`. |
-| `--hub-modal-accent-subtle`    | `color-mix(accent 8%, surface)`        | Fondo del diálogo tintado con el acento, usado bajo una variante.   |
-| `--hub-modal-accent-border`    | `color-mix(accent 35%, surface)`       | Color de borde tintado con el acento (exterior + reglas cabecera/pie). |
-| `--hub-modal-accent-bar-width` | `var(--hub-ref-space-1, 4px)`          | Grosor de la barra de acento superior.                              |
-| `--hub-modal-title-color`      | neutro (`--hub-modal-color`)           | Color del título; una variante lo reapunta al acento.               |
+| Variable                       | Default                          | Descripción                                                               |
+| ------------------------------ | -------------------------------- | ------------------------------------------------------------------------- |
+| `--hub-modal-accent`           | `var(--hub-sys-color-primary)`   | Color de acento base; una variante lo rebasa desde `--hub-sys-color-<v>`. |
+| `--hub-modal-accent-subtle`    | `color-mix(accent 8%, surface)`  | Fondo del diálogo tintado con el acento, usado bajo una variante.         |
+| `--hub-modal-accent-border`    | `color-mix(accent 35%, surface)` | Color de borde tintado con el acento (exterior + reglas cabecera/pie).    |
+| `--hub-modal-accent-bar-width` | `var(--hub-ref-space-1, 4px)`    | Grosor de la barra de acento superior.                                    |
+| `--hub-modal-title-color`      | neutro (`--hub-modal-color`)     | Color del título; una variante lo reapunta al acento.                     |
 
 ### Mixin de tema Sass
 

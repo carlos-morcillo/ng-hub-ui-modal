@@ -80,6 +80,7 @@ const WINDOW_ATTRIBUTES: string[] = [
 	'backdrop',
 	'centered',
 	'placement',
+	'offcanvas',
 	'fullscreen',
 	'keyboard',
 	'scrollable',
