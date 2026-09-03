@@ -512,6 +512,18 @@ body.hub-modal-open {
 		&:focus {
 			opacity: var(--hub-modal-close-hover-opacity, 0.75);
 		}
+
+		// The ring follows the dialog's accent instead of the browser's default blue,
+		// which on a variant dialog is a colour from nowhere: a danger confirm drew a
+		// blue box over a red header. `:focus-visible` rather than `:focus`, so it is
+		// the keyboard that gets the ring and a mouse click does not leave one behind.
+		&:focus-visible {
+			outline: var(--hub-modal-close-focus-ring-width, 2px) solid
+				var(--hub-modal-close-focus-ring-color, var(--hub-modal-accent));
+			outline-offset: var(--hub-modal-close-focus-ring-offset, 2px);
+			border-radius: var(--hub-modal-close-focus-ring-radius, var(--hub-ref-radius-sm, 0.25rem));
+			opacity: 1;
+		}
 	}
 
 	&.fade &__dialog {

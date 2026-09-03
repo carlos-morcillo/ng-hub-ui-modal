@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## [22.9.0] - 2026-09-03
+
+### Fixed
+
+- **The dialog no longer opens with the focus on its own close button.**
+
+    The dismiss button is the first focusable element in the window's DOM, so `_setFocus` handed it
+    the focus on every open. Two things followed. A destructive confirm opened with the caret on
+    «cancel this dialog» rather than on what the dialog asks, which is the one placement the ARIA
+    dialog pattern names as the wrong one. And the browser drew its **own** focus ring — blue,
+    always — which on a `variant` dialog is a colour from nowhere: measured on a `danger` confirm,
+    a blue box sitting across a red header, and read by the consumer as a broken glyph rather than
+    as focus. The button is now skipped when choosing where focus lands; `hubAutofocus` still names
+    it explicitly for anybody who wants it there, and a dialog with nothing else focusable falls
+    through to the dialog element, which carries `tabindex="-1"` for exactly this.
+
+- **The close button's focus ring follows the dialog's accent.** It had no `:focus-visible` rule at
+    all, so what showed was the user agent's default. It now draws from `--hub-modal-accent`, which
+    every variant already re-bases, and it is `:focus-visible` rather than `:focus` so a mouse click
+    does not leave a ring behind. Four new slots — `--hub-modal-close-focus-ring-width`, `-color`,
+    `-offset` and `-radius` — for a host that wants another shape.
+
 ## [22.8.0] - 2026-09-02
 
 ### Added

@@ -517,7 +517,19 @@ export class HubModalWindow implements OnInit, OnDestroy {
 		const { nativeElement } = this._elRef;
 		if (!nativeElement.contains(document.activeElement)) {
 			const autoFocusable = nativeElement.querySelector(`[hubAutofocus]`) as HTMLElement;
-			const firstFocusable = getFocusableBoundaryElements(nativeElement)[0];
+
+			// The dialog's own dismiss button is skipped when choosing where focus
+			// lands. It is the first focusable element in the DOM, so it used to take
+			// the focus on every open: a destructive confirm opened with the caret on
+			// «cancel this dialog» rather than on what it asks, and the browser drew its
+			// default focus ring over the header. Whoever wants it focused can still say
+			// so with `hubAutofocus`, and a dialog whose only focusable element is the
+			// close button falls through to the dialog itself, which carries
+			// `tabindex="-1"` for exactly this.
+			const closeButton = this._closeButtonEl()?.nativeElement ?? null;
+			const firstFocusable = getFocusableBoundaryElements(nativeElement).find(
+				(element) => element !== closeButton
+			);
 
 			const elementToFocus = autoFocusable || firstFocusable || nativeElement;
 			elementToFocus.focus();

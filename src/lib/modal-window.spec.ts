@@ -10,6 +10,23 @@ describe('hub-modal-dialog', () => {
 		fixture = TestBed.createComponent(HubModalWindow);
 	});
 
+	describe('where the focus lands when it opens', () => {
+		/**
+		 * The dismiss button is the first focusable element in the DOM, so it used to
+		 * take the focus on every open: a destructive confirm opened with the caret on
+		 * «cancel this dialog» rather than on what it asks, and the browser drew its own
+		 * focus ring — blue — across a red header.
+		 */
+		it('does not hand the focus to the dialog own close button', () => {
+			fixture.detectChanges();
+
+			const closeButton = fixture.nativeElement.querySelector('.hub-modal__close');
+
+			expect(closeButton, 'the window renders its own dismiss button').toBeTruthy();
+			expect(document.activeElement).not.toBe(closeButton);
+		});
+	});
+
 	describe('basic rendering functionality', () => {
 		it('should render default modal window', () => {
 			fixture.detectChanges();

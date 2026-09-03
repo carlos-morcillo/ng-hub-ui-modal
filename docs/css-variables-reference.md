@@ -98,6 +98,10 @@ Applied only when a `variant` is set (e.g. `{ variant: 'danger' }` or `windowCla
 | `--hub-modal-close-hover-opacity` | `0.75` |
 | `--hub-modal-close-padding-x` | `0` |
 | `--hub-modal-close-padding-y` | `0` |
+| `--hub-modal-close-focus-ring-width` | `2px` |
+| `--hub-modal-close-focus-ring-color` | `var(--hub-modal-accent)` |
+| `--hub-modal-close-focus-ring-offset` | `2px` |
+| `--hub-modal-close-focus-ring-radius` | `var(--hub-ref-radius-sm, 0.25rem)` |
 
 ### Backdrop
 
