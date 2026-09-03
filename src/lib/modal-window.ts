@@ -527,9 +527,7 @@ export class HubModalWindow implements OnInit, OnDestroy {
 			// close button falls through to the dialog itself, which carries
 			// `tabindex="-1"` for exactly this.
 			const closeButton = this._closeButtonEl()?.nativeElement ?? null;
-			const firstFocusable = getFocusableBoundaryElements(nativeElement).find(
-				(element) => element !== closeButton
-			);
+			const firstFocusable = getFocusableBoundaryElements(nativeElement).find((element) => element !== closeButton);
 
 			const elementToFocus = autoFocusable || firstFocusable || nativeElement;
 			elementToFocus.focus();
