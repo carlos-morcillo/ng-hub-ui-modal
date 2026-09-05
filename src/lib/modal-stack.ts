@@ -244,7 +244,12 @@ export class HubModalStack {
 
 	private _createFromString(content: string): ContentRef {
 		const component = this._document.createTextNode(`${content}`);
-		return new ContentRef([[component]]);
+		// Three slots, always: `attachContent` destructures `[header, body, footer]`, and
+		// `splitIntoSlots` — the path every other kind of content takes — returns three.
+		// Returning one put the text in the HEADER slot and left the body `undefined`, so
+		// appending it threw before the window could arm its Escape handler: a string modal
+		// opened blank and could not be closed with the keyboard.
+		return new ContentRef([[], [component], []]);
 	}
 
 	private _createFromComponent(

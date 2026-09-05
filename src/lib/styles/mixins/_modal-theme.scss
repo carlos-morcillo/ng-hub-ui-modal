@@ -7,6 +7,17 @@
 // are emitted, so the rest keep the component's defaults. Token-based and
 // self-contained (no Bootstrap dependencies).
 //
+// `$accent` carries the accent family on its own. The mixin emits it on the
+// dialog element, which is where `--hub-modal-accent-subtle`, `-emphasis`, `-on`
+// and `-border` re-mix from it, so one accent moves all of them. That is new in
+// 22.10.0: the roles used to be declared on `:root`, resolved against the root's
+// accent and ignored this one, which is the only reason `$accent-subtle` and
+// `$accent-border` had to be passed alongside `$accent` to stay in step. Pass
+// them now only to BREAK the derivation deliberately — a tint that is not a
+// percentage of the accent. (What the accent paints is still the variant's
+// decision: the tinted surface, the accent title and the opt-in top bar come
+// from a `hub-modal--<variant>` class or from a rule of your own.)
+//
 // Because modals are opened through the `HubModal` service, theme them on the
 // class you pass as `windowClass` (or on `.hub-modal` to theme them all):
 //

@@ -130,14 +130,18 @@ export interface HubModalOptions<D = unknown> {
 
 	/**
 	 * Semantic accent of the modal, for meaningful dialogs (a destructive
-	 * confirmation, a success notice…). Adds a coloured top bar to the dialog by
-	 * applying the `hub-modal--<variant>` class to the window.
+	 * confirmation, a success notice…). Applies the `hub-modal--<variant>` class
+	 * to the window, which tints the dialog surface, its outer and header/footer
+	 * borders, and its title.
 	 *
 	 * The built-in values (`'primary'` · `'success'` · `'danger'` · `'warning'`
 	 * · `'info'`) map to the design-system colours, but **any string is accepted**
 	 * — the modal reads `--hub-sys-color-<variant>` from the host application.
 	 *
-	 * If not specified, the modal is rendered neutral (no accent bar).
+	 * A top accent bar is available too, but ships at zero width: set
+	 * `--hub-modal-accent-bar-width` to turn it on.
+	 *
+	 * If not specified, the modal is rendered neutral.
 	 */
 	variant?: 'primary' | 'success' | 'danger' | 'warning' | 'info' | (string & {});
 

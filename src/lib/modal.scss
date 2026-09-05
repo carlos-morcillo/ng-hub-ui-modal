@@ -43,35 +43,69 @@ body.hub-modal-open {
 }
 
 /*
- * Defaults live on `:root`, not on `.hub-modal`, and that is a contract rather than a detail.
+ * Document-level tokens: the stacking order, and everything the backdrop reads.
  *
- * This stylesheet is injected at runtime by the component, so it always lands after a
- * consumer's own sheet. Declared on `.hub-modal`, every default here would beat a consumer's
- * `.hub-modal { --hub-modal-width: … }` at equal specificity by order alone, and the only way
- * through was to out-specify the primitive — which is the opposite of what assigning a token
- * is supposed to cost. On `:root` there is no fight: the values reach the dialog by
- * inheritance, and any declaration closer to it in the tree wins whatever the source order.
- * A consumer assigns tokens on `.hub-modal` and is read.
- *
- * What must NOT move here is anything a modifier re-bases on the element itself — the variant
- * classes re-point `--hub-modal-accent`, and they keep working precisely because an
- * element-level declaration outranks an inherited one.
+ * `.hub-modal__backdrop` is a SIBLING of the dialog, not a descendant, so it cannot inherit
+ * anything declared on `.hub-modal`. These stay on `:root`, which both elements descend from,
+ * and are themed there. `--hub-modal-zindex` is here for the same reason: the backdrop derives
+ * its own from it, and a stacking order is a document-wide decision in any case.
  */
 :root {
 	--hub-modal-zindex: var(--hub-sys-zindex-modal, 1055);
+	--hub-modal-backdrop-zindex: calc(var(--hub-modal-zindex, var(--hub-sys-zindex-modal, 1055)) - 1);
+	--hub-modal-backdrop-bg: var(--hub-ref-color-black, #000000);
+	--hub-modal-backdrop-opacity: var(--hub-sys-opacity-50, 0.5);
+	--hub-modal-backdrop-opacity-hidden: var(--hub-sys-opacity-0, 0);
+	--hub-modal-backdrop-transition: opacity 0.15s linear;
+}
+
+/*
+ * Where a default is declared decides whether a consumer can move it, and whether anything
+ * derived from it follows. Two rules, learned in that order.
+ *
+ * This stylesheet is injected at runtime, so it always lands after a consumer's own sheet.
+ * Declared on `.hub-modal`, every default here would beat a consumer's `.hub-modal { … }` at
+ * equal specificity by source order alone, and the only way through was to out-specify the
+ * primitive — the opposite of what assigning a token should cost. `:where()` settles that:
+ * it matches the same element and contributes zero specificity, so ANY declaration a consumer
+ * writes wins, whatever the order.
+ *
+ * And it has to be the element rather than `:root`, because a custom property is substituted
+ * where it is DECLARED. On `:root` every derived token resolved against the root's own values
+ * and reached the dialog already cooked: re-basing `--hub-modal-accent` on a variant recoloured
+ * the top bar and the title and left the tint on the brand colour, `--hub-modal-padding-x`
+ * never reached the header, a dark `--hub-modal-bg` kept a white footer. Declared here, every
+ * link of every chain resolves against the value that won ON THIS ELEMENT — a variant class,
+ * a `windowClass`, or a consumer's own rule.
+ *
+ * What stays on `:root` below is what a sibling reads: the backdrop is not a descendant of
+ * `.hub-modal`, so its tokens cannot be inherited from the dialog.
+ */
+:where(.hub-modal) {
 	// Semantic accent — used only when a `variant` is set (e.g. a danger confirm
 	// dialog). The variant re-bases the single `--hub-modal-accent` slot; the role
 	// family is then derived LOCALLY from it (mirroring the ds engine), so one
 	// accent — a known variant or a custom `brand` — recolours the whole dialog
-	// (top bar + tinted background + accent border + accent title) with no
-	// recompilation. `-on` is a grayscale contrast flip driven by the accent's own
-	// lightness, ready for accent-filled surfaces.
+	// (tinted background + accent border + accent title, and the top bar if the host
+	// turns it on) with no recompilation. `-on` is a grayscale contrast flip driven by
+	// the accent's own lightness, ready for accent-filled surfaces.
 	--hub-modal-accent: var(--hub-sys-color-primary, #0d6efd);
 	--hub-modal-accent-emphasis: color-mix(in oklch, var(--hub-modal-accent) 80%, var(--hub-sys-color-ink, #212529));
 	--hub-modal-accent-subtle: color-mix(in oklch, var(--hub-modal-accent) 12%, var(--hub-sys-surface-page, #ffffff));
 	--hub-modal-accent-on: oklch(from var(--hub-modal-accent) clamp(0, (0.62 - l) * 1000, 1) 0 h);
 	--hub-modal-accent-border: color-mix(in oklch, var(--hub-modal-accent) 35%, var(--hub-sys-surface-page, #ffffff));
-	--hub-modal-accent-bar-width: var(--hub-ref-space-1, 0.25rem);
+	// Off by default. The bar was the loudest half of a variant and the half nobody asked
+	// for: a dialog already says `danger` through its tint, its borders and its title, and
+	// the stripe only competed with whatever the host had put at the top of its own chrome.
+	// It stays one assignment away, and that assignment has to land on the dialog — which
+	// `.hub-modal` does for every dialog in the application:
+	//
+	//   .hub-modal { --hub-modal-accent-bar-width: 0.25rem; }
+	//
+	// NOT on `:root`. This token is declared here, on the element, so an ancestor's value is
+	// inherited and loses to it. That is the whole subject of this release, and it applies to
+	// the release's own escape hatch as much as to anything else.
+	--hub-modal-accent-bar-width: 0;
 	--hub-modal-width: auto;
 	--hub-modal-max-width: 500px;
 	--hub-modal-margin-y: 1.75rem;
@@ -170,17 +204,12 @@ body.hub-modal-open {
 	--hub-modal-close-padding-y: 0;
 	--hub-modal-close-opacity: 0.5;
 	--hub-modal-close-hover-opacity: 0.75;
-	--hub-modal-backdrop-bg: var(--hub-ref-color-black, #000000);
-	--hub-modal-backdrop-opacity: var(--hub-sys-opacity-50, 0.5);
-	--hub-modal-backdrop-opacity-hidden: var(--hub-sys-opacity-0, 0);
-	--hub-modal-backdrop-transition: opacity 0.15s linear;
 	--hub-modal-fade-transform: translate(0, -50px);
 	--hub-modal-show-transform: none;
 	--hub-modal-transition: var(--hub-sys-transition-base, all 0.2s ease-in-out);
 	--hub-modal-resize-duration: 200;
 	--hub-modal-resize-easing: ease-in-out;
 	--hub-modal-scale-transform: scale(1.02);
-	--hub-modal-backdrop-zindex: calc(var(--hub-modal-zindex, var(--hub-sys-zindex-modal, 1055)) - 1);
 
 	// ── Offcanvas ───────────────────────────────────────────────────────────
 	// A drawer's width is not a modal size. `size: 'lg'` is 800px, and on an 853px window
@@ -384,15 +413,17 @@ body.hub-modal-open {
 	// `{ variant: 'danger' }` — or directly via `windowClass: 'hub-modal--danger'`.
 	// Each variant re-bases the single `--hub-modal-accent` slot; the derived
 	// emphasis / subtle / on / border roles recompute from it locally, recolouring
-	// the whole dialog: a top accent bar, a lightly accent-tinted background,
-	// accent-tinted borders (outer + header + footer rules) and an accent title.
+	// the whole dialog: a lightly accent-tinted background, accent-tinted borders
+	// (outer + header + footer rules) and an accent title. The top accent bar is part
+	// of the set too, but ships at zero width — see `--hub-modal-accent-bar-width`.
 	// The nine canonical variants map to the design-system colours. A neutral modal
 	// (no variant) is unaffected — these only apply under a variant modifier (never
 	// on the unrelated `--static` state).
 	//
 	// Open-set escape hatch — any custom accent (e.g. a `brand` the host adds to
-	// the ds `$hub-accents` map) works with ONE rule that re-bases the accent slot;
-	// the roles re-derive locally, so no recompilation is needed:
+	// the ds `$hub-accents` map) works with ONE rule that re-bases the accent slot.
+	// The roles are declared on the dialog itself, so they re-derive from whichever
+	// accent wins on that element and no recompilation is needed:
 	//
 	//   .hub-modal--brand {
 	//     --hub-modal-accent: var(--hub-sys-color-brand);
@@ -400,17 +431,40 @@ body.hub-modal-open {
 	//     --hub-modal-border-color: var(--hub-modal-accent-border);
 	//     --hub-modal-title-color: var(--hub-modal-accent);
 	//   }
+	//
+	// This was a lie until 22.10.0, and the four lines below are why: the roles used to
+	// be declared on `:root`, where they resolved against the root's accent and reached
+	// the dialog already cooked. The loop only ever re-based the slot, so a variant got a
+	// new title over a tint still mixed from the host's brand colour.
 	@each $variant in (primary, secondary, success, danger, warning, info, neutral, light, dark) {
 		&--#{$variant} {
-			--hub-modal-accent: var(--hub-sys-color-#{$variant}, var(--hub-modal-accent));
+			// The fallback names the brand, not `--hub-modal-accent`. Naming the property
+			// inside its own value is a cycle, and a cycle is invalid at computed-value
+			// time: on a host that ships some of the nine `--hub-sys-color-*` but not all,
+			// `variant: 'neutral'` emptied the accent AND every role derived from it, so
+			// the dialog silently rendered with no accent at all. Measured on a host with
+			// no `--hub-sys-color-neutral`: accent, `-subtle` and `-border` all empty.
+			--hub-modal-accent: var(--hub-sys-color-#{$variant}, var(--hub-sys-color-primary, #0d6efd));
 			--hub-modal-bg: var(--hub-modal-accent-subtle);
 			--hub-modal-border-color: var(--hub-modal-accent-border);
 			--hub-modal-header-border-color: var(--hub-modal-accent-border);
 			--hub-modal-footer-border-color: var(--hub-modal-accent-border);
 			--hub-modal-title-color: var(--hub-modal-accent);
 
-			.hub-modal__content {
-				border-top: var(--hub-modal-accent-bar-width, 0.25rem) solid var(--hub-modal-accent);
+			// The bar is drawn ON the content, not as its top border. As a border it was a
+			// replacement rather than an addition: taking the width to zero to turn the bar
+			// off also took away the dialog's own 1px top edge, leaving a tinted box with
+			// three sides and an open top. A layer of its own occupies no space at zero
+			// height, and the frame is never the accent's to spend.
+			.hub-modal__content::before {
+				content: '';
+				position: absolute;
+				inset: 0 0 auto;
+				height: var(--hub-modal-accent-bar-width, 0);
+				background-color: var(--hub-modal-accent);
+				border-start-start-radius: inherit;
+				border-start-end-radius: inherit;
+				pointer-events: none;
 			}
 		}
 	}
@@ -443,7 +497,14 @@ body.hub-modal-open {
 		);
 	}
 
-	&__header .modal-title {
+	// The heading is authored by the caller, not by this library, so it is matched by class.
+	// `.modal-title` is the name every consumer already writes — it dates from when this
+	// library shipped on top of Bootstrap. `.hub-modal__title` is the name the rest of this
+	// stylesheet uses, and until 22.10.0 it got nothing: a consumer who never used Bootstrap
+	// wrote the house name, read `--hub-modal-title-color` in the README, and saw no accent.
+	// Both are matched. Neither is going away while consumers own the markup.
+	&__header .modal-title,
+	&__header &__title {
 		color: var(--hub-modal-title-color, var(--hub-modal-color, var(--hub-sys-text-primary, #212529)));
 		font-size: var(--hub-modal-title-font-size, var(--hub-ref-font-size-lg, 1.25rem));
 		font-weight: var(--hub-modal-title-font-weight, var(--hub-ref-font-weight-medium, 500));

@@ -58,7 +58,7 @@ Applied only when a `variant` is set (e.g. `{ variant: 'danger' }` or `windowCla
 | `--hub-modal-accent` | `var(--hub-sys-color-primary, #0d6efd)` |
 | `--hub-modal-accent-subtle` | `color-mix(in oklch, var(--hub-modal-accent) 12%, var(--hub-sys-surface-page, #ffffff))` |
 | `--hub-modal-accent-border` | `color-mix(in oklch, var(--hub-modal-accent) 35%, var(--hub-sys-surface-page, #ffffff))` |
-| `--hub-modal-accent-bar-width` | `var(--hub-ref-space-1, 0.25rem)` |
+| `--hub-modal-accent-bar-width` | `0` |
 
 ### Header and title
 

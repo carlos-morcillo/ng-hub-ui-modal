@@ -152,7 +152,8 @@ export class HubModalWindow implements OnInit, OnDestroy {
 	/**
 	 * Semantic accent of the modal (`'primary'`, `'success'`, `'danger'`,
 	 * `'warning'`, `'info'`, or any custom token name). Applies the
-	 * `hub-modal--<variant>` class, which paints an accent top bar on the dialog.
+	 * `hub-modal--<variant>` class, which tints the dialog surface, its borders
+	 * and its title with that accent.
 	 */
 	readonly variant = input<string>();
 

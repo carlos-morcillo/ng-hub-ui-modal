@@ -2,6 +2,178 @@
 
 All notable changes to this project will be documented in this file.
 
+## [22.10.0] - 2026-09-05
+
+### Fixed
+
+- **`HubModal.open()` with a plain string opened an empty dialog that the keyboard could not
+  close.** Every other kind of content goes through `splitIntoSlots`, which returns the three
+  slots `attachContent` destructures — `[header, body, footer]`. The string path did not: it
+  returned a single slot, so the text was appended to the **header** and the body arrived
+  `undefined`. Appending it threw `TypeError: Cannot read properties of undefined (reading
+'forEach')` part-way through the open sequence, before the window reached
+  `_enableEventHandling()`. The dialog rendered blank, with no content and no close button, and
+  <kbd>Esc</kbd> did nothing because no listener had been attached — leaving the backdrop click
+  as the only way out.
+
+    The string now goes into the body slot like everything else. Three specs pin it, in
+    `modal-string-content.spec.ts`: the text lands in the body, nothing lands in the header, and
+    the call does not throw.
+
+    This is the second time <kbd>Esc</kbd> has stopped working for a reason that had nothing to
+    do with the keyboard — 22.4.1 was the first, when `NgZone.onStable` never emitted in a
+    zoneless app and the listener was likewise never attached. Both share a shape worth naming:
+    the handler is armed at the tail of a sequence that can quietly fail to finish.
+
+- **A `--hub-modal-*` token a consumer set on the dialog did not reach anything derived from it.**
+  This is one defect with a long tail, and the narrow symptom that surfaced it — a `warning`
+  dialog painted half in the host's brand colour — was the least of it.
+
+    A custom property is substituted on the element where it is **declared**, not where the
+    value is finally used. Every default this library ships was declared on `:root`, and a good
+    third of them are derived from another `--hub-modal-*` token: the header's padding from
+    `--hub-modal-padding-x`, the footer's background from `--hub-modal-bg`, the title's colour
+    from `--hub-modal-color`, the inner and placement radii from `--hub-modal-border-radius`,
+    the whole margin family from `--hub-modal-margin-y`, the four accent roles from
+    `--hub-modal-accent`. All of them resolved against the **root's** values and reached the
+    dialog already cooked, so a declaration on the dialog itself re-based the parent token and
+    nothing downstream of it moved.
+
+    Measured in Chrome, on the real DOM, before and after:
+
+    | Written on `.hub-modal`           | Before                                | After          |
+    | --------------------------------- | ------------------------------------- | -------------- |
+    | `--hub-modal-padding-x: 3rem`     | header stayed at 16px                 | 48px           |
+    | `--hub-modal-margin-y: 5rem`      | dialog stayed at 28px                 | 80px           |
+    | `--hub-modal-bg: #1f1714`         | footer stayed white                   | follows        |
+    | `--hub-modal-color: #f8efe7`      | `--hub-modal-title-color` was #212529 | follows        |
+    | `--hub-modal-border-radius: 1rem` | placement radius stayed at 8px        | 16px           |
+    | `--hub-modal-accent: #efc900`     | the roles kept the host's brand green | derive from it |
+
+    The reported symptom was the last row. On a product whose company colour is olive green,
+    `.hub-modal--warning` re-pointed `--hub-modal-accent` and got a yellow top bar and a yellow
+    title over a background and two borders still mixed from `#6b8e23` — a warning that warned
+    in green. The accent measured `#efc900` while `--hub-modal-accent-subtle` was still mixing
+    the brand.
+
+    The defaults now live on `:where(.hub-modal)`, which is the dialog element itself, so every
+    link of every chain resolves against the value that won **on that element** — a variant
+    class, a `windowClass`, or the consumer's own rule. See _Changed_ below for what that costs.
+
+- **The open-set escape hatch documented in the stylesheet was false, and now is not.** The
+  comment above the variant loop has promised since 22.2.0 that any custom accent — a `brand`
+  the host adds to the ds `$hub-accents` map — recolours a whole dialog with one rule that only
+  re-bases `--hub-modal-accent`, no recompilation needed. It never did: the roles it relies on
+  were declared on `:root` and had already resolved there. That rule now works exactly as
+  written, and the comment says so:
+
+    ```scss
+    .hub-modal--brand {
+    	--hub-modal-accent: var(--hub-sys-color-brand);
+    	--hub-modal-bg: var(--hub-modal-accent-subtle);
+    	--hub-modal-border-color: var(--hub-modal-accent-border);
+    	--hub-modal-title-color: var(--hub-modal-accent);
+    }
+    ```
+
+- **A `variant` whose design-system colour the host had not defined emptied the accent instead
+  of falling back.** Each variant read `var(--hub-sys-color-<v>, var(--hub-modal-accent))`, and a
+  custom property that names itself inside its own value is a cycle — invalid at computed-value
+  time, not a fallback. On a host that ships some of the nine `--hub-sys-color-*` but not all,
+  `variant: 'neutral'` left `--hub-modal-accent` empty and took `-subtle`, `-emphasis`, `-on` and
+  `-border` down with it, so the dialog rendered with no accent at all and no error anywhere. The
+  fallback now names the brand — `var(--hub-sys-color-<v>, var(--hub-sys-color-primary, #0d6efd))`
+  — so a missing variant colour degrades to the brand accent and the roles still derive.
+
+- **`--hub-modal-title-color` reached a title classed `hub-modal__title`.** The rule that reads
+  it matched `.modal-title` alone — the name from when this library sat on top of Bootstrap, and
+  the name every example in the documentation still writes. A consumer who never used Bootstrap
+  wrote the house name, read the token in the README, and got nothing. Both class names are
+  matched now. Neither is going away: the heading is authored by the caller, not by this
+  library, so it cannot simply be renamed.
+
+### Changed
+
+- **The accent bar above a `variant` dialog is off by default.** `--hub-modal-accent-bar-width`
+  ships at `0` instead of `0.25rem`. The bar was the loudest half of a variant and the half
+  nobody asked for: a dialog already reads as `danger` through its tint, its two borders and its
+  title, and the stripe mostly competed with whatever the host had put at the top of its own
+  chrome. It is one assignment away for anyone who wants it, and the assignment goes on the
+  dialog — `.hub-modal` reaches every dialog in the application, a `windowClass` only some.
+  Not `:root`: the token is declared on the element, so an inherited value loses to it, which
+  is the same rule the rest of this release is about.
+
+    ```scss
+    .hub-modal {
+    	--hub-modal-accent-bar-width: 0.25rem;
+    }
+    ```
+
+    The bar is now drawn as a layer on the content rather than as its top border, and that
+    correction is worth its own line: as a border it was a _replacement_, so taking the width to
+    zero also took away the dialog's own 1px top edge and left a tinted box with three sides and
+    an open top. A layer occupies no space at zero height, and turning the bar on no longer
+    costs the frame — a `danger` dialog keeps four matching 1px borders either way. The net
+    effect is that a variant dialog is 3px shorter than it was.
+
+    If you had overridden `border-top` on `.hub-modal__content` to suppress the bar yourself,
+    that override no longer has anything to suppress and can go.
+
+- **The footer of a dialog carrying a `variant` now takes the accent tint instead of staying
+  white.** `--hub-modal-footer-bg` derives from `--hub-modal-bg`, and a variant re-bases
+  `--hub-modal-bg` to `--hub-modal-accent-subtle`; before, the footer read the root's white and
+  the dialog ended with a tinted body sitting on a white strip. This is the defect above being
+  corrected rather than a decision, and it is the only rendering this release changes that
+  nobody chose — the accent bar below was chosen.
+
+    Pinned by measurement, not by inspection: 19,470 computed properties compared across 81
+    dialog configurations — nine window variants against nine dialog variants — plus the
+    backdrop, old stylesheet against new. Exactly 64 differ, and every one of them is one of
+    the two decisions in this section: 18 are that footer background, and 46 are the accent bar
+    standing down — 16 top-border widths going from the bar's 4px back to the dialog's own 1px,
+    16 top-border colours going from the accent back to the accent-tinted border the other three
+    sides use, and the 14 dialog heights that are 3px shorter for it.
+    The default dialog, every size, `centered`, `scrollable`, `fullscreen`, all four placements,
+    `offcanvas` and the backdrop render byte-identically.
+
+    If a consumer compensated for the white strip — a `--hub-modal-footer-bg` of their own on a
+    variant dialog — that declaration still wins and needs no change; it is simply no longer
+    doing the library's work.
+
+- **The default custom properties moved from `:root` to `:where(.hub-modal)`.** This reverses
+  most of what 22.8.0 did three days ago, and keeps what it was for.
+
+    22.8.0 moved the defaults to `:root` because, declared plainly on `.hub-modal`, they beat a
+    consumer's own `.hub-modal { … }` rule: the stylesheet is injected at runtime by the window
+    component, so it always lands after the consumer's sheet and wins at equal specificity by
+    source order. `:root` traded that fight for inheritance and the consumer was read — at the
+    price of every derived token resolving one level too high, which is the defect above.
+
+    `:where()` settles both at once. It matches the same element and contributes **zero**
+    specificity, so any declaration a consumer writes wins whatever the source order, and the
+    values are declared on the dialog, where everything derived from them resolves against what
+    actually won there.
+
+    Six tokens stay on `:root`, and they are exactly the ones a sibling reads:
+    `--hub-modal-zindex`, `--hub-modal-backdrop-zindex`, `--hub-modal-backdrop-bg`,
+    `--hub-modal-backdrop-opacity`, `--hub-modal-backdrop-opacity-hidden` and
+    `--hub-modal-backdrop-transition`. `.hub-modal__backdrop` is not a descendant of
+    `.hub-modal` and cannot inherit anything declared on it; a stacking order is a
+    document-wide decision in any case.
+
+    **And that one pair still does not follow the dialog, which is worth saying plainly rather
+    than leaving to be discovered.** `--hub-modal-backdrop-zindex` derives from
+    `--hub-modal-zindex`, and both are declared on `:root`, so re-basing `--hub-modal-zindex`
+    on `.hub-modal` raises the window and leaves the backdrop where it was — measured at 3000
+    against 1054. This is not a leftover of the defect above; two sibling elements cannot share
+    a value through inheritance, and no declaration site fixes that. Theme the stacking order on
+    `:root`, where both elements can read it, or set the backdrop's own token through
+    `backdropClass`. Everything else in this library derives on the dialog and follows it.
+
+    **What this breaks:** a `--hub-modal-*` token assigned on `:root`, `html` or `body` — which
+    is what 22.8.0 briefly made viable — now loses to the library's own element-level default.
+    Assign on the modal element instead. See [BREAKING_CHANGES.md](./BREAKING_CHANGES.md).
+
 ## [22.9.0] - 2026-09-03
 
 ### Fixed
@@ -19,10 +191,10 @@ All notable changes to this project will be documented in this file.
     through to the dialog element, which carries `tabindex="-1"` for exactly this.
 
 - **The close button's focus ring follows the dialog's accent.** It had no `:focus-visible` rule at
-    all, so what showed was the user agent's default. It now draws from `--hub-modal-accent`, which
-    every variant already re-bases, and it is `:focus-visible` rather than `:focus` so a mouse click
-    does not leave a ring behind. Four new slots — `--hub-modal-close-focus-ring-width`, `-color`,
-    `-offset` and `-radius` — for a host that wants another shape.
+  all, so what showed was the user agent's default. It now draws from `--hub-modal-accent`, which
+  every variant already re-bases, and it is `:focus-visible` rather than `:focus` so a mouse click
+  does not leave a ring behind. Four new slots — `--hub-modal-close-focus-ring-width`, `-color`,
+  `-offset` and `-radius` — for a host that wants another shape.
 
 ## [22.8.0] - 2026-09-02
 

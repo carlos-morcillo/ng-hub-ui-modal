@@ -2,6 +2,8 @@
 
 This table details the functionalities of the `ng-hub-ui-modal` library and indicates which ones are covered by interactive examples.
 
+"Example Covered" means an example **registered on the documentation page** demonstrates it. A source file that exists but is not registered does not count — nobody reading the docs can reach it.
+
 ## Opening Modals
 
 | Category          | Functionality                      | Example Covered |
@@ -21,15 +23,35 @@ This table details the functionalities of the `ng-hub-ui-modal` library and indi
 |                   | `centered` (vertically)                                      |       ✅        |
 |                   | `scrollable` content                                         |       ✅        |
 |                   | `placement` — a floating dialog entering from an edge        |       ✅        |
-|                   | `offcanvas` — a drawer flush against that edge               |       ❌        |
+|                   | `offcanvas` — a drawer flush against that edge               |       ✅        |
 |                   | `--hub-modal-offcanvas-width` / `-height` / `-border-radius` |       ❌        |
-|                   | `fullscreen` (always or responsive)                          |       ❌        |
-|                   | `windowClass` / `modalDialogClass`                           |       ❌        |
-|                   | `backdropClass`                                              |       ❌        |
+|                   | `fullscreen: true` (always)                                  |       ✅        |
+|                   | `fullscreen` below a breakpoint (`'sm'` … `'xxl'`)           |       ❌        |
+|                   | `variant` — semantic accent (nine compiled variants)         |       ✅        |
+|                   | `windowClass`                                                |       ✅        |
+|                   | `modalDialogClass`                                           |       ❌        |
+|                   | `backdropClass`                                              |       ✅        |
+| **Content slots** | `headerSelector` / `footerSelector`                          |       ✅        |
+|                   | `bodySelector`                                               |       ✅        |
+|                   | `dismissSelector` / `closeSelector`                          |       ❌        |
 | **Behavior**      | `backdrop` (true, false, 'static')                           |       ✅        |
 |                   | `keyboard` (Esc to close)                                    |       ✅        |
 |                   | `animation` (fade in/out)                                    |       ❌        |
+|                   | `beforeDismiss` guard                                        |       ❌        |
+|                   | `container` / `injector`                                     |       ❌        |
+| **Payload**       | `data` + `HUB_MODAL_DATA` / `HubActiveModal<D>.data`         |       ✅        |
 | **Global Config** | `HubModalConfig` injection token                             |       ❌        |
+
+## Theming
+
+| Category   | Functionality                                                         | Example Covered |
+| :--------- | :-------------------------------------------------------------------- | :-------------: |
+| **Tokens** | `--hub-modal-*` overrides scoped with `windowClass` / `backdropClass` |       ✅        |
+|            | Derived tokens follow their parent on the dialog element              |       ✅        |
+| **Accent** | Accent roles (`-emphasis`, `-subtle`, `-on`, `-border`)               |       ✅        |
+|            | Custom accent in one rule (`.hub-modal--brand`)                       |       ✅        |
+|            | `--hub-modal-accent-bar-width` — the opt-in top bar (ships at `0`)    |       ❌        |
+| **Sass**   | `hub-modal-theme()` one-call mixin                                    |       ❌        |
 
 ## Modal Reference (HubModalRef)
 
@@ -39,7 +61,7 @@ This table details the functionalities of the `ng-hub-ui-modal` library and indi
 |             | `.dismiss(reason)`             |       ✅        |
 |             | `.update(options)`             |       ❌        |
 | **State**   | `result` Promise               |       ✅        |
-|             | `componentInstance` access     |       ✅        |
+|             | `componentInstance` access     |       ❌        |
 | **Events**  | `closed` Observable            |       ❌        |
 |             | `dismissed` Observable         |       ❌        |
 |             | `shown` / `hidden` Observables |       ❌        |
