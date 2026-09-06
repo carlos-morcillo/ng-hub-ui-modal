@@ -65,7 +65,7 @@ Esta librería forma parte del ecosistema **ng-hub-ui**:
 
 ## Características
 
-- **Sin dependencias externas**: sin ng-bootstrap, sin Bootstrap JS.
+- **Sin framework de UI debajo**: sin ng-bootstrap, sin Bootstrap JS. El único peer aparte de Angular es `ng-hub-ui-utils`, la caja de herramientas de esta familia (límites de foco, transiciones), que se instala junto al paquete.
 - **Tres tipos de contenido**: abre modales con `TemplateRef`, clase `Component` o `string`.
 - **Proyección de contenido flexible**: usa selectores CSS para enrutar nodos a los slots `header`, `body` y `footer`.
 - **Soporte de placement**: ancla el modal a cualquier borde del viewport — `start`, `end`, `top`, `bottom` — o mantenlo centrado.
@@ -82,8 +82,12 @@ Esta librería forma parte del ecosistema **ng-hub-ui**:
 ## Instalación
 
 ```bash
-npm install ng-hub-ui-modal
+npm install ng-hub-ui-modal ng-hub-ui-utils
 ```
+
+`ng-hub-ui-utils` (`>=22.0.0`) es una dependencia peer: la librería importa de ahí sus utilidades de
+foco, transiciones y tipos. Los gestores de paquetes que no instalan los peers automáticamente
+fallarán al resolver `ng-hub-ui-utils` al compilar.
 
 ---
 
@@ -121,7 +125,12 @@ export class AppComponent {
 }
 ```
 
-### NgModule (clásico)
+### NgModule (clásico) — obsoleto
+
+> **`HubModalModule` está obsoleto y se retira en la 23.0.0.** Su cuerpo entero es
+> `providers: [HubModal]`, y `HubModal` es `providedIn: 'root'`, así que el import nunca activó el
+> servicio: solo añadía una segunda instancia en ese inyector. Inyecta `HubModal` y quita el import;
+> todo lo de abajo sigue funcionando igual en una aplicación basada en módulos.
 
 ```typescript
 import { HubModalModule } from 'ng-hub-ui-modal';
@@ -186,6 +195,14 @@ this.modal.open(ConfirmarComponent, {
 	headerSelector: '.hub-modal__header',
 	footerSelector: '.hub-modal__footer'
 });
+```
+
+### Abrir con String
+
+Muestra un mensaje breve sin componente ni plantilla.
+
+```typescript
+this.modal.open('Esto es un modal de texto plano.');
 ```
 
 ### Placement (posición del modal)
@@ -278,7 +295,7 @@ this.modal.open(MiFormComponent, {
 });
 ```
 
-### HubActiveModal
+### HubActiveModal en el componente de contenido
 
 Inyecta `HubActiveModal` en el componente de contenido para controlar el modal desde dentro. Es genérico en el tipo del payload y en el del resultado — `HubActiveModal<D = unknown, R = any>` (`close(result?: R)`) — y expone un accesor de solo lectura `data` (equivalente a `inject(HUB_MODAL_DATA)`; `null` si no se pasó `data`). Prefiere `HUB_MODAL_DATA` / `HubActiveModal.data` a leer un campo `data` de la instancia (ese parche `Object.assign` está **obsoleto** y se mantiene solo una versión):
 
@@ -292,6 +309,28 @@ export class MiModalComponent {
 	cancelar() {
 		this.activeModal.dismiss('cancelado');
 	}
+}
+```
+
+### Payload de datos tipado
+
+Pasa un `data` al abrir y léelo **tipado** dentro del componente de contenido con `HUB_MODAL_DATA` (o `HubActiveModal<D>.data`):
+
+```typescript
+import { inject } from '@angular/core';
+import { HubModal, HUB_MODAL_DATA, HubActiveModal } from 'ng-hub-ui-modal';
+
+interface EditarUsuarioData {
+	userId: string;
+}
+
+// Al abrir el modal:
+inject(HubModal).open(EditarUsuarioComponent, { data: { userId: '42' } });
+
+// Dentro de EditarUsuarioComponent:
+export class EditarUsuarioComponent {
+	protected readonly data = inject<EditarUsuarioData>(HUB_MODAL_DATA);
+	// o: private readonly ref = inject<HubActiveModal<EditarUsuarioData>>(HubActiveModal); → this.ref.data
 }
 ```
 
@@ -361,6 +400,19 @@ Genérico en el componente de contenido y en el tipo del resultado — `HubModal
 | `shown`             | Emite cuando la animación de apertura termina.                   |
 | `hidden`            | Emite cuando la animación de cierre termina y el DOM se elimina. |
 
+### HubActiveModal
+
+Se inyecta en el componente de contenido para controlar el modal desde dentro. Genérico en los tipos del payload y del resultado — `HubActiveModal<D = unknown, R = any>`.
+
+| Miembro             | Descripción                                                                                                                            |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `data`              | Payload de solo lectura pasado en la opción `data`, tipado `D`. Equivale a `inject(HUB_MODAL_DATA)`; vale `null` si no se pasó `data`. |
+| `close(result?: R)` | Cierra el modal con un resultado opcional.                                                                                             |
+| `dismiss(reason?)`  | Descarta el modal con un motivo opcional.                                                                                              |
+| `update(options)`   | Actualiza opciones en caliente (igual que `HubModalRef.update`).                                                                       |
+
+> **Payload tipado.** Prefiere `inject(HUB_MODAL_DATA)` o `inject(HubActiveModal<MisDatos>).data` a leer un campo `data` de la instancia. El parche `Object.assign(instance, { data })` está **obsoleto** y se mantiene solo una versión.
+
 ### HubModalOptions
 
 Genérico en el tipo del payload — `HubModalOptions<D = unknown>` tipa la opción `data`, en pareja con `HubActiveModal<D>.data`.
@@ -368,10 +420,14 @@ Genérico en el tipo del payload — `HubModalOptions<D = unknown>` tipa la opci
 | Opción             | Tipo                                                                  | Default                  | Descripción                                                                                                                                                                                                                                                                                                                                                         |
 | ------------------ | --------------------------------------------------------------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `animation`        | `boolean`                                                             | `true`                   | Activa transiciones de apertura/cierre.                                                                                                                                                                                                                                                                                                                             |
+| `ariaLabelledBy`   | `string`                                                              | —                        | ID del elemento que etiqueta el diálogo (`aria-labelledby`).                                                                                                                                                                                                                                                                                                        |
+| `ariaDescribedBy`  | `string`                                                              | —                        | ID del elemento que describe el diálogo (`aria-describedby`).                                                                                                                                                                                                                                                                                                       |
+| `closeAriaLabel`   | `string`                                                              | `'Close'`                | Nombre accesible del botón de cierre que dibuja la librería en su propia cabecera. Ese botón no lleva texto —su aspa la pinta el CSS—, así que esta cadena es todo lo que anuncia un lector de pantalla. Pasa aquí la traducción, o fija el valor por defecto una sola vez en `HubModalConfig`.                                                                     |
 | `backdrop`         | `boolean \| 'static'`                                                 | `true`                   | `'static'` impide cierre al hacer clic fuera.                                                                                                                                                                                                                                                                                                                       |
 | `beforeDismiss`    | `() => boolean \| Promise<boolean>`                                   | —                        | Guard de cierre. Devolver `false` lo cancela.                                                                                                                                                                                                                                                                                                                       |
 | `centered`         | `boolean`                                                             | `false`                  | Centra el modal en el eje secundario al usar placement lateral.                                                                                                                                                                                                                                                                                                     |
 | `placement`        | `HubModalPlacement`                                                   | `Center`                 | Anclaje del modal en el viewport.                                                                                                                                                                                                                                                                                                                                   |
+| `offcanvas`        | `boolean`                                                             | `false`                  | Abre el diálogo como un cajón pegado al borde que nombra `placement`: sin redondeo en ese lado, estirado al alto completo (o al ancho) y con el cuerpo desplazándose. Su ancho sale de `--hub-modal-offcanvas-width`, no de la escala de tallas. Sin `placement` abre desde el borde final.                                                                         |
 | `fullscreen`       | `boolean \| string`                                                   | `false`                  | Pantalla completa siempre o bajo un breakpoint dado.                                                                                                                                                                                                                                                                                                                |
 | `keyboard`         | `boolean`                                                             | `true`                   | Permite cerrar con la tecla ESC.                                                                                                                                                                                                                                                                                                                                    |
 | `scrollable`       | `boolean`                                                             | `false`                  | Activa el scroll interno del body del modal.                                                                                                                                                                                                                                                                                                                        |
@@ -382,6 +438,7 @@ Genérico en el tipo del payload — `HubModalOptions<D = unknown>` tipa la opci
 | `backdropClass`    | `string`                                                              | —                        | Clase extra en `.hub-modal__backdrop`.                                                                                                                                                                                                                                                                                                                              |
 | `headerSelector`   | `string`                                                              | —                        | Selector CSS para nodos del slot de cabecera.                                                                                                                                                                                                                                                                                                                       |
 | `footerSelector`   | `string`                                                              | —                        | Selector CSS para nodos del slot de pie.                                                                                                                                                                                                                                                                                                                            |
+| `bodySelector`     | `string`                                                              | —                        | Selector CSS del bloque cuyos hijos forman el cuerpo. Sin él, el cuerpo es lo que dejan la cabecera y el pie; con él se coloca a propósito, y lo que no reclame ningún hueco sigue yendo detrás.                                                                                                                                                                    |
 | `dismissSelector`  | `string`                                                              | `[data-dismiss="modal"]` | Selector para elementos que descartan el modal al hacer clic.                                                                                                                                                                                                                                                                                                       |
 | `closeSelector`    | `string`                                                              | `[data-close="modal"]`   | Selector para elementos que cierran el modal al hacer clic.                                                                                                                                                                                                                                                                                                         |
 | `data`             | `D`                                                                   | —                        | Payload tipado entregado al componente de contenido vía `inject(HUB_MODAL_DATA)` o `inject(HubActiveModal).data` (el parche de campo en la instancia está obsoleto).                                                                                                                                                                                                |
@@ -392,7 +449,7 @@ Genérico en el tipo del payload — `HubModalOptions<D = unknown>` tipa la opci
 
 Subconjunto de `HubModalOptions` que puede actualizarse en un modal ya abierto mediante `HubModalRef.update()`:
 
-`ariaLabelledBy`, `ariaDescribedBy`, `centered`, `placement`, `fullscreen`, `backdropClass`, `size`, `variant`, `windowClass`, `modalDialogClass`.
+`ariaLabelledBy`, `ariaDescribedBy`, `centered`, `placement`, `offcanvas`, `fullscreen`, `backdropClass`, `size`, `variant`, `windowClass`, `modalDialogClass`.
 
 ### HubModalPlacement
 
@@ -407,6 +464,41 @@ import { HubModalPlacement } from 'ng-hub-ui-modal';
 | `End`    | `hub-modal--placement-end`    | Borde derecho.          |
 | `Top`    | `hub-modal--placement-top`    | Borde superior.         |
 | `Bottom` | `hub-modal--placement-bottom` | Borde inferior.         |
+
+### ModalDismissReasons
+
+Constantes de los motivos de descarte que emite la propia librería.
+
+```typescript
+import { ModalDismissReasons } from 'ng-hub-ui-modal';
+
+modalRef.dismissed.subscribe((reason) => {
+	if (reason === ModalDismissReasons.ESC) {
+		/* tecla ESC */
+	}
+	if (reason === ModalDismissReasons.BACKDROP_CLICK) {
+		/* clic en el backdrop */
+	}
+});
+```
+
+### HubModalConfig
+
+Inyecta `HubModalConfig` para fijar los valores por defecto de toda la aplicación.
+
+```typescript
+import { HubModalConfig } from 'ng-hub-ui-modal';
+
+@Injectable({ providedIn: 'root' })
+export class AppModalDefaults {
+	constructor(config: HubModalConfig) {
+		config.animation = true;
+		config.keyboard = false;
+		config.backdrop = 'static';
+		config.closeAriaLabel = 'Cerrar';
+	}
+}
+```
 
 ---
 
@@ -546,6 +638,23 @@ hub-modal-window {
 	--hub-modal-border-color: var(--bs-border-color);
 }
 ```
+
+### Referencia de clases BEM
+
+| Clase                            | Elemento                         |
+| -------------------------------- | -------------------------------- |
+| `.hub-modal`                     | Host de la ventana modal         |
+| `.hub-modal__backdrop`           | Capa de backdrop                 |
+| `.hub-modal__dialog`             | Contenedor del diálogo           |
+| `.hub-modal__content`            | Envoltorio del contenido         |
+| `.hub-modal__header`             | Región de cabecera               |
+| `.hub-modal__body`               | Región de cuerpo                 |
+| `.hub-modal__footer`             | Región de pie                    |
+| `.hub-modal__close`              | Botón de cierre de la librería   |
+| `.hub-modal--placement-{valor}`  | Modificador de placement         |
+| `.hub-modal__dialog--centered`   | Centrado vertical                |
+| `.hub-modal__dialog--scrollable` | Cuerpo desplazable               |
+| `.hub-modal__dialog--fullscreen` | Modificador de pantalla completa |
 
 ---
 

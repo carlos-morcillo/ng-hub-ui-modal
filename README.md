@@ -85,7 +85,7 @@ This library is part of the **ng-hub-ui** ecosystem:
 
 ## Features
 
-- **Zero external dependencies**: No ng-bootstrap, no Bootstrap JS.
+- **No UI framework underneath**: no ng-bootstrap, no Bootstrap JS. The one peer besides Angular is `ng-hub-ui-utils`, this family's own toolbox (focus boundaries, transitions), installed alongside the package.
 - **Three content types**: Open modals with a `TemplateRef`, a `Component` class, or a plain `string`.
 - **Flexible content projection**: Use CSS selectors to route content to `header`, `body`, and `footer` slots.
 - **Placement support**: Anchor modals to any viewport edge — `start`, `end`, `top`, `bottom` — or keep them `center`.
@@ -102,8 +102,12 @@ This library is part of the **ng-hub-ui** ecosystem:
 ## Installation
 
 ```bash
-npm install ng-hub-ui-modal
+npm install ng-hub-ui-modal ng-hub-ui-utils
 ```
+
+`ng-hub-ui-utils` (`>=22.0.0`) is a peer dependency: the library imports its focus, transition and
+type helpers. Package managers that do not install peers automatically will otherwise fail to
+resolve `ng-hub-ui-utils` at build time.
 
 ---
 
@@ -141,7 +145,12 @@ export class AppComponent {
 }
 ```
 
-### NgModule (classic)
+### NgModule (classic) — deprecated
+
+> **`HubModalModule` is deprecated and will be removed in 23.0.0.** Its whole body is
+> `providers: [HubModal]`, and `HubModal` is `providedIn: 'root'` — so the import never enabled the
+> service, it only added a second instance in that injector. Inject `HubModal` and drop the import;
+> everything below works the same in a module-based application.
 
 ```typescript
 import { HubModalModule } from 'ng-hub-ui-modal';
@@ -572,10 +581,12 @@ All options accepted by `HubModal.open()`. Generic in the payload type —
 | `animation`        | `boolean`                                                             | `true`                   | Enables fade in/out transitions.                                                                                                                                                                                                                                                                                                  |
 | `ariaLabelledBy`   | `string`                                                              | —                        | ID of the element that labels the modal.                                                                                                                                                                                                                                                                                          |
 | `ariaDescribedBy`  | `string`                                                              | —                        | ID of the element that describes the modal.                                                                                                                                                                                                                                                                                       |
+| `closeAriaLabel`   | `string`                                                              | `'Close'`                | Accessible name of the dismiss button the library draws in its own header. The button carries no text — its glyph is painted by CSS — so this string is the whole of what a screen reader announces. Pass the translated string, or set the default once on `HubModalConfig`.                                                     |
 | `backdrop`         | `boolean \| 'static'`                                                 | `true`                   | `false` = no backdrop, `'static'` = click does not close.                                                                                                                                                                                                                                                                         |
 | `beforeDismiss`    | `() => boolean \| Promise<boolean>`                                   | —                        | Guard called before dismissal. Return `false` to cancel.                                                                                                                                                                                                                                                                          |
 | `centered`         | `boolean`                                                             | `false`                  | Centers modal on the cross-axis for side placements.                                                                                                                                                                                                                                                                              |
 | `placement`        | `HubModalPlacement`                                                   | `Center`                 | Viewport anchor for the modal.                                                                                                                                                                                                                                                                                                    |
+| `offcanvas`        | `boolean`                                                             | `false`                  | Opens the dialog as a drawer flush against the edge named by `placement`: square on that side, stretched to the full height (or width), body scrolling. Its width comes from `--hub-modal-offcanvas-width`, not from the size scale. With no `placement` it opens from the end edge.                                              |
 | `container`        | `string \| HTMLElement`                                               | `body`                   | CSS selector or element to which modals are appended.                                                                                                                                                                                                                                                                             |
 | `fullscreen`       | `boolean \| 'sm' \| 'md' \| 'lg' \| 'xl' \| 'xxl' \| string`          | `false`                  | Fullscreen always or below a specific breakpoint.                                                                                                                                                                                                                                                                                 |
 | `injector`         | `Injector`                                                            | —                        | Custom injector for content component dependencies.                                                                                                                                                                                                                                                                               |
@@ -599,7 +610,7 @@ All options accepted by `HubModal.open()`. Generic in the payload type —
 
 A subset of `HubModalOptions` that can be updated on an already-open modal via `HubModalRef.update()`.
 
-`ariaLabelledBy`, `ariaDescribedBy`, `centered`, `placement`, `fullscreen`, `backdropClass`, `size`, `variant`, `windowClass`, `modalDialogClass`.
+`ariaLabelledBy`, `ariaDescribedBy`, `centered`, `placement`, `offcanvas`, `fullscreen`, `backdropClass`, `size`, `variant`, `windowClass`, `modalDialogClass`.
 
 ---
 
@@ -651,6 +662,7 @@ export class AppModalDefaults {
 		config.animation = true;
 		config.keyboard = false;
 		config.backdrop = 'static';
+		config.closeAriaLabel = 'Cerrar';
 	}
 }
 ```

@@ -284,16 +284,14 @@ export class HubModalStack {
 		}
 
 		const componentNativeEl: HTMLElement = componentRef.location.nativeElement;
-		if (options.scrollable) {
-			componentNativeEl.classList.add('component-host-scrollable');
-		}
 		this._applicationRef.attachView(componentRef.hostView);
 
 		this._addDismissEventListener(componentNativeEl, context, options);
 		this._addCloseEventListener(componentNativeEl, context as any, options);
 
-		// FIXME: we should here get rid of the component nativeElement
-		// and use `[Array.from(componentNativeEl.childNodes)]` instead and remove the above CSS class.
+		// The component host is only a query root: `splitIntoSlots` hands its children to the
+		// window and the host itself never enters the document, so anything set on it is lost.
+		// `scrollable` is delivered by the dialog instead, in `HubModalWindow`.
 		return new ContentRef(splitIntoSlots(componentNativeEl, options), componentRef.hostView, componentRef);
 	}
 
@@ -385,23 +383,12 @@ export class HubModalStack {
 		if (options.closeSelector) {
 			const dismissaable: NodeListOf<Element> = container.querySelectorAll(options.closeSelector);
 			for (const item of Array.from(dismissaable)) {
-				const clickEventListeners = item.addEventListener('click', () => context.close());
+				item.addEventListener('click', () => context.close());
 			}
 		}
 	}
 }
 
-/**
- * Extracts child nodes matching a selector from a container element, removes those nodes from the DOM, and returns them as an array.
- *
- * @param {HTMLElement} container - The `container` parameter in the `extractAndRemoveNodesBySelector` function is an HTMLElement
- * that represents the parent element within which we want to search for nodes matching a specific selector and remove them.
- * @param {string} selector - The `selector` parameter in the `extractAndRemoveNodesBySelector` function is a string that
- * represents a CSS selector. This selector is used to query and select specific elements within the `container` HTMLElement.
- *
- * @returns An array of nodes that were extracted from the container element based on the provided selector, and then removes those
- * nodes from the DOM.
- */
 /**
  * Split a container into the modal's three slots, taking nothing out of the document twice.
  *
@@ -428,17 +415,23 @@ function splitIntoSlots(
 	return [header, [...declaredBody, ...remainder], footer];
 }
 
+/**
+ * Extracts the children of every element matching `selector` inside `container` and takes those
+ * matched elements out of the DOM, so the caller can hand the children to another slot without
+ * the marker element travelling with them.
+ *
+ * @param {HTMLElement} container - Element searched for the selector.
+ * @param {string} selector - CSS selector identifying the slot markers.
+ *
+ * @returns The children of every matched element, in document order.
+ */
 function extractAndRemoveNodesBySelector(container: HTMLElement, selector: string): Array<Node> {
-	let containerNodes = container.querySelectorAll(selector);
+	const containerNodes = container.querySelectorAll(selector);
 
 	const nodes = Array.from(containerNodes).reduce((acc, c) => {
 		return [...acc, ...Array.from(c.childNodes)];
 	}, [] as Array<Node>);
 
-	// Selecciona los nodos dentro del contenedor que coincidan con el selector
-	const nodesToRemove = container.querySelectorAll<HTMLElement>(selector);
-
-	// Convertir NodeList a array y eliminar cada nodo del DOM
-	Array.from(nodesToRemove).forEach((node) => node.remove());
+	Array.from(containerNodes).forEach((node) => node.remove());
 	return nodes;
 }

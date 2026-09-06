@@ -1,6 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import {
 	afterNextRender,
+	ChangeDetectionStrategy,
 	Component,
 	ElementRef,
 	inject,
@@ -27,6 +28,7 @@ import { HubModalPlacement } from './modal-placement';
 @Component({
 	selector: 'hub-modal-window',
 	imports: [],
+	changeDetection: ChangeDetectionStrategy.OnPush,
 	host: {
 		'[class]':
 			'"hub-modal" + hostPlacementClass + (variant() ? " hub-modal--" + variant() : "") + (windowClass() ? " " + windowClass() : "")',
@@ -60,7 +62,7 @@ import { HubModalPlacement } from './modal-placement';
 							#closeButton
 							type="button"
 							class="hub-modal__close"
-							aria-label="Close"
+							[attr.aria-label]="closeAriaLabel()"
 							(click)="dismiss(null)"
 						></button>
 					</div>
@@ -108,6 +110,14 @@ export class HubModalWindow implements OnInit, OnDestroy {
 	 * Identifier to apply to the `aria-describedby` attribute of the modal.
 	 */
 	readonly ariaDescribedBy = input<string>();
+
+	/**
+	 * Accessible name of the dismiss button drawn in the built-in header.
+	 *
+	 * The glyph is painted by CSS, so the button has no text node and this attribute is
+	 * the only name assistive technology can read.
+	 */
+	readonly closeAriaLabel = input<string>('Close');
 
 	/**
 	 * Configures the presence and behavior of the modal backdrop (`true`, `false`, or `'static'`).

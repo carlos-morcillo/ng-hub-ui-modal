@@ -2,6 +2,80 @@
 
 All notable changes to this project will be documented in this file.
 
+## [22.11.0] - 2026-09-06
+
+### Added
+
+- **`closeAriaLabel`: the dismiss button the library draws can finally be named in the
+  application's own language.** That button carries no text — its glyph is painted by CSS — so its
+  `aria-label` is the entire name a screen reader reads out, and it was the literal `"Close"`,
+  written into the template. A localized application therefore shipped one control it had no way
+  to translate, and it is not an edge case: that header is what the library builds whenever
+  `headerSelector` or `footerSelector` is set.
+
+    The option follows the shape every other option here already has — `closeAriaLabel` on
+    `HubModalOptions`, with its default on `HubModalConfig`, so it can be set once for the whole
+    application or per call. It still defaults to `"Close"`, so nothing changes for an application
+    that says nothing.
+
+### Changed
+
+- **`modal-stack.ts` no longer dresses the component host with `component-host-scrollable`.**
+  That element is only a query root: `splitIntoSlots` takes its children into the window and the
+  host itself never enters the document, and this library ships no rule for the class either — so
+  the line had no effect on anything a consumer can see. `scrollable` reaches the dialog through
+  `hub-modal__dialog--scrollable`, set in `HubModalWindow`, and keeps working exactly as before.
+  The old `FIXME` that asked for this is replaced by a note saying why the host cannot be styled,
+  so the class does not come back.
+
+- Internal hygiene in the same file, with no change in behaviour: the JSDoc of
+  `extractAndRemoveNodesBySelector` moved from above `splitIntoSlots` — where it described a
+  function it did not belong to — down onto its own; a `const` bound to the `void` return of
+  `addEventListener` was dropped; the selector was queried twice in a row to remove what had just
+  been read, and now the single result is reused; and the two remaining Spanish comments, which
+  only restated the line under them, are gone.
+
+- **`HubModalWindow` and `HubModalBackdrop` now declare `ChangeDetectionStrategy.OnPush`.** Both read
+  their template values from signal inputs, and `HubModalRef` updates them through
+  `ComponentRef.setInput`, which marks the view itself — so neither ever needed a check it had not
+  been marked for. Angular 22 already treats a component that names no strategy as OnPush, so nothing
+  changes for an application on the current major; the declaration is what carries the strategy into
+  the published package, compiled in partial mode for a peer range that still admits Angular 18, whose
+  linker resolves an unstated strategy to `Eager`.
+
+### Deprecated
+
+- **`HubModalModule`, marked for removal in 23.0.0.** The class carried no `@deprecated` tag, so an
+  editor gave no hint and neither did the build: a consumer had no way of learning the module was on
+  its way out before it stopped existing. It now says so. Its whole body is `providers: [HubModal]`,
+  and `HubModal` is `providedIn: 'root'` — so importing the module never enabled the service, it
+  added a redundant second instance in whichever injector declared the import, delegating to the
+  same root `HubModalStack` and `HubModalConfig`. Inject `HubModal` and drop the import; nothing
+  else changes. See `BREAKING_CHANGES.md`.
+
+### Fixed
+
+- **`BREAKING_CHANGES.md` promised its breaks in major versions.** The preamble read "breaking
+  changes introduced in major versions", which this library cannot deliver: its major tracks the
+  Angular major it targets, so a break arrives inside a minor — as 22.8.0 and 22.10.0 both did, two
+  entries down the same file. A reader taking the preamble at its word had every reason to skip the
+  file on a minor upgrade, which is exactly when it matters.
+
+- **The documentation described an API this library does not have.** Both READMEs opened with
+  "zero external dependencies" while four files import from `ng-hub-ui-utils` and the manifest
+  declares it as a peer, so the install instructions left a reader one unresolved import short of
+  a build. `offcanvas` was missing from the English options table and from both
+  `HubModalUpdatableOptions` lists, which reads as "a drawer cannot be toggled on an open dialog";
+  the Spanish table was missing `ariaLabelledBy`, `ariaDescribedBy` and `bodySelector` on top of
+  it, and the Spanish API reference had no `HubActiveModal`, `ModalDismissReasons`,
+  `HubModalConfig` or BEM class sections at all. All of it now matches `modal-config.ts`.
+
+- **The `zindex` rename shipped in 22.2.0 had no migration entry.** `--hub-modal-z-index` became
+  `--hub-modal-zindex` and `--hub-modal-backdrop-z-index` became `--hub-modal-backdrop-zindex`,
+  and a custom property nobody reads raises no error — so a host that had set the old names lost
+  them in silence, with a dialog sliding behind its own chrome as the only symptom.
+  `BREAKING_CHANGES.md` now carries that section, where it belonged since June.
+
 ## [22.10.0] - 2026-09-05
 
 ### Fixed

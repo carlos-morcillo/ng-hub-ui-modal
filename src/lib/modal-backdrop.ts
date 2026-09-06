@@ -1,5 +1,6 @@
 import {
 	afterNextRender,
+	ChangeDetectionStrategy,
 	Component,
 	ElementRef,
 	inject,
@@ -19,6 +20,7 @@ import { Observable } from 'rxjs';
 @Component({
 	selector: 'hub-modal-backdrop',
 	standalone: true,
+	changeDetection: ChangeDetectionStrategy.OnPush,
 	encapsulation: ViewEncapsulation.None,
 	template: '',
 	host: {

@@ -31,6 +31,18 @@ export interface HubModalOptions<D = unknown> {
 	ariaDescribedBy?: string;
 
 	/**
+	 * Accessible name of the dismiss button the modal draws in its own header.
+	 *
+	 * That button carries no text — its glyph is painted by CSS — so this string is the
+	 * whole of what a screen reader announces. It ships in English, which leaves a
+	 * localized application with a control it cannot translate; pass the translated
+	 * string here, or set the default once on `HubModalConfig`.
+	 *
+	 * Default value is `'Close'`.
+	 */
+	closeAriaLabel?: string;
+
+	/**
 	 * If `true`, the backdrop element will be created for a given modal.
 	 *
 	 * Alternatively, specify `'static'` for a backdrop which doesn't close the modal on click.
@@ -256,6 +268,7 @@ export class HubModalConfig implements Required<HubModalOptions> {
 
 	ariaLabelledBy!: string;
 	ariaDescribedBy!: string;
+	closeAriaLabel = 'Close';
 	backdrop: boolean | 'static' = true;
 	beforeDismiss!: () => boolean | Promise<boolean>;
 	centered!: boolean;

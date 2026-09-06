@@ -9,6 +9,7 @@ describe('HubModalConfig', () => {
 		expect(config.ariaLabelledBy).toBeUndefined();
 		expect(config.ariaLabelledBy).toBeUndefined();
 		expect(config.ariaDescribedBy).toBeUndefined();
+		expect(config.closeAriaLabel).toBe('Close');
 		expect(config.backdrop).toBe(true);
 		expect(config.backdropClass).toBeUndefined();
 		expect(config.beforeDismiss).toBeUndefined();

@@ -1,6 +1,35 @@
 # Breaking Changes in `ng-hub-ui-modal`
 
-This document details the breaking changes introduced in major versions of `ng-hub-ui-modal` and how to migrate your codebase.
+This document details the breaking changes of `ng-hub-ui-modal` and how to migrate your codebase.
+
+The major version tracks the Angular major this library targets, so it cannot also signal a break: a
+breaking change ships in a **minor** release and is announced here. This file — not the version
+number — is the warning.
+
+## [22.11.0] - 2026-09-06
+
+### Announced: `HubModalModule` is removed in 23.0.0
+
+- **Change**: the class is now marked `@deprecated`. Nothing is removed here and nothing changes at
+  runtime — this release is the notice, and the removal lands in 23.0.0, the next version that tracks
+  a new Angular major.
+- **Impact**: from 23.0.0 the symbol is gone from the entry point, so `import { HubModalModule }`
+  and `imports: [HubModalModule]` stop compiling.
+- **Migration**: delete the import and inject `HubModal`. The module's whole body is
+  `providers: [HubModal]`, and the service is `providedIn: 'root'`, so it is already reachable from
+  anywhere; the module only added a second instance in whichever injector declared the import,
+  delegating to the same root `HubModalStack` and `HubModalConfig`.
+
+    ```ts
+    // Before
+    @NgModule({ imports: [HubModalModule] })
+    export class AppModule {}
+
+    // After — no import at all
+    export class OrdersComponent {
+    	readonly #modal = inject(HubModal);
+    }
+    ```
 
 ## [22.10.0] - 2026-09-05
 
@@ -141,6 +170,21 @@ keeps the win and drops the price.
 - **Change**: the theming mixin now builds to `dist/modal/styles/...` instead of `dist/modal/src/lib/styles/...`, and a `styles/index.scss` root entry forwards it.
 - **Impact**: a `@use` that reached into the old `src/lib/styles/...` path no longer resolves.
 - **Migration**: `@use 'ng-hub-ui-modal/styles' as *;`
+
+## [22.2.0] - 2026-06-26
+
+### `zindex` tokens lost their hyphen
+
+- **Change**: `--hub-modal-z-index` is now `--hub-modal-zindex`, and `--hub-modal-backdrop-z-index`
+  is now `--hub-modal-backdrop-zindex`, matching the `--hub-sys-zindex-*` convention the rest of
+  the design system already used. The old names are not read any more.
+- **Impact**: this is the quietest kind of break there is. A custom property nobody reads raises no
+  error and leaves no warning: a host that had raised the stacking order to sit above its own
+  chrome simply went back to the library's default, and the only symptom is a dialog appearing
+  behind something it used to cover.
+- **Migration**: search your styles for `--hub-modal-z-index` and `--hub-modal-backdrop-z-index`
+  and drop the hyphen from `z-index` in each. Both stay declared on `:root`, because the backdrop
+  is a sibling of the dialog and cannot inherit from it.
 
 ## Version 22.1.0
 

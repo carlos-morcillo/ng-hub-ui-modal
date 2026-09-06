@@ -34,6 +34,7 @@ This table details the functionalities of the `ng-hub-ui-modal` library and indi
 | **Content slots** | `headerSelector` / `footerSelector`                          |       ✅        |
 |                   | `bodySelector`                                               |       ✅        |
 |                   | `dismissSelector` / `closeSelector`                          |       ❌        |
+|                   | `closeAriaLabel` — name of the built-in close button         |       ✅        |
 | **Behavior**      | `backdrop` (true, false, 'static')                           |       ✅        |
 |                   | `keyboard` (Esc to close)                                    |       ✅        |
 |                   | `animation` (fade in/out)                                    |       ❌        |
