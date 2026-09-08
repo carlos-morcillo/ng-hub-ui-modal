@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file.
 
+## [22.11.1] - 2026-09-08
+
+### Added
+
+- **`ng-hub-ui-ds` is declared as an optional peer dependency.** The stylesheet reads twenty-one
+  distinct `--hub-sys-*` and `--hub-ref-*` tokens across eighty-six references, and until now the
+  manifest said nothing about where they come from: a consumer installing the modal on its own got the fallback values and no hint that a
+  shared palette exists. `peerDependenciesMeta` marks it optional, exactly as `ng-hub-ui-panels`
+  already does, so nothing warns a project that themes on its own — every token this library reads
+  is written with its own fallback. Install metadata only; no code changes.
+
+- **Both READMEs state where this library stands on server-side rendering.** The honest answer is
+  «not verified»: a dialog only exists after a gesture, so the site's prerender — which is the
+  running proof for the libraries that render markup on the page — never draws one.
+
+### Changed
+
+- **`HubModalBackdrop` no longer declares `ViewEncapsulation.None`.** It has `template: ''` and no
+  stylesheet of its own, so the setting had nothing to leak and nothing to protect; the rules that
+  dress `.hub-modal__backdrop` are emitted from `HubModalWindow`, which does declare it. Removing
+  a style-encapsulation override from a component with no styles changes nothing at runtime.
+
+- **`HubModalWindow` says why it leaves style encapsulation**, as `CODING_RULES.md` requires of
+  every exception. Reason 1: most of that stylesheet dresses elements outside the window's own
+  view — `body.hub-modal-open`, the `:root` block the backdrop reads, and `.hub-modal__backdrop`
+  itself, a sibling component rather than a descendant — none of which can ever carry the window's
+  marker attribute.
+
 ## [22.11.0] - 2026-09-06
 
 ### Added

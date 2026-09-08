@@ -78,6 +78,7 @@ This library is part of the **ng-hub-ui** ecosystem:
     - [ModalDismissReasons](#modaldismissreasons)
     - [HubModalConfig](#hubmodalconfig)
 - [Styling](#styling)
+- [Server-Side Rendering](#server-side-rendering)
 - [Contributing](#contributing)
 - [Support & License](#support--license)
 
@@ -108,6 +109,18 @@ npm install ng-hub-ui-modal ng-hub-ui-utils
 `ng-hub-ui-utils` (`>=22.0.0`) is a peer dependency: the library imports its focus, transition and
 type helpers. Package managers that do not install peers automatically will otherwise fail to
 resolve `ng-hub-ui-utils` at build time.
+
+> **Theming (optional).** Every `--hub-modal-*` default falls back to a shared `--hub-sys-*` or
+> `--hub-ref-*` token, so installing the design tokens makes the dialog read the same palette and
+> dark-mode colours as the rest of the family:
+>
+> ```bash
+> npm install ng-hub-ui-ds
+> ```
+>
+> It is declared as an **optional** peer (`>=22.0.0`): every token this library reads is written
+> with its own fallback value, so a project that themes on its own installs nothing and sees no
+> warning.
 
 ---
 
@@ -829,6 +842,15 @@ hub-modal-window {
 | `.hub-modal__dialog--centered`   | Vertical centering    |
 | `.hub-modal__dialog--scrollable` | Scrollable body       |
 | `.hub-modal__dialog--fullscreen` | Fullscreen modifier   |
+
+---
+
+## Server-Side Rendering
+
+**Not verified.** A dialog only exists after a gesture, so the prerender that stands as running
+proof for the libraries which render markup on the page never draws one, and there is nothing here
+to promise on. `HubModalStack` reaches for `document` the moment `open()` is called: if you call it
+during server rendering, guard the call yourself.
 
 ---
 

@@ -58,6 +58,7 @@ Esta librería forma parte del ecosistema **ng-hub-ui**:
 - [Ejemplos](#ejemplos)
 - [Referencia de API](#referencia-de-api)
 - [Estilos](#estilos)
+- [Renderizado en servidor](#renderizado-en-servidor)
 - [Contribuciones](#contribuciones)
 - [Soporte y Licencia](#soporte-y-licencia)
 
@@ -88,6 +89,18 @@ npm install ng-hub-ui-modal ng-hub-ui-utils
 `ng-hub-ui-utils` (`>=22.0.0`) es una dependencia peer: la librería importa de ahí sus utilidades de
 foco, transiciones y tipos. Los gestores de paquetes que no instalan los peers automáticamente
 fallarán al resolver `ng-hub-ui-utils` al compilar.
+
+> **Tematización (opcional).** Cada default `--hub-modal-*` cae sobre un token compartido
+> `--hub-sys-*` o `--hub-ref-*`, así que instalar los tokens de diseño hace que el diálogo lea la
+> misma paleta y los mismos colores de modo oscuro que el resto de la familia:
+>
+> ```bash
+> npm install ng-hub-ui-ds
+> ```
+>
+> Está declarada como peer **opcional** (`>=22.0.0`): todos los tokens que lee esta librería llevan
+> escrito su propio valor de reserva, así que quien tematiza por su cuenta no instala nada y no ve
+> ningún aviso.
 
 ---
 
@@ -655,6 +668,15 @@ hub-modal-window {
 | `.hub-modal__dialog--centered`   | Centrado vertical                |
 | `.hub-modal__dialog--scrollable` | Cuerpo desplazable               |
 | `.hub-modal__dialog--fullscreen` | Modificador de pantalla completa |
+
+---
+
+## Renderizado en servidor
+
+**No comprobado.** Un diálogo solo existe tras un gesto, así que el prerender que sirve de prueba
+corriendo para las librerías que sí pintan marcado en la página nunca dibuja ninguno, y aquí no hay
+nada que prometer. `HubModalStack` toca `document` en cuanto se llama a `open()`: si lo llamas
+durante el renderizado en servidor, pon tú la guarda.
 
 ---
 

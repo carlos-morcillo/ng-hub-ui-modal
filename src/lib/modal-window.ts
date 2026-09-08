@@ -72,6 +72,11 @@ import { HubModalPlacement } from './modal-placement';
 			</div>
 		</div>
 	`,
+	// Reason 1 of CODING_RULES: most of this stylesheet dresses elements that are not in this
+	// component's view and can never carry its marker attribute — `body.hub-modal-open`, the
+	// `:root` block the backdrop reads, and `.hub-modal__backdrop`, which is a sibling component
+	// created on the container element rather than a descendant of the window. Every selector it
+	// emits stays under the library's own `hub-modal` prefix.
 	encapsulation: ViewEncapsulation.None,
 	styleUrl: './modal.scss'
 })

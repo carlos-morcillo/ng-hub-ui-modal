@@ -7,8 +7,7 @@ import {
 	Injector,
 	input,
 	NgZone,
-	OnInit,
-	ViewEncapsulation
+	OnInit
 } from '@angular/core';
 import { hubRunTransition, reflow } from 'ng-hub-ui-utils';
 import { Observable } from 'rxjs';
@@ -21,7 +20,6 @@ import { Observable } from 'rxjs';
 	selector: 'hub-modal-backdrop',
 	standalone: true,
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	encapsulation: ViewEncapsulation.None,
 	template: '',
 	host: {
 		'[class]': '"hub-modal__backdrop" + (backdropClass() ? " " + backdropClass() : "")',
